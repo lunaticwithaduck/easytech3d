@@ -2,7 +2,11 @@ import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { AnnouncementBar } from '@/features/chrome/AnnouncementBar/AnnouncementBar';
+import { Footer } from '@/features/chrome/Footer/Footer';
+import { Header } from '@/features/chrome/Header/Header';
 import { routing } from '@/i18n/routing';
+import { getFooterMenu, getMenu } from '@/server/catalog/data';
 import { fontVariables } from '../fonts';
 
 export function generateStaticParams() {
@@ -25,7 +29,12 @@ export default async function LocaleLayout({ children, params }: Props) {
   return (
     <html lang={locale} className={fontVariables}>
       <body>
-        <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={messages}>
+          <AnnouncementBar message="Безплатна доставка при поръчки над 100 лв. · Изпращаме в същия ден" />
+          <Header menu={getMenu()} />
+          {children}
+          <Footer menu={getFooterMenu()} />
+        </NextIntlClientProvider>
       </body>
     </html>
   );
