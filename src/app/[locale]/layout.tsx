@@ -30,7 +30,7 @@ export default async function LocaleLayout({ children, params }: Props) {
     <html lang={locale} className={fontVariables}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <AnnouncementBar message="Безплатна доставка при поръчки над 100 лв. · Изпращаме в същия ден" />
+          <AnnouncementBar />
           <Header menu={getMenu()} />
           {children}
           <Footer menu={getFooterMenu()} />

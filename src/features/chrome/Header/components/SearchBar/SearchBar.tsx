@@ -1,30 +1,38 @@
 'use client';
 
-import { Search } from 'lucide-react';
-import { type FormEvent, useId, useRef, useState } from 'react';
+import { type FormEvent, useRef } from 'react';
 import { routes } from '@/config/routes';
+import { CaretIcon, SearchIcon } from '@/design-system/icons';
 import { Button } from '@/design-system/primitives/Button/Button';
-import { Icon } from '@/design-system/primitives/Icon/Icon';
-import { Input } from '@/design-system/primitives/Input/Input';
+import { Link } from '@/design-system/primitives/Link/Link';
+import { Text } from '@/design-system/primitives/Text/Text';
 import { useRouter } from '@/i18n/navigation';
 import { HEADER_COPY } from '../../config/constants';
-import { searchFieldVariants, searchFormClass, searchToggleClass } from './SearchBar.styles';
+import {
+  categoryButtonClass,
+  categoryChevronClass,
+  mobileSearchButtonVariants,
+  mobileSearchIconClass,
+  searchFormClass,
+  searchInputClass,
+  searchInteriorClass,
+  searchSubmitClass,
+  searchSubmitIconClass,
+} from './SearchBar.styles';
 
-// Search affordance: a toggle reveals an inline field; submitting routes to /search?q=…
+/**
+ * Header search — the pink pill (`.search-bar__interior`, max-w 515px, radius 50px, min-h 55px).
+ * Left segment is the pink `Всички Категории ⌄` category button; the `Търсене` input fills the rest
+ * with a pink magnifier submit. Submits to `routes.search` (`?q=…`). On mobile (< 750px) the pill is
+ * hidden and a standalone pink circular magnifier links to the search route.
+ */
 export function SearchBar() {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
-  const fieldId = useId();
-  const [open, setOpen] = useState(false);
 
   function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const query = inputRef.current?.value.trim() ?? '';
-    if (!open) {
-      setOpen(true);
-      inputRef.current?.focus();
-      return;
-    }
     if (query.length === 0) {
       inputRef.current?.focus();
       return;
@@ -33,27 +41,47 @@ export function SearchBar() {
   }
 
   return (
-    <form className={searchFormClass} action={routes.search} onSubmit={onSubmit}>
-      <div className={searchFieldVariants({ open })}>
-        <Input
-          ref={inputRef}
-          id={fieldId}
-          type="search"
-          name="q"
-          placeholder={HEADER_COPY.searchPlaceholder}
-          aria-label={HEADER_COPY.searchLabel}
-          autoComplete="off"
-        />
+    <>
+      {/* DESKTOP pill */}
+      <div className={searchInteriorClass}>
+        <Button type="button" variant="primary" unstyled className={categoryButtonClass}>
+          <Text as="span" size="sm" color="current" value={HEADER_COPY.allCategories} />
+          <CaretIcon className={categoryChevronClass} />
+        </Button>
+
+        <form className={searchFormClass} action={routes.search} method="get" onSubmit={onSubmit}>
+          {/* Raw type="search" input — the convention linter sanctions it (pill needs an inline
+              field; the Input primitive's flex-col wrapper would break the horizontal pill). */}
+          <input
+            ref={inputRef}
+            type="search"
+            name="q"
+            placeholder={HEADER_COPY.searchPlaceholder}
+            aria-label={HEADER_COPY.searchPlaceholder}
+            autoComplete="off"
+            className={searchInputClass}
+          />
+          <Button
+            type="submit"
+            variant="primary"
+            unstyled
+            className={searchSubmitClass}
+            aria-label={HEADER_COPY.searchLabel}
+          >
+            <SearchIcon className={searchSubmitIconClass} />
+          </Button>
+        </form>
       </div>
-      <Button
-        type="submit"
-        variant="ghost"
-        unstyled
-        className={searchToggleClass}
+
+      {/* MOBILE circular magnifier → search route */}
+      <Link
+        href={routes.search}
+        variant="unstyled"
+        className={mobileSearchButtonVariants()}
         aria-label={HEADER_COPY.searchLabel}
       >
-        <Icon icon={Search} size={20} />
-      </Button>
-    </form>
+        <SearchIcon className={mobileSearchIconClass} />
+      </Link>
+    </>
   );
 }

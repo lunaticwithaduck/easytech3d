@@ -1,39 +1,49 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
-import { Icon } from '@/design-system/primitives/Icon/Icon';
+import { ArrowBottomIcon } from '@/design-system/icons';
 import { Link } from '@/design-system/primitives/Link/Link';
 import { Text } from '@/design-system/primitives/Text/Text';
 import type { NavItem } from '@/server/catalog/types';
-import { desktopNavWrapperClass } from '../../Header.styles';
 import { MegaMenu } from '../MegaMenu/MegaMenu';
-import { navCaretClass, navItemClass, navLinkClass, navListClass } from './DesktopNav.styles';
+import {
+  navCaretClass,
+  navItemClass,
+  navLinkClass,
+  navListClass,
+  navWrapperClass,
+} from './DesktopNav.styles';
 
 type DesktopNavProps = {
   menu: NavItem[];
 };
 
-// Horizontal desktop nav. Items with `children` reveal a hover/focus mega-menu panel.
+/**
+ * Horizontal desktop nav (`.main_nav-bar_linklist`). UPPERCASE, Archivo Narrow (font-nav).
+ * Items with children carry the theme `arrow-bottom` caret and reveal a hover/focus MEGA-MENU
+ * panel (CSS group-hover, matching the theme's `.visible`-on-hover behaviour). Hidden < 750px.
+ */
 export function DesktopNav({ menu }: DesktopNavProps) {
   return (
-    <nav className={desktopNavWrapperClass} aria-label="Primary">
+    <nav className={navWrapperClass} aria-label="Primary">
       <ul className={navListClass}>
         {menu.map((item) => {
-          const hasChildren = (item.children?.length ?? 0) > 0;
+          const children = item.children ?? [];
+          const hasChildren = children.length > 0;
           return (
             <li key={item.href} className={navItemClass}>
-              <Link href={item.href} variant="unstyled" className={navLinkClass}>
-                <Text as="span" size="sm" weight="medium" color="current">
+              <Link
+                href={item.href}
+                variant="unstyled"
+                className={navLinkClass}
+                aria-haspopup={hasChildren || undefined}
+              >
+                <Text as="span" size="base" weight="normal" color="current">
                   {item.label}
                 </Text>
-                {hasChildren ? (
-                  <span className={navCaretClass}>
-                    <Icon icon={ChevronDown} size={16} />
-                  </span>
-                ) : null}
+                {hasChildren ? <ArrowBottomIcon className={navCaretClass} /> : null}
               </Link>
 
-              {hasChildren ? <MegaMenu items={item.children ?? []} /> : null}
+              {hasChildren ? <MegaMenu items={children} /> : null}
             </li>
           );
         })}

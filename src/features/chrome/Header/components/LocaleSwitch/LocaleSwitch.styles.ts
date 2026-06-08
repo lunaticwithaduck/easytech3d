@@ -1,11 +1,25 @@
 import { cva } from 'class-variance-authority';
 
-export const localeSwitchClass =
-  'hidden items-center gap-0.5 rounded-full border border-border p-0.5 sm:inline-flex';
+// BG/EN locale switch (theme `selectors-form` localization, `show_locale_selector=true`). Rendered
+// as a compact rounded segmented control in the icons cluster. Hidden < 750px (it moves into the
+// drawer footer). Arbitrary px live here (R4 exempts *.styles.ts).
+export const localeSwitchVariants = cva(
+  'items-center gap-[2px] rounded-[50px] border border-border p-[2px]',
+  {
+    variants: {
+      // Default: desktop icons cluster (hidden < 750px). Inline = mobile drawer footer.
+      placement: {
+        cluster: 'hidden min-[750px]:inline-flex',
+        inline: 'mt-[10px] inline-flex border-muted',
+      },
+    },
+    defaultVariants: { placement: 'cluster' },
+  },
+);
 
-// Each locale option pill. Active = primary fill; inactive = muted, hover to text.
+// Each option pill. Active = pink fill (#ff1b5c) / white text; inactive = muted, hover to text.
 export const localeOptionVariants = cva(
-  'rounded-full px-2.5 py-1 text-xs font-semibold uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+  'rounded-[50px] px-[10px] py-[4px] font-nav text-[12px] font-semibold uppercase transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
   {
     variants: {
       active: {
