@@ -180,7 +180,10 @@ const rules = [
     name: 'R1: no inline style={}',
     pattern: /\bstyle=\{/,
     skipFile: (p) => p.endsWith('.styles.ts') || p.endsWith('.styles.tsx'),
-    hint: 'Move inline styles into a co-located *.styles.ts file (CVA).',
+    // Allow inline styles that set CSS custom properties — the sanctioned escape for per-record
+    // dynamic values (slide overlay opacity, bg-image URLs, --rating, alignment) that CVA can't hold.
+    skipLine: (line) => /--[a-zA-Z]/.test(line),
+    hint: 'Move static inline styles into a co-located *.styles.ts (CVA). Dynamic per-record values are allowed only via CSS custom properties (style={{ "--x": value }}).',
   },
   {
     name: 'R3: no raw <input> (use the Input primitive)',

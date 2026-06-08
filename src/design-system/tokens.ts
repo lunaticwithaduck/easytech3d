@@ -32,13 +32,13 @@ export const colors = {
 export type ColorToken = keyof typeof colors;
 export type ColorValue = (typeof colors)[ColorToken];
 
+// Exact theme radii: pill buttons 50px, cards 20px, media/dropdowns 10px, inputs 2px.
 export const radius = {
   none: '0',
-  sm: '3px',
-  md: '5px',
-  lg: '10px',
-  xl: '20px',
-  button: '5px',
+  sm: '2px', // default inputs
+  md: '10px', // blog/media cards, dropdowns, logo tiles
+  lg: '20px', // product/collection cards, labels
+  button: '50px', // pill buttons + pill (cart/search/footer) inputs
   full: '9999px',
 } as const;
 

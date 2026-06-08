@@ -23,11 +23,10 @@
 	--color-ring: #ff1b5c;
 
 	--radius-none: 0;
-	--radius-sm: 3px;
-	--radius-md: 5px;
-	--radius-lg: 10px;
-	--radius-xl: 20px;
-	--radius-button: 5px;
+	--radius-sm: 2px;
+	--radius-md: 10px;
+	--radius-lg: 20px;
+	--radius-button: 50px;
 	--radius-full: 9999px;
 
 	--text-2xs: 0.75rem;
