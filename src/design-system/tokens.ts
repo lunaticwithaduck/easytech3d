@@ -1,38 +1,44 @@
-// Design tokens — single source of truth. Derived from the easytech3d.com reference
-// (tools/output/design-tokens/tokens.json). `colors` and `radius` are flat string maps so
+// Design tokens — EXACT values extracted from the live theme's resolved :root variables
+// (see .claude/scout / tools settings extraction). `colors` and `radius` are flat string maps so
 // scripts/generate-theme.cjs can regex-parse them into Tailwind v4 `@theme` custom properties.
-// Keep every value a flat string literal — nested objects are silently dropped by the generator.
 
 export const colors = {
-  background: '#ffffff',
-  elevated: '#f4f4f4',
-  paper: '#ebebeb',
-  backdrop: 'rgba(0, 0, 0, 0.5)',
-  text: '#232323',
-  muted: '#60646c',
-  inverse: '#ffffff',
-  primary: '#ff1b5c',
-  secondary: '#f4f4f4',
-  accent: '#fd5b2a',
+  // surfaces
+  background: '#f4f4f4', // --color-body / --color-bg (the page is light grey, NOT white)
+  surface: '#ffffff', // cards, fields (--color-text-field)
+  elevated: '#ffffff',
+  paper: '#ffffff',
+  backdrop: 'rgba(35, 35, 35, 0.4)', // image/overlay scrim (--opacity-image-overlay 0.4)
+  // text
+  text: '#232323', // --color-text / --color-body-text
+  muted: '#6e6e6e',
+  inverse: '#ffffff', // --color-btn-primary-text / on-dark text
+  // brand
+  primary: '#ff1b5c', // --color-btn-primary
+  'primary-dark': '#e70042', // --color-btn-primary-darker (hover/focus)
+  secondary: '#3a3a3a', // --color-btn-secondary
+  accent: '#ff1b5c',
+  // status
   destructive: '#ea0606',
+  sale: '#ea0606', // --color-sale-text
   success: '#16795b',
   warning: '#b68a0b',
-  sale: '#00a500',
-  border: '#e4e4e4',
+  // lines
+  border: '#ebebeb', // --color-border
+  'border-form': '#cccccc', // --color-border-form
   ring: '#ff1b5c',
 } as const;
 
 export type ColorToken = keyof typeof colors;
 export type ColorValue = (typeof colors)[ColorToken];
 
-// px values straight from the reference; full = pill.
 export const radius = {
   none: '0',
   sm: '3px',
-  md: '10px',
-  lg: '20px',
-  xl: '50px',
-  button: '10px',
+  md: '5px',
+  lg: '10px',
+  xl: '20px',
+  button: '5px',
   full: '9999px',
 } as const;
 

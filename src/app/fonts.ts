@@ -1,8 +1,9 @@
-import { Instrument_Sans } from 'next/font/google';
+import { Archivo_Narrow, Instrument_Sans } from 'next/font/google';
 
-// The reference site renders in Instrument Sans. Google's Instrument Sans ships Latin (+ ext);
-// Cyrillic glyphs (Bulgarian) fall back through the stack below — same as the live site. If you
-// want a first-class Cyrillic cut, self-host an Instrument Sans Cyrillic build and swap here.
+// EXACT theme fonts: header/body = Instrument Sans, navigation = Archivo Narrow.
+// Latin subset only (Google's Instrument Sans / Archivo Narrow don't ship Cyrillic); Bulgarian
+// Cyrillic falls back through the stack — same behaviour as the live site. Self-host a Cyrillic
+// cut later if crisper BG glyphs are wanted.
 export const instrumentSans = Instrument_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
@@ -10,4 +11,11 @@ export const instrumentSans = Instrument_Sans({
   display: 'swap',
 });
 
-export const fontVariables = instrumentSans.variable;
+export const archivoNarrow = Archivo_Narrow({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-archivo-narrow',
+  display: 'swap',
+});
+
+export const fontVariables = `${instrumentSans.variable} ${archivoNarrow.variable}`;

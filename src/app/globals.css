@@ -3,6 +3,7 @@
 
 @theme {
   --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-nav: var(--font-archivo-narrow), var(--font-instrument-sans), ui-sans-serif, sans-serif;
 }
 
 html,
