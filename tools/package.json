@@ -1,0 +1,22 @@
+{
+  "name": "easytech3d-tools",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Site-teardown tooling: mirror easytech3d.com, screenshot every page, and derive its brand palette as a high-accuracy design reference.",
+  "scripts": {
+    "palette": "node scripts/extract-palette.cjs",
+    "ref:crawl": "node scripts/crawl-reference.cjs",
+    "ref:capture": "node scripts/capture-reference.cjs",
+    "ref:mirror": "node scripts/mirror-reference.cjs",
+    "ref:serve": "node scripts/serve-mirror.cjs",
+    "gap": "node scripts/gap-check.cjs",
+    "tokens": "node scripts/extract-tokens.cjs",
+    "scan": "node scripts/crawl-reference.cjs && node scripts/capture-reference.cjs && node scripts/mirror-reference.cjs",
+    "all": "node scripts/extract-palette.cjs && node scripts/crawl-reference.cjs && node scripts/capture-reference.cjs && node scripts/mirror-reference.cjs && node scripts/extract-tokens.cjs",
+    "postinstall": "playwright install chromium"
+  },
+  "dependencies": {
+    "pngjs": "^7.0.0",
+    "playwright": "^1.49.0"
+  }
+}

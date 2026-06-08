@@ -1,0 +1,31 @@
+category,item,severity,description
+technical,robots.txt exists,critical,Ensure robots.txt is present and does not block important content
+technical,XML sitemap exists,critical,sitemap.xml or sitemap.ts must exist and include all indexable pages
+technical,Canonical URLs,critical,Every page must have a canonical URL to prevent duplicate content
+technical,HTTPS enforcement,critical,All resources served over HTTPS with valid certificate
+technical,Custom 404 page,medium,not-found.tsx with helpful navigation links
+technical,Redirect chains,high,No redirect chains longer than 2 hops
+technical,Status codes,high,All important pages return 200 status
+technical,URL structure,medium,Lowercase hyphenated descriptive slugs
+technical,Error boundaries,low,error.tsx for graceful server error handling
+content,Title tags,critical,Unique title per page 50-60 chars with primary keyword
+content,Meta descriptions,high,Unique description per page 150-160 chars with CTA
+content,H1 heading,critical,Exactly one H1 per page matching page topic
+content,Heading hierarchy,high,Sequential headings h1 to h2 to h3 no skips
+content,Image alt text,high,Descriptive alt on meaningful images empty on decorative
+content,Internal linking,medium,Key pages linked from navigation with descriptive anchor text
+content,Open Graph tags,high,og:title og:description og:image og:url on all pages
+content,Twitter Card tags,medium,twitter:card twitter:title twitter:description twitter:image
+content,metadataBase,high,Set in root layout for proper URL resolution
+content,Title template,medium,Use title.template in root layout for consistent branding
+structured-data,JSON-LD present,high,At least Organization and BreadcrumbList schemas
+structured-data,Article schema,medium,On blog posts and articles with required properties
+structured-data,Product schema,high,On product pages with price and availability
+structured-data,FAQ schema,low,On FAQ sections for rich result eligibility
+structured-data,Schema validation,high,All JSON-LD validates against schema.org
+performance,LCP under 2.5s,critical,Largest Contentful Paint target
+performance,INP under 200ms,critical,Interaction to Next Paint target
+performance,CLS under 0.1,critical,Cumulative Layout Shift target
+performance,Image optimization,high,next/image or responsive images with modern formats
+performance,Font optimization,medium,next/font or font-display swap with preload
+performance,Code splitting,medium,Dynamic imports for heavy components

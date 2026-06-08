@@ -1,0 +1,16 @@
+type,use_when,required_properties,recommended_properties,rich_result
+Article,"Blog posts, news articles, editorial content","headline, image, datePublished, author","dateModified, publisher, description, mainEntityOfPage",Yes - article snippet
+Product,"E-commerce product pages","name, image, offers.price, offers.priceCurrency, offers.availability","brand, sku, aggregateRating, review, description",Yes - product snippet with price
+FAQPage,"FAQ sections on any page","mainEntity[].name, mainEntity[].acceptedAnswer.text","","Yes - expandable FAQ in search results"
+BreadcrumbList,"Pages with breadcrumb navigation","itemListElement[].position, itemListElement[].name","itemListElement[].item (URL, except last item)",Yes - breadcrumb trail in search results
+Organization,"About page or site-wide (root layout)","name, url","logo, sameAs, description, contactPoint",Yes - knowledge panel
+LocalBusiness,"Local business websites","name, address","telephone, openingHoursSpecification, geo, image, priceRange",Yes - local business panel
+HowTo,"Tutorial and guide pages","name, step[].text","description, totalTime, step[].name, step[].url, step[].image",Yes - step-by-step in search results
+VideoObject,"Pages with video content","name, description, thumbnailUrl, uploadDate","duration, contentUrl, embedUrl",Yes - video snippet
+Event,"Event listing pages","name, startDate, location","endDate, description, offers, image, organizer",Yes - event snippet
+Review,"Review content pages","itemReviewed, reviewRating, author","reviewBody, datePublished",Yes - review stars
+Recipe,"Recipe pages","name, image, author, datePublished, description","prepTime, cookTime, totalTime, recipeIngredient, recipeInstructions",Yes - recipe card
+SoftwareApplication,"App/software product pages","name, offers","applicationCategory, operatingSystem, aggregateRating",Yes - software info
+WebSite,"Homepage (for sitelinks search)","name, url","potentialAction (SearchAction)",Yes - sitelinks search box
+Course,"Online course pages","name, description, provider","hasCourseInstance, offers",Yes - course snippet
+JobPosting,"Job listing pages","title, description, datePosted, hiringOrganization","validThrough, employmentType, baseSalary, jobLocation",Yes - job listing

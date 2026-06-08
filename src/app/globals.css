@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import "../design-system/theme.css";
+
+@theme {
+  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+}
+
+html,
+body {
+  background: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}

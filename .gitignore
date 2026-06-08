@@ -1,0 +1,28 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.*
+
+# next
+.next/
+out/
+build/
+next-env.d.ts
+
+# test / playwright
+coverage/
+playwright-report/
+test-results/
+
+# tooling output (reference capture — regenerable)
+tools/node_modules/
+tools/output/
+
+# env
+.env
+.env*.local
+
+# misc
+.DS_Store
+*.tsbuildinfo
+.turbo
