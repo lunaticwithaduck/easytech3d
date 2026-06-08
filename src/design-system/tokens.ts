@@ -17,6 +17,7 @@ export const colors = {
   destructive: '#ea0606',
   success: '#16795b',
   warning: '#b68a0b',
+  sale: '#00a500',
   border: '#e4e4e4',
   ring: '#ff1b5c',
 } as const;

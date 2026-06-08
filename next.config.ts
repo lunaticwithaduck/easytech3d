@@ -6,11 +6,14 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   output: 'standalone',
   images: {
-    // Product media will come from the backend / object storage (a separate repo/service).
-    // Add the real media host here once chosen (e.g. R2 / S3 / UploadThing CDN).
-    remotePatterns: process.env.NEXT_PUBLIC_MEDIA_HOST
-      ? [{ protocol: 'https', hostname: process.env.NEXT_PUBLIC_MEDIA_HOST }]
-      : [],
+    // Transitional: reference imagery loads from Shopify's public CDN (no images committed to
+    // git). The backend (separate repo) will serve product media later — add its host here then.
+    remotePatterns: [
+      { protocol: 'https', hostname: 'cdn.shopify.com' },
+      ...(process.env.NEXT_PUBLIC_MEDIA_HOST
+        ? [{ protocol: 'https' as const, hostname: process.env.NEXT_PUBLIC_MEDIA_HOST }]
+        : []),
+    ],
   },
 };
 
