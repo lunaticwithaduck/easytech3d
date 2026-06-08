@@ -1,12 +1,17 @@
+import { ShoppingCart } from 'lucide-react';
 import { routes } from '@/config/routes';
 import { cn } from '@/design-system/lib/cn';
 import { Button } from '@/design-system/primitives/Button/Button';
+import { Icon } from '@/design-system/primitives/Icon/Icon';
 import { Image } from '@/design-system/primitives/Image/Image';
 import { Link } from '@/design-system/primitives/Link/Link';
 import { Text } from '@/design-system/primitives/Text/Text';
 import { PriceTag } from '@/features/_shared/PriceTag/PriceTag';
 import type { ProductCardData } from '@/server/catalog/types';
 import {
+  actionsClass,
+  addButtonClass,
+  cardLinkClass,
   cardVariants,
   imageVariants,
   infoVariants,
@@ -20,14 +25,13 @@ export type ProductCardProps = {
   className?: string | undefined;
 };
 
-// Grid tile for a single product. The whole surface is one link to the product page (rendered via
-// `<Button asChild unstyled>` so it keeps button semantics while the card owns its styling). Inside:
-// a square featured image, the title, and the price row; an "Промоция" flag overlays the media when
-// the product is on sale. Matches the reference's product-card grid and the Liquid card snippet.
+// Grid tile for a single product. The media + info area links to the product page; a pink
+// "Добави в количката" action sits pinned at the bottom (a sibling link, not nested, so the
+// markup stays valid) — matching the reference's product-card grid and the Liquid card snippet.
 export function ProductCard({ product, className }: ProductCardProps) {
   return (
-    <Button asChild unstyled className={cn(cardVariants(), className)}>
-      <Link href={routes.product(product.handle)} variant="unstyled">
+    <div className={cn(cardVariants(), className)}>
+      <Link href={routes.product(product.handle)} variant="unstyled" className={cardLinkClass}>
         <span className={mediaVariants()}>
           {product.onSale ? (
             <Text
@@ -54,6 +58,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
           <PriceTag price={product.price} compareAtPrice={product.compareAtPrice} />
         </span>
       </Link>
-    </Button>
+      <div className={actionsClass}>
+        <Button asChild variant="primary" size="sm" className={addButtonClass}>
+          <Link href={routes.product(product.handle)} variant="unstyled">
+            <Icon icon={ShoppingCart} size={16} />
+            <Text as="span" color="current" weight="medium" value="Добави в количката" />
+          </Link>
+        </Button>
+      </div>
+    </div>
   );
 }

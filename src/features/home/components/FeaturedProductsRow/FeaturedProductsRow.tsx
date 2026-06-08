@@ -1,10 +1,11 @@
 import { Container } from '@/features/_shared/Container/Container';
-import { ProductCarousel } from '@/features/_shared/ProductCarousel/ProductCarousel';
 import { Section } from '@/features/_shared/Section/Section';
-import { SectionHeading } from '@/features/_shared/SectionHeading/SectionHeading';
-import { getProductsInCollection } from '@/server/catalog/data';
-import type { ProductCardData } from '@/server/catalog/types';
-import { groupClass, groupStackClass } from './FeaturedProductsRow.styles';
+import { getCollection, getProductsInCollection } from '@/server/catalog/data';
+import {
+  type FeaturedTab,
+  FeaturedProductsTabs,
+} from './components/FeaturedProductsTabs/FeaturedProductsTabs';
+import { groupStackClass } from './FeaturedProductsRow.styles';
 
 export type FeaturedGroup = {
   title: string;
@@ -16,36 +17,34 @@ export type FeaturedProductsRowProps = {
   groups: readonly FeaturedGroup[];
 };
 
-// Gather a group's products from all its source collections, de-duplicating by id so a product
-// appearing in multiple handles shows once.
-function gatherProducts(handles: readonly string[]): ProductCardData[] {
-  const seen = new Set<string>();
-  const out: ProductCardData[] = [];
+// Build the tab set for a group: one tab per source collection (label = collection title), each
+// carrying that collection's products. Empty collections are skipped.
+function buildTabs(handles: readonly string[]): FeaturedTab[] {
+  const tabs: FeaturedTab[] = [];
   for (const handle of handles) {
-    for (const product of getProductsInCollection(handle)) {
-      if (seen.has(product.id)) continue;
-      seen.add(product.id);
-      out.push(product);
-    }
+    const products = getProductsInCollection(handle);
+    if (products.length === 0) continue;
+    tabs.push({ label: getCollection(handle)?.title ?? handle, products });
   }
-  return out;
+  return tabs;
 }
 
-// The three featured-product blocks from the live homepage: each a left-aligned eyebrow+title
-// over a horizontal carousel of the group's products.
+// The three featured-product blocks from the live homepage, each a tabbed carousel.
 export function FeaturedProductsRow({ groups }: FeaturedProductsRowProps) {
   return (
     <Section>
       <Container>
         <div className={groupStackClass}>
           {groups.map((group) => {
-            const products = gatherProducts(group.collectionHandles);
-            if (products.length === 0) return null;
+            const tabs = buildTabs(group.collectionHandles);
+            if (tabs.length === 0) return null;
             return (
-              <div key={`${group.title}-${group.subtitle}`} className={groupClass}>
-                <SectionHeading title={group.title} subtitle={group.subtitle} align="left" />
-                <ProductCarousel products={products} />
-              </div>
+              <FeaturedProductsTabs
+                key={`${group.title}-${group.subtitle}`}
+                title={group.title}
+                subtitle={group.subtitle}
+                tabs={tabs}
+              />
             );
           })}
         </div>

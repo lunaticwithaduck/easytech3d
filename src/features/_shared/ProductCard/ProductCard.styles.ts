@@ -19,6 +19,13 @@ export const saleBadgeVariants = cva(
 );
 
 // Title + price stack beneath the media.
-export const infoVariants = cva('flex flex-1 flex-col gap-2 p-4');
+export const infoVariants = cva('flex flex-1 flex-col gap-2 p-4 pb-2');
 
 export const titleVariants = cva('line-clamp-2 group-hover:text-primary');
+
+// The clickable region (media + info) — everything except the add-to-cart action.
+export const cardLinkClass = 'flex flex-1 flex-col';
+
+// Add-to-cart action pinned to the card bottom (the reference's pink "Добави в количката").
+export const actionsClass = 'mt-auto p-4 pt-0';
+export const addButtonClass = 'w-full gap-2';
