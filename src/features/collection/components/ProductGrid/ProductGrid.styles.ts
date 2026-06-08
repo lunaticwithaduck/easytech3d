@@ -10,7 +10,9 @@ import { cva } from 'class-variance-authority';
 //   @media (max-width:749px){ .grid { margin-left:-22px; } }
 // `align-items:inherit` for `.Collection-wrapper` so cells stretch to equal height (cards are h-full).
 export const gridVariants = cva(
-  'grid use_align_height Collection-wrapper grid--uniform grid--view-items flex flex-wrap items-stretch -ml-[22px] md:-ml-[11px]',
+  // bare `grid` theme class dropped — it collides with Tailwind `display:grid` and would override
+  // the flexbox row (the Warehouse "grid" is flexbox: row + negative left margin gutter).
+  'use_align_height Collection-wrapper grid--uniform grid--view-items flex flex-wrap items-stretch -ml-[22px] md:-ml-[11px]',
 );
 
 // core.css:

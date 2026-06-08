@@ -15,7 +15,8 @@ export const pageWidthVariants = cva('mx-auto w-full max-w-[1660px] px-[20px] md
 //   @media (max-width:749px){ .grid { margin-left:-22px; } }
 //   .grid--uniform .grid__item { margin-bottom:20px; }
 export const gridVariants = cva(
-  'grid grid--uniform list-collections-grid use_align_height flex flex-wrap items-stretch -ml-[22px] md:-ml-[11px]',
+  // bare `grid` theme class dropped — collides with Tailwind `display:grid`; the layout is flexbox.
+  'grid--uniform list-collections-grid use_align_height flex flex-wrap items-stretch -ml-[22px] md:-ml-[11px]',
 );
 
 // `<li class="grid__item small--one-whole tablet--one-third medium-up--one-third">` — grid 3 /

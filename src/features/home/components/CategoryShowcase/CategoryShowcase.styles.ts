@@ -27,7 +27,9 @@ export const showcaseRootClass =
 // mobile (<=749px): horizontal overflow scroll with 85%-wide cells (theme max-width:749px rule:
 // `.collection-list__slider .grid__item { width:85%; margin-right:11px }`). Scrollbar hidden.
 export const trackClass = [
-  'collection-list__slider grid grid--uniform',
+  // NOTE: the theme's bare `grid` class is dropped — it collides with Tailwind's `display:grid`
+  // utility and would override the flex row below (the Warehouse "grid" is actually flexbox).
+  'collection-list__slider grid--uniform',
   'flex w-full snap-x snap-mandatory overflow-x-auto overflow-y-hidden scroll-smooth',
   // hide scrollbar (Flickity has none)
   '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
@@ -61,7 +63,7 @@ export const tileLinkClass = 'collection-grid-item__link block';
 // `.collection-grid-item__image-wrapper` — the round image frame: 120×120, border-radius 50%,
 // centered (mx-auto). Relative so the dark overlay can absolutely fill it.
 export const imageWrapClass =
-  'collection-grid-item__image-wrapper relative mx-auto h-[120px] w-[120px] overflow-hidden rounded-full';
+  'collection-grid-item__image-wrapper relative mx-auto block h-[120px] w-[120px] shrink-0 overflow-hidden rounded-full';
 
 // the circle image itself — object-cover, scales subtly on hover (theme zoom-fade-animation-element).
 export const imageClass =
