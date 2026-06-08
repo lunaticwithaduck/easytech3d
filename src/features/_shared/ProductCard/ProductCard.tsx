@@ -1,7 +1,7 @@
 import { routes } from '@/config/routes';
 import { cn } from '@/design-system/lib/cn';
 import { CartIcon } from '@/design-system/icons';
-import { Button } from '@/design-system/primitives/Button/Button';
+import { buttonVariants } from '@/design-system/primitives/Button/Button.styles';
 import { Image } from '@/design-system/primitives/Image/Image';
 import { Link } from '@/design-system/primitives/Link/Link';
 import { Text } from '@/design-system/primitives/Text/Text';
@@ -114,18 +114,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </div>
 
           <div className={actionListClass}>
-            <Button asChild variant="primary" className={addButtonClass}>
-              <Link href={routes.cart} variant="unstyled">
-                <Text
-                  as="span"
-                  size="2xs"
-                  weight="bold"
-                  color="current"
-                  value="Добави в количката"
-                />
-                <CartIcon className={cartIconClass} />
-              </Link>
-            </Button>
+            {/* Card CTA is a styled Link (the .btn--primary pill applied directly) rather than
+                <Button asChild>, avoiding Radix Slot fragility when slotting onto the Link. */}
+            <Link
+              href={routes.cart}
+              variant="unstyled"
+              className={cn(buttonVariants({ variant: 'primary' }), addButtonClass)}
+            >
+              <Text as="span" size="2xs" weight="bold" color="current" value="Добави в количката" />
+              <CartIcon className={cartIconClass} />
+            </Link>
           </div>
         </div>
       </div>
