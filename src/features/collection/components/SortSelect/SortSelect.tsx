@@ -1,9 +1,8 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useId } from 'react';
-import { Icon } from '@/design-system/primitives/Icon/Icon';
+import { ChevronDownIcon } from '@/design-system/icons';
 import { Text } from '@/design-system/primitives/Text/Text';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import type { SortKey } from '@/server/catalog/types';
@@ -11,6 +10,7 @@ import { SORT_OPTIONS } from '../../config/constants';
 import {
   sortChevronVariants,
   sortFieldVariants,
+  sortLabelVariants,
   sortSelectVariants,
   sortWrapperVariants,
 } from './SortSelect.styles';
@@ -19,9 +19,11 @@ export type SortSelectProps = {
   value: SortKey;
 };
 
-// Toolbar sort control: a native <select> whose change pushes a new `?sort=` onto the URL via the
-// locale-aware router, re-running the Server Component fetch with the chosen order. We keep the
-// native element for accessibility and overlay a chevron to match the theme's styled select.
+// `.toolbar_sort_by-block` — the sort-by control: a "Сортирай:" label
+// (`collections.sorting.title`) + a native <select> whose change pushes a new `?sort=` onto the URL
+// via the locale-aware router, re-running the Server Component fetch with the chosen order. We keep
+// the native element for accessibility and overlay the theme's `icon-chevron-down` glyph, matching
+// `collection-template.liquid`'s `select#SortBy` + `{% render 'icon-chevron-down' %}`.
 export function SortSelect({ value }: SortSelectProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -36,18 +38,11 @@ export function SortSelect({ value }: SortSelectProps) {
 
   return (
     <div className={sortWrapperVariants()}>
-      <Text
-        as="label"
-        size="sm"
-        color="muted"
-        weight="medium"
-        htmlFor={selectId}
-        value="Подреди:"
-      />
+      <Text as="label" htmlFor={selectId} className={sortLabelVariants()} value="Сортирай:" />
       <span className={sortFieldVariants()}>
         <select
           id={selectId}
-          name="sort"
+          name="sort_by"
           value={value}
           onChange={handleChange}
           className={sortSelectVariants()}
@@ -58,7 +53,7 @@ export function SortSelect({ value }: SortSelectProps) {
             </option>
           ))}
         </select>
-        <Icon icon={ChevronDown} size={16} className={sortChevronVariants()} />
+        <ChevronDownIcon className={sortChevronVariants()} />
       </span>
     </div>
   );

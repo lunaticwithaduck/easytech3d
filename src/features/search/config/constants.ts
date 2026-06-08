@@ -1,20 +1,20 @@
-// BG copy for the search page. Mirrors the Liquid `general.search.*` strings; rendered through
-// <Text value=…> so the translate pipeline falls back to these literals until EN keys land.
+// BG copy for the search page — verbatim from the live theme's `general.search.*` strings
+// (`locales/en.default.json`, which holds the Bulgarian storefront copy; see config-copy.md §2.2).
+// Rendered through <Text value=…> so the translate pipeline falls back to these literals.
 export const SEARCH_COPY = {
-  // Heading shown when no query has been performed.
-  title: 'Търсене',
-  // Eyebrow above the heading (matches the storefront section header rhythm).
-  eyebrow: 'Каталог',
-  // Field copy.
-  placeholder: 'Търсене на продукти…',
-  inputLabel: 'Търсене на продукти',
-  submit: 'Търсене',
-  // Result count line. `{count}` resolves via ICU; `{terms}` is the user's query (runtime data).
-  resultsWithCount: '{count} резултата за «{terms}»',
-  // Empty states.
-  emptyTitle: 'Какво търсите?',
-  emptyHint: 'Въведете дума за търсене, за да намерите продукти.',
-  noResultsTitle: 'Няма намерени резултати',
-  noResultsHint: 'Опитайте с друга дума или разгледайте нашите продукти.',
-  browseAll: 'Разгледай всички продукти',
+  // `general.search.title` — heading shown when no query has been performed yet
+  // (`search.performed == false`, the `<h1 class="h2">` branch of search-page.liquid).
+  title: 'Потърсете в нашия сайт',
+  // `general.search.results_with_count.other` — the heading once a search runs. This single
+  // `<h1 class="h2">` IS the result-count line in the theme. Curly quotes “…” match the live DOM
+  // ("{count} резултати за “{terms}”"). `{count}` resolves via ICU; `{terms}` is the user's query.
+  resultsWithCount: '{count} резултати за “{terms}”',
+  // `general.search.heading.other` — visually-hidden screen-reader label before the count.
+  headingSr: 'Резултати на търсенето',
+  // `general.search.placeholder` — search field placeholder.
+  placeholder: 'Търсене',
+  // `general.search.submit` — submit button aria-label.
+  submit: 'Потърси',
+  // `general.search.no_results` — empty-results message (`search--no-results-found`).
+  noResults: 'Няма резултати. Пробвайте да промените ключовите думи',
 } as const;

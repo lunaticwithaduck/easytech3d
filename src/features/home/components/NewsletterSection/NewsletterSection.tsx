@@ -4,14 +4,18 @@ import { type FormEvent, useState } from 'react';
 import { Button } from '@/design-system/primitives/Button/Button';
 import { Input } from '@/design-system/primitives/Input/Input';
 import { Text } from '@/design-system/primitives/Text/Text';
-import { Container } from '@/features/_shared/Container/Container';
 import { Section } from '@/features/_shared/Section/Section';
 import { SectionHeading } from '@/features/_shared/SectionHeading/SectionHeading';
-import { HOME_COPY } from '../../config/constants';
 import {
-  newsletterFormClass,
-  newsletterInputClass,
-  newsletterRootClass,
+  btnWrapperClass,
+  formClass,
+  formInputClass,
+  inputGroupClass,
+  nameGridClass,
+  nameGridItemClass,
+  pageWidthSmallClass,
+  sectionHeaderClass,
+  successMessageClass,
 } from './NewsletterSection.styles';
 
 export type NewsletterConfig = {
@@ -23,9 +27,18 @@ export type NewsletterSectionProps = {
   config: NewsletterConfig;
 };
 
-// "Абонирайте се към нашият мейл лист": an elevated band with a heading, subheading, and an
-// inline email field. Submit is a no-op stub this session — it flips a local flag to acknowledge.
+// Faithful 1:1 port of `sections/newsletter.liquid` (home instance, showFormLabels: true):
+//   .newsletter-section > .page-width-small
+//     > .section-header.text-center  ( h2 title + .rte subheading )
+//     > form 'customer'.contact-form.form-single-field
+//         .grid.grid--half-gutters   ( Първо име / Фамилно име )
+//         .input-group               ( Имейл )
+//         .input-group__btn-wrapper  ( submit "Подай" + tail-right arrow )
+// The real form POSTs to Shopify's `customer` endpoint; in this port the submit is a no-op stub
+// ('use client', preventDefault) that flips a local flag to show the confirmation message.
 export function NewsletterSection({ config }: NewsletterSectionProps) {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -33,39 +46,83 @@ export function NewsletterSection({ config }: NewsletterSectionProps) {
     event.preventDefault();
     if (email.trim() === '') return;
     setSubscribed(true);
+    setFirstName('');
+    setLastName('');
     setEmail('');
   }
 
   return (
-    <Section background="muted">
-      <Container>
-        <div className={newsletterRootClass}>
-          <SectionHeading title={config.title} align="center" />
-          <Text as="p" size="base" color="muted">
+    <Section>
+      <div className={pageWidthSmallClass}>
+        {/* .section-header.text-center — title (h2) + .rte subheading under one bottom margin */}
+        <div className={sectionHeaderClass}>
+          <SectionHeading title={config.title} align="center" className="mb-0" />
+          <Text as="p" color="muted">
             {config.subheading}
           </Text>
+        </div>
 
-          <form onSubmit={handleSubmit} className={newsletterFormClass}>
+        <form onSubmit={handleSubmit} className={formClass}>
+          {/* .grid.grid--half-gutters → Първо име / Фамилно име */}
+          <div className={nameGridClass}>
+            <div className={nameGridItemClass}>
+              <Input
+                type="text"
+                name="first_name"
+                value={firstName}
+                onChange={(event) => setFirstName(event.target.value)}
+                placeholder="Първо име"
+                aria-label="Първо име"
+                autoComplete="given-name"
+                className={formInputClass}
+              />
+            </div>
+            <div className={nameGridItemClass}>
+              <Input
+                type="text"
+                name="last_name"
+                value={lastName}
+                onChange={(event) => setLastName(event.target.value)}
+                placeholder="Фамилно име"
+                aria-label="Фамилно име"
+                autoComplete="family-name"
+                className={formInputClass}
+              />
+            </div>
+          </div>
+
+          {/* .input-group → email field */}
+          <div className={inputGroupClass}>
             <Input
               type="email"
               name="email"
               value={email}
               onChange={(event) => setEmail(event.target.value)}
-              placeholder={HOME_COPY.newsletterPlaceholder}
-              aria-label={HOME_COPY.newsletterAria}
+              placeholder="Имейл"
+              aria-label="Имейл"
               autoComplete="email"
-              className={newsletterInputClass}
+              className={formInputClass}
             />
-            <Button type="submit" variant="primary" size="lg">
-              {HOME_COPY.newsletterCta}
+          </div>
+
+          {/* .input-group__btn-wrapper → submit "Подай" with trailing tail-right arrow */}
+          <span className={btnWrapperClass}>
+            <Button type="submit" variant="primary" iconRight>
+              Подай
             </Button>
-          </form>
+          </span>
 
           {subscribed ? (
-            <Text as="p" size="sm" color="success" value={HOME_COPY.newsletterSuccess} />
+            <Text
+              as="p"
+              size="sm"
+              color="success"
+              className={successMessageClass}
+              value="Благодарим за абонирането!"
+            />
           ) : null}
-        </div>
-      </Container>
+        </form>
+      </div>
     </Section>
   );
 }

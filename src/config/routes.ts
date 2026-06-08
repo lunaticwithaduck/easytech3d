@@ -9,6 +9,8 @@ export const routes = {
   cart: '/cart',
   search: '/search',
   blog: '/blogs',
+  /** Blog index for a specific blog handle (Liquid `blog.url` → `/blogs/{handle}`). */
+  blogIndex: (blog: string) => `/blogs/${encodeURIComponent(blog)}` as const,
   article: (blog: string, slug: string) =>
     `/blogs/${encodeURIComponent(blog)}/${encodeURIComponent(slug)}` as const,
   page: (slug: string) => `/pages/${encodeURIComponent(slug)}` as const,

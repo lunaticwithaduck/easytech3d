@@ -1,5 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { ContactPage } from '@/features/page/components/ContactPage/ContactPage';
+import { getPageContent } from '@/features/page/config/constants';
 import { PageContent } from '@/features/page/PageContent';
 import { resolvePageTitle } from '@/features/page/utils/page.utils';
 
@@ -15,5 +16,5 @@ export default async function StaticPage({ params }: Props) {
     return <ContactPage />;
   }
 
-  return <PageContent title={resolvePageTitle(slug)} />;
+  return <PageContent title={resolvePageTitle(slug)} contentHtml={getPageContent(slug)} />;
 }

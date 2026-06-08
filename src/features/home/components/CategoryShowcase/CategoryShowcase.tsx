@@ -1,6 +1,6 @@
-import { routes } from '@/config/routes';
+import { TailRightIcon } from '@/design-system/icons';
 import { Button } from '@/design-system/primitives/Button/Button';
-import { Image } from '@/design-system/primitives/Image/Image';
+import { iconRightClass } from '@/design-system/primitives/Button/Button.styles';
 import { Link } from '@/design-system/primitives/Link/Link';
 import { Text } from '@/design-system/primitives/Text/Text';
 import { Container } from '@/features/_shared/Container/Container';
@@ -8,14 +8,11 @@ import { Section } from '@/features/_shared/Section/Section';
 import { SectionHeading } from '@/features/_shared/SectionHeading/SectionHeading';
 import { getCollection } from '@/server/catalog/data';
 import { resolveHomeHref } from '../../utils/href.utils';
+import { ctaClass, showcaseRootClass } from './CategoryShowcase.styles';
 import {
-  showcaseRootClass,
-  tileClass,
-  tileGridClass,
-  tileImageClass,
-  tileImageWrapClass,
-  tileLabelClass,
-} from './CategoryShowcase.styles';
+  type CategoryTile,
+  CategoryCarousel,
+} from './components/CategoryCarousel/CategoryCarousel';
 
 export type CategoryShowcaseConfig = {
   title: string;
@@ -28,12 +25,24 @@ export type CategoryShowcaseProps = {
   config: CategoryShowcaseConfig;
 };
 
-// "Всички Категории": a centered heading over a row of circular collection images with labels,
-// then a primary CTA to the collections index (the live collection-list / carousel section).
+/**
+ * "Всички Категории" — the home `collection-list` section in carousel mode
+ * (sections/collection-list.liquid, section_style "carousel", image_style "circle").
+ * A centered SectionHeading over a wrap-around carousel of circular collection tiles
+ * (.collection-grid-item — 120px round image + dark overlay + collection title, 5-up desktop),
+ * then a primary Button "Вижте категориите" → /collections (config.ctaHref).
+ * Tiles resolve from getCollection(handle); each links to routes.collection(handle).
+ */
 export function CategoryShowcase({ config }: CategoryShowcaseProps) {
-  const tiles = config.collectionHandles
+  const tiles: CategoryTile[] = config.collectionHandles
     .map((handle) => getCollection(handle))
-    .filter((collection) => collection !== undefined);
+    .filter((collection) => collection !== undefined)
+    .map((collection) => ({
+      id: collection.id,
+      handle: collection.handle,
+      title: collection.title,
+      image: collection.image ?? null,
+    }));
 
   return (
     <Section background="muted">
@@ -41,37 +50,15 @@ export function CategoryShowcase({ config }: CategoryShowcaseProps) {
         <div className={showcaseRootClass}>
           <SectionHeading title={config.title} align="center" />
 
-          <div className={tileGridClass}>
-            {tiles.map((collection) => (
-              <Link
-                key={collection.id}
-                href={routes.collection(collection.handle)}
-                variant="unstyled"
-                className={tileClass}
-              >
-                <span className={tileImageWrapClass}>
-                  {collection.image ? (
-                    <Image
-                      src={collection.image.url}
-                      alt={collection.image.alt || collection.title}
-                      fill
-                      sizes="(min-width: 1024px) 14vw, (min-width: 640px) 25vw, 33vw"
-                      className={tileImageClass}
-                    />
-                  ) : null}
-                </span>
-                <Text as="span" size="sm" weight="medium" className={tileLabelClass}>
-                  {collection.title}
-                </Text>
-              </Link>
-            ))}
-          </div>
+          <CategoryCarousel tiles={tiles} />
 
-          <Button asChild variant="primary" size="lg">
+          <Button asChild variant="primary" size="lg" className={ctaClass}>
             <Link href={resolveHomeHref(config.ctaHref)} variant="unstyled">
+              {/* theme `.btn` markup: <span>{label}</span> + trailing icon 'tail-right' (15px gap) */}
               <Text as="span" color="current">
                 {config.ctaLabel}
               </Text>
+              <TailRightIcon className={iconRightClass} aria-hidden />
             </Link>
           </Button>
         </div>

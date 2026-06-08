@@ -10,6 +10,8 @@ export const HOME_COPY = {
   heroNext: 'Следващ слайд',
   heroSlideLabel: 'Зареди слайд {number}',
   blogReadMore: 'Прочети повече',
+  // featured-blog card author line — theme `blogs.article.by_author`: "от {author}".
+  blogByAuthor: 'от {author}',
 } as const;
 
 // Lucide icon names used by the FeatureIcons section, mapped from homeConfig.features[].icon.

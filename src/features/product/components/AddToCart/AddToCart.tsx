@@ -1,32 +1,38 @@
 'use client';
 
-import { Minus, Plus, ShoppingCart } from 'lucide-react';
 import { useState } from 'react';
+import { CartIcon, MinusIcon, PlusIcon } from '@/design-system/icons';
 import { Button } from '@/design-system/primitives/Button/Button';
-import { Icon } from '@/design-system/primitives/Icon/Icon';
 import { Text } from '@/design-system/primitives/Text/Text';
 import {
-  addButtonClass,
-  addToCartRootClass,
+  cartIconClass,
+  quantityLabelClass,
   quantityRowClass,
+  rootClass,
   stepperButtonClass,
   stepperClass,
+  stepperIconClass,
   stepperValueClass,
+  submitButtonClass,
+  submitRowClass,
 } from './AddToCart.styles';
 
 export type AddToCartProps = {
   available: boolean;
 };
 
-// Quantity stepper + primary "Добави в количката" CTA. The submit is a no-op stub this session —
-// the cart backend is wired next — but the stepper is fully interactive (clamped at 1).
+// 1:1 port of the `quantity_block` + `product_buttons` blocks in `sections/product-template.liquid`.
+// A `.QuantitySelector` pill (w120, radius50) with minus/value/plus, followed by the primary
+// `.btn--primary` "Добави в количката" CTA (cart icon trailing). On mobile (≤749px) the submit row
+// becomes a sticky bottom bar (`enabled_mobile_sticky_btns`). The submit is a no-op stub this
+// session — the cart backend is wired next — but the stepper is fully interactive (clamped at 1).
 export function AddToCart({ available }: AddToCartProps) {
   const [quantity, setQuantity] = useState(1);
 
   return (
-    <div className={addToCartRootClass}>
+    <div className={rootClass}>
       <div className={quantityRowClass}>
-        <Text as="span" size="sm" weight="semibold" color="text" value="Количество" />
+        <Text as="span" className={quantityLabelClass} value="Количество:" />
         <div className={stepperClass}>
           <Button
             unstyled
@@ -35,9 +41,9 @@ export function AddToCart({ available }: AddToCartProps) {
             disabled={quantity <= 1}
             onClick={() => setQuantity((q) => Math.max(1, q - 1))}
           >
-            <Icon icon={Minus} size={16} />
+            <MinusIcon className={stepperIconClass} />
           </Button>
-          <Text as="span" size="base" weight="semibold" color="text" className={stepperValueClass}>
+          <Text as="span" className={stepperValueClass}>
             {String(quantity)}
           </Text>
           <Button
@@ -46,28 +52,29 @@ export function AddToCart({ available }: AddToCartProps) {
             aria-label="Увеличи количеството"
             onClick={() => setQuantity((q) => q + 1)}
           >
-            <Icon icon={Plus} size={16} />
+            <PlusIcon className={stepperIconClass} />
           </Button>
         </div>
       </div>
 
-      <Button
-        variant="primary"
-        size="lg"
-        className={addButtonClass}
-        disabled={!available}
-        onClick={() => {
-          /* no-op: cart backend wired next session */
-        }}
-      >
-        <Icon icon={ShoppingCart} size={18} />
-        <Text
-          as="span"
-          color="current"
-          weight="medium"
-          value={available ? 'Добави в количката' : 'Изчерпан'}
-        />
-      </Button>
+      <div className={submitRowClass}>
+        <Button
+          variant="primary"
+          className={submitButtonClass}
+          disabled={!available}
+          onClick={() => {
+            /* no-op: cart backend wired next session */
+          }}
+        >
+          <Text
+            as="span"
+            color="current"
+            weight="bold"
+            value={available ? 'Добави в количката' : 'Изпродадено'}
+          />
+          <CartIcon className={cartIconClass} />
+        </Button>
+      </div>
     </div>
   );
 }

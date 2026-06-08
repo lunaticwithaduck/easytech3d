@@ -1,8 +1,5 @@
-import { PackageSearch, SearchX } from 'lucide-react';
-import { routes } from '@/config/routes';
-import { Button } from '@/design-system/primitives/Button/Button';
-import { Icon } from '@/design-system/primitives/Icon/Icon';
-import { Link } from '@/design-system/primitives/Link/Link';
+import { SearchLoopIcon } from '@/design-system/icons';
+import { Heading } from '@/design-system/primitives/Heading/Heading';
 import { Text } from '@/design-system/primitives/Text/Text';
 import { Container } from '@/features/_shared/Container/Container';
 import { ProductCard } from '@/features/_shared/ProductCard/ProductCard';
@@ -11,14 +8,13 @@ import { searchProducts } from '@/server/catalog/data';
 import { SearchForm } from './components/SearchForm/SearchForm';
 import { SEARCH_COPY } from './config/constants';
 import {
-  emptyCtaClass,
-  emptyHintClass,
-  emptyIconClass,
-  emptyStateClass,
   formRowClass,
-  headerClass,
-  productGridClass,
-  resultCountClass,
+  headingBlockClass,
+  noResultsClass,
+  noResultsHintClass,
+  noResultsIconClass,
+  pageClass,
+  resultsGridClass,
 } from './SearchPage.styles';
 
 export type SearchPageProps = {
@@ -26,76 +22,70 @@ export type SearchPageProps = {
   query?: string;
 };
 
-// Search results page (Liquid `search-page.liquid`): a centered heading + search form, a result
-// count line, and a product grid — with empty states when there's no query or no matches.
+/**
+ * SearchPage — 1:1 port of `sections/search-page.liquid` for this store's `search.json`
+ * (no header image, `searchMode = product`, paginate by 10).
+ *
+ * DOM/order reproduced (the `header_image == blank` branch):
+ *   .page-width > .Search_Section > .search-page-wrapper
+ *     ├ .text-center > h1.h2            → title ("Потърсете…") or the result-count line
+ *     ├ .rte.search--no-results-found   → no-results message (only when performed & 0 results)
+ *     ├ form.search-page-form           → the pill search Input (submits ?q=)
+ *     └ .SearchGrid.grid                → ProductCard grid of results (3-up desktop)
+ *
+ * The heading IS the result-count line in the theme: when a search runs it renders
+ * `{count} резултати за “{terms}”` (general.search.results_with_count) as the `<h1 class="h2">`.
+ */
 export function SearchPage({ query }: SearchPageProps) {
   const term = query?.trim() ?? '';
-  const hasQuery = term.length > 0;
-  const results = hasQuery ? searchProducts(term) : [];
+  const performed = term.length > 0;
+  const results = performed ? searchProducts(term) : [];
   const hasResults = results.length > 0;
 
   return (
     <Section background="white">
       <Container>
-        <div className={headerClass}>
-          <Text
-            as="span"
-            color="primary"
-            size="sm"
-            weight="semibold"
-            className="uppercase tracking-wide"
-            value={SEARCH_COPY.eyebrow}
-          />
-          <Text as="h1" size="4xl" weight="bold" value={SEARCH_COPY.title} />
+        <div className={pageClass}>
+          <div className={headingBlockClass}>
+            {performed ? (
+              <Heading as="h1" level="h2">
+                <span className="sr-only">{`${SEARCH_COPY.headingSr}: `}</span>
+                <Text
+                  as="span"
+                  color="current"
+                  value={SEARCH_COPY.resultsWithCount}
+                  params={{ count: results.length, terms: term }}
+                />
+              </Heading>
+            ) : (
+              <Heading as="h1" level="h2" value={SEARCH_COPY.title} />
+            )}
+          </div>
+
+          {performed && !hasResults ? (
+            <div className={noResultsClass}>
+              <SearchLoopIcon className={noResultsIconClass} aria-hidden />
+              <Text
+                as="p"
+                color="muted"
+                className={noResultsHintClass}
+                value={SEARCH_COPY.noResults}
+              />
+            </div>
+          ) : null}
+
           <div className={formRowClass}>
             <SearchForm query={term} />
           </div>
-        </div>
 
-        {hasQuery && hasResults ? (
-          <>
-            <Text
-              as="p"
-              size="lg"
-              weight="medium"
-              color="text"
-              className={resultCountClass}
-              value={SEARCH_COPY.resultsWithCount}
-              params={{ count: results.length, terms: term }}
-            />
-            <div className={productGridClass}>
+          {performed && hasResults ? (
+            <div className={resultsGridClass}>
               {results.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
-          </>
-        ) : (
-          <div className={emptyStateClass}>
-            <Icon
-              icon={hasQuery ? SearchX : PackageSearch}
-              size={48}
-              className={emptyIconClass}
-            />
-            <Text
-              as="h2"
-              size="2xl"
-              weight="semibold"
-              value={hasQuery ? SEARCH_COPY.noResultsTitle : SEARCH_COPY.emptyTitle}
-            />
-            <Text
-              as="p"
-              size="base"
-              color="muted"
-              className={emptyHintClass}
-              value={hasQuery ? SEARCH_COPY.noResultsHint : SEARCH_COPY.emptyHint}
-            />
-            <Button asChild variant="outline" size="lg" className={emptyCtaClass}>
-              <Link href={routes.collections} variant="unstyled">
-                <Text as="span" color="current" value={SEARCH_COPY.browseAll} />
-              </Link>
-            </Button>
-          </div>
-        )}
+          ) : null}
+        </div>
       </Container>
     </Section>
   );

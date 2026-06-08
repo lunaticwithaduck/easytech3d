@@ -1,9 +1,8 @@
 'use client';
 
-import { X } from 'lucide-react';
 import { routes } from '@/config/routes';
+import { CloseIcon } from '@/design-system/icons';
 import { Button } from '@/design-system/primitives/Button/Button';
-import { Icon } from '@/design-system/primitives/Icon/Icon';
 import { Image } from '@/design-system/primitives/Image/Image';
 import { Link } from '@/design-system/primitives/Link/Link';
 import { Text } from '@/design-system/primitives/Text/Text';
@@ -14,15 +13,19 @@ import { lineTotal } from '../../utils/cart.utils';
 import { QuantityStepper } from '../QuantityStepper/QuantityStepper';
 import {
   mobileLabelClass,
+  mobileRemoveClass,
   productCellClass,
   productInfoClass,
   productTitleClass,
   quantityCellClass,
   removeButtonClass,
+  removeCellClass,
+  removeIconClass,
   rowClass,
   thumbnailClass,
   thumbnailImageClass,
   totalCellClass,
+  variantClass,
 } from './CartLineItem.styles';
 
 export type CartLineItemProps = {
@@ -31,8 +34,9 @@ export type CartLineItemProps = {
   onRemove: () => void;
 };
 
-// A single cart line: thumbnail, title (links to the product), variant label, quantity stepper,
-// line total, and a remove control. All handlers are passed in by the parent (stub-wired).
+// A single `.CartItem` row: thumbnail + title (links to the product) + variant, the `QuantitySelector`
+// pill, the dual лв/€ line total, and the close (×) remove control. All handlers are passed in by the
+// parent (stub-wired; no backend this session).
 export function CartLineItem({ item, onQuantityChange, onRemove }: CartLineItemProps) {
   const { product, variantLabel, quantity } = item;
   const total = lineTotal(item);
@@ -45,29 +49,29 @@ export function CartLineItem({ item, onQuantityChange, onRemove }: CartLineItemP
             src={product.featuredImage.url}
             alt={product.featuredImage.alt || product.title}
             fill
-            sizes="80px"
+            sizes="120px"
             className={thumbnailImageClass}
           />
         </Link>
 
         <div className={productInfoClass}>
-          <Link href={routes.product(product.handle)} variant="default">
-            <Text as="span" size="base" weight="medium" className={productTitleClass}>
+          <Link href={routes.product(product.handle)} variant="unstyled">
+            <Text as="h5" size="base" weight="normal" className={productTitleClass}>
               {product.title}
             </Text>
           </Link>
-          <Text as="span" size="sm" color="muted">
+          <Text as="span" size="sm" color="muted" className={variantClass}>
             {variantLabel}
           </Text>
 
           <Button
             variant="ghost"
             unstyled
-            className={removeButtonClass}
+            className={mobileRemoveClass}
             aria-label={CART_COPY.removeItem}
             onClick={onRemove}
           >
-            <Icon icon={X} size={14} />
+            <CloseIcon className={removeIconClass} />
             <Text as="span" size="xs" color="current" value={CART_COPY.removeItem} />
           </Button>
         </div>
@@ -95,6 +99,18 @@ export function CartLineItem({ item, onQuantityChange, onRemove }: CartLineItemP
           value={CART_COPY.columnTotal}
         />
         <PriceTag price={total} compareAtPrice={product.compareAtPrice} />
+      </div>
+
+      <div className={removeCellClass}>
+        <Button
+          variant="ghost"
+          unstyled
+          className={removeButtonClass}
+          aria-label={CART_COPY.removeItem}
+          onClick={onRemove}
+        >
+          <CloseIcon className={removeIconClass} />
+        </Button>
       </div>
     </div>
   );

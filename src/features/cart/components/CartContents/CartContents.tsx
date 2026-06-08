@@ -10,10 +10,12 @@ import { EmptyCart } from '../EmptyCart/EmptyCart';
 import { OrderSummary } from '../OrderSummary/OrderSummary';
 import {
   cartLayoutClass,
+  columnHeaderCenterClass,
   columnHeaderClass,
   columnHeaderProductClass,
-  columnHeaderRightClass,
+  itemListClass,
   lineItemsSideClass,
+  sidebarSideClass,
 } from './CartContents.styles';
 
 export type CartContentsProps = {
@@ -21,9 +23,10 @@ export type CartContentsProps = {
   initialItems: CartLineItemType[];
 };
 
-// Interactive cart body. Holds the line-item rows in local state so the quantity steppers and
-// remove control are wired (no backend this session — updates are client-only). When the last row
-// is removed the layout swaps to the empty-cart state, so both states are reachable in the UI.
+// Interactive cart body (`form.Cart`). Holds the line-item rows in local state so the quantity
+// steppers and the remove control are wired (no backend this session — updates are client-only).
+// When the last row is removed the layout swaps to the empty-cart state, so both states are
+// reachable in the UI.
 export function CartContents({ initialItems }: CartContentsProps) {
   const [items, setItems] = useState<CartLineItemType[]>(initialItems);
 
@@ -46,44 +49,46 @@ export function CartContents({ initialItems }: CartContentsProps) {
   return (
     <div className={cartLayoutClass}>
       <div className={lineItemsSideClass}>
-        <div className={columnHeaderClass}>
-          <Text
-            as="span"
-            size="xs"
-            weight="semibold"
-            color="muted"
-            className={columnHeaderProductClass}
-            value={CART_COPY.columnProduct}
-          />
-          <Text
-            as="span"
-            size="xs"
-            weight="semibold"
-            color="muted"
-            className={columnHeaderRightClass}
-            value={CART_COPY.columnQuantity}
-          />
-          <Text
-            as="span"
-            size="xs"
-            weight="semibold"
-            color="muted"
-            className={columnHeaderRightClass}
-            value={CART_COPY.columnTotal}
-          />
-        </div>
+        <div className={itemListClass}>
+          <div className={columnHeaderClass}>
+            <Text
+              as="span"
+              size="base"
+              weight="bold"
+              className={columnHeaderProductClass}
+              value={CART_COPY.columnProduct}
+            />
+            <Text
+              as="span"
+              size="base"
+              weight="bold"
+              className={columnHeaderCenterClass}
+              value={CART_COPY.columnQuantity}
+            />
+            <Text
+              as="span"
+              size="base"
+              weight="bold"
+              className={columnHeaderCenterClass}
+              value={CART_COPY.columnTotal}
+            />
+            <span />
+          </div>
 
-        {items.map((item) => (
-          <CartLineItem
-            key={item.id}
-            item={item}
-            onQuantityChange={(quantity) => setQuantity(item.id, quantity)}
-            onRemove={() => removeItem(item.id)}
-          />
-        ))}
+          {items.map((item) => (
+            <CartLineItem
+              key={item.id}
+              item={item}
+              onQuantityChange={(quantity) => setQuantity(item.id, quantity)}
+              onRemove={() => removeItem(item.id)}
+            />
+          ))}
+        </div>
       </div>
 
-      <OrderSummary subtotal={cartSubtotal(items)} />
+      <div className={sidebarSideClass}>
+        <OrderSummary subtotal={cartSubtotal(items)} />
+      </div>
     </div>
   );
 }

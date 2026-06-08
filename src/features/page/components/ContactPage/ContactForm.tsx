@@ -1,16 +1,24 @@
 'use client';
 
-import { Send } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { Button } from '@/design-system/primitives/Button/Button';
-import { Icon } from '@/design-system/primitives/Icon/Icon';
 import { Input } from '@/design-system/primitives/Input/Input';
-import { Text } from '@/design-system/primitives/Text/Text';
 import { Textarea } from '@/design-system/primitives/Textarea/Textarea';
-import { contactFormClass, contactFormRowClass } from './ContactForm.styles';
+import {
+  contactFieldClass,
+  contactFieldControlClass,
+  contactFormClass,
+  contactFormRowClass,
+  contactSubmitWrapClass,
+  contactTextareaControlClass,
+} from './ContactForm.styles';
 
-// Contact form mirroring the Liquid `page-contact` section (name + email row, phone, message,
-// submit). Submission is a no-op stub this session — the backend wiring comes later.
+// Contact form — 1:1 with `page-contact.liquid` `{% form 'contact' id:'ContactForm' %}`:
+//   • Name + Email row (`.grid.grid--half-gutters` → two `medium-up--one-half`), both required.
+//   • NO phone field — the theme's `custom_css` HIDES `#ContactForm-phone` on this page.
+//   • Message textarea (required).
+//   • Primary "Прати" button with the trailing `tail-right` arrow.
+// Submission is a no-op stub this session — the Shopify contact form wiring comes later.
 export function ContactForm() {
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -18,32 +26,38 @@ export function ContactForm() {
   }
 
   return (
-    <form className={contactFormClass} onSubmit={handleSubmit} noValidate>
+    <form id="ContactForm" className={contactFormClass} onSubmit={handleSubmit} noValidate>
       <div className={contactFormRowClass}>
-        <Input label="Име" name="name" autoComplete="name" placeholder="Вашето име" />
         <Input
-          label="Имейл"
-          name="email"
+          label="Име *"
+          name="contact[Име]"
+          autoComplete="name"
+          required
+          className={contactFieldControlClass}
+        />
+        <Input
+          label="Имейл *"
+          name="contact[email]"
           type="email"
           autoComplete="email"
-          placeholder="you@example.com"
+          required
+          className={contactFieldControlClass}
         />
       </div>
 
-      <Input
-        label="Телефон"
-        name="phone"
-        type="tel"
-        autoComplete="tel"
-        placeholder="+359 ..."
-      />
+      <div className={contactFieldClass}>
+        <Textarea
+          label="Съобщение *"
+          name="contact[Съобщение]"
+          rows={10}
+          required
+          className={contactTextareaControlClass}
+        />
+      </div>
 
-      <Textarea label="Съобщение" name="message" rows={8} placeholder="Как можем да помогнем?" />
-
-      <div>
-        <Button type="submit" variant="primary" size="lg">
-          <Text as="span" color="current" value="Изпрати" />
-          <Icon icon={Send} size={18} />
+      <div className={contactSubmitWrapClass}>
+        <Button type="submit" variant="primary" iconRight>
+          Прати
         </Button>
       </div>
     </form>

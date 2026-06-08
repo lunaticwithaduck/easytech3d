@@ -1,16 +1,26 @@
 import { cva } from 'class-variance-authority';
 
-// Two-column cart body on desktop (line items | order summary), single column on mobile.
-export const cartLayoutClass = 'grid grid-cols-1 gap-8 lg:grid-cols-[1fr_360px]';
+// `form.Cart { display:flex }` (cart-page.css §14): line items side (`width:100%`) + sidebar
+// (`max-width:370px; margin-left:11px`). Below 1200px it stacks to a single column.
+export const cartLayoutClass =
+  'flex flex-col gap-[15px] min-[1200px]:flex-row min-[1200px]:items-start min-[1200px]:gap-[11px]';
 
-// The line-items side: a header row of column labels + a divided list of rows.
-export const lineItemsSideClass = 'flex flex-col';
+// `.Cart_ContentSide { width:100% }` — the line-items table column.
+export const lineItemsSideClass = 'w-full min-w-0';
 
-// Column-header row, hidden on mobile where each row stacks its own labels.
+// `.Cart_SidebarSide { max-width:370px }` on desktop; full width when stacked.
+export const sidebarSideClass = 'w-full min-[1200px]:max-w-[370px]';
+
+// `.Cart__ItemList { border-radius:20px; overflow:hidden }` — the rounded table shell.
+export const itemListClass = 'overflow-hidden rounded-[20px] bg-surface';
+
+// `.Cart__Head { background:#e0e0e0 }` with `.Cart__HeadItem { padding:15px }` (first 30px-left,
+// last 30px-right). Hidden on mobile where each row stacks its own labels (`.CartItemMobile`).
 export const columnHeaderClass =
-  'hidden grid-cols-[1fr_auto_auto] items-center gap-6 border-border border-b pb-3 md:grid';
+  'hidden grid-cols-[1fr_120px_minmax(120px,auto)_40px] items-center gap-[15px] bg-[#e0e0e0] py-[15px] md:grid';
 
-// The product column header sits left; price/qty/total headers align to their cells.
-export const columnHeaderProductClass = 'text-left';
+// `.Cart__HeadItem:first-child { padding-left:30px; text-align:left }` — the "Продукти" label.
+export const columnHeaderProductClass = 'pl-[30px] text-left';
 
-export const columnHeaderRightClass = 'min-w-24 text-right';
+// quantity / total head labels centered above their cells.
+export const columnHeaderCenterClass = 'text-center';

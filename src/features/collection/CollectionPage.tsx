@@ -1,11 +1,13 @@
 import { routes } from '@/config/routes';
-import { Text } from '@/design-system/primitives/Text/Text';
-import { Breadcrumbs } from '@/features/_shared/Breadcrumbs/Breadcrumbs';
-import { Container } from '@/features/_shared/Container/Container';
 import type { Collection, ProductCardData, SortKey } from '@/server/catalog/types';
-import { headingBlockVariants, pageVariants } from './CollectionPage.styles';
+import {
+  collectionSectionVariants,
+  pageVariants,
+  pageWidthVariants,
+} from './CollectionPage.styles';
 import { CollectionBanner } from './components/CollectionBanner/CollectionBanner';
 import { CollectionDescription } from './components/CollectionDescription/CollectionDescription';
+import { CollectionHeader } from './components/CollectionHeader/CollectionHeader';
 import { CollectionToolbar } from './components/CollectionToolbar/CollectionToolbar';
 import { ProductGrid } from './components/ProductGrid/ProductGrid';
 
@@ -15,40 +17,59 @@ export type CollectionPageProps = {
   sort: SortKey;
 };
 
-// Collection listing screen. Top to bottom: breadcrumbs (Начало › Колекции › title), a banner
-// hero when the collection has an image (title overlaid) — otherwise a plain heading — then the
-// count/sort toolbar, the responsive product grid, and the RTE description at the bottom.
-// Faithful to `sections/collection-template.liquid` for this store's settings.
+/**
+ * CollectionPage — faithful 1:1 port of `sections/collection-template.liquid` for this store's
+ * settings (collection_image_mode: banner, breadcrumbs on, grid 3 / grid_mobile 1, overlay #000@40%,
+ * description bottom, off_canvas_sidebar with filters: none):
+ *
+ *   <header class="collection-header">
+ *     {% render 'custom_page_header' ... show_collection_filters_toolbar:true %}   (banner: image +
+ *        #000@40% overlay, breadcrumbs, H1 title + count, filters toolbar)  — when collection.image
+ *     ...else .section-header (breadcrumbs + title/count + toolbar)               — when no image
+ *   </header>
+ *   <div class="page-width">
+ *     <div class="Collection_Section filters_view_mode_off_canvas_sidebar"><div id="Collection">
+ *        <div class="grid ... grid--view-items">{% include 'product-card-item' %} …</div>
+ *        {collection.description (rte, bottom)}
+ *     </div></div>
+ *   </div>
+ *
+ * Breadcrumbs follow `snippets/breadcrumbs.liquid`: `Начало › {collection.title}`.
+ */
 export function CollectionPage({ collection, products, sort }: CollectionPageProps) {
-  const breadcrumbs = [
-    { label: 'Начало', href: routes.home },
-    { label: 'Колекции', href: routes.collections },
-    { label: collection.title },
-  ];
+  const breadcrumbs = [{ label: 'Начало', href: routes.home }, { label: collection.title }];
+  const toolbar = <CollectionToolbar sort={sort} />;
 
   return (
-    <Container>
-      <div className={pageVariants()}>
-        <Breadcrumbs items={breadcrumbs} />
+    <div className={pageVariants()}>
+      {collection.image ? (
+        <CollectionBanner
+          image={collection.image}
+          title={collection.title}
+          count={products.length}
+          breadcrumbs={breadcrumbs}
+          toolbar={toolbar}
+        />
+      ) : null}
 
-        {collection.image ? (
-          <CollectionBanner image={collection.image} title={collection.title} />
-        ) : (
-          <div className={headingBlockVariants()}>
-            <Text as="h1" size="4xl" weight="bold">
-              {collection.title}
-            </Text>
-          </div>
+      <div className={pageWidthVariants()}>
+        {collection.image ? null : (
+          <CollectionHeader
+            title={collection.title}
+            count={products.length}
+            breadcrumbs={breadcrumbs}
+            toolbar={toolbar}
+          />
         )}
 
-        <CollectionToolbar count={products.length} sort={sort} />
+        <div className={collectionSectionVariants()}>
+          <ProductGrid products={products} />
 
-        <ProductGrid products={products} />
-
-        {collection.descriptionHtml ? (
-          <CollectionDescription html={collection.descriptionHtml} />
-        ) : null}
+          {collection.descriptionHtml ? (
+            <CollectionDescription html={collection.descriptionHtml} />
+          ) : null}
+        </div>
       </div>
-    </Container>
+    </div>
   );
 }

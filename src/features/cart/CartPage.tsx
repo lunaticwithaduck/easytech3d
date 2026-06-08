@@ -1,6 +1,4 @@
-import { routes } from '@/config/routes';
-import { Text } from '@/design-system/primitives/Text/Text';
-import { Breadcrumbs } from '@/features/_shared/Breadcrumbs/Breadcrumbs';
+import { Heading } from '@/design-system/primitives/Heading/Heading';
 import { Container } from '@/features/_shared/Container/Container';
 import { Section } from '@/features/_shared/Section/Section';
 import type { ProductCardData } from '@/server/catalog/types';
@@ -13,22 +11,18 @@ export type CartPageProps = {
   sampleProducts: ProductCardData[];
 };
 
-// Cart route template (Server Component). Renders the breadcrumb trail + "Количка" heading, then
-// hands the interactive body to the client `CartContents`, which toggles between the populated
-// line-item table and the empty-cart state as rows are removed. No live cart this session — the
-// rows are stub data built from the catalog.
+// Cart route template (Server Component). 1:1 of `cart-template.liquid`: the `custom_page_header`
+// "Количка" heading (no banner image is set on cart.json, so it renders as the centered
+// `page_header_heading`), then the interactive `CartContents` body — which toggles between the
+// populated `.Cart__ItemList` table and the empty-cart state as rows are removed. No live cart this
+// session — the rows are stub data built from the catalog (2 sample products).
 export function CartPage({ sampleProducts }: CartPageProps) {
   const items = buildSampleLineItems(sampleProducts);
-  const breadcrumbs = [
-    { label: CART_COPY.breadcrumbHome, href: routes.home },
-    { label: CART_COPY.breadcrumbCart },
-  ];
 
   return (
     <Section>
       <Container className={cartPageRootClass}>
-        <Breadcrumbs items={breadcrumbs} />
-        <Text as="h1" size="4xl" weight="bold" className={cartHeadingClass} value={CART_COPY.pageTitle} />
+        <Heading as="h1" level="h2" className={cartHeadingClass} value={CART_COPY.pageTitle} />
         <CartContents initialItems={items} />
       </Container>
     </Section>

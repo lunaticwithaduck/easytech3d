@@ -1,21 +1,32 @@
-// Centered header column: eyebrow + heading + form, stacked with breathing room.
-export const headerClass = 'flex flex-col items-center gap-4 text-center';
+import { cva } from 'class-variance-authority';
 
-// Wraps the on-page search form so it centers under the heading.
-export const formRowClass = 'mt-2 flex w-full justify-center';
+// SearchPage — 1:1 port of `sections/search-page.liquid` for this store (no header image, so the
+// theme renders the `<div class="text-center"><h1 class="h2">…</h1></div>` heading branch, a pill
+// search form, then the `SearchGrid grid` of results). All arbitrary px live here (R4 exempts
+// *.styles.ts). The page is wrapped by Section (white) + Container in SearchPage.tsx.
 
-// Result count line sits left-aligned above the grid once a search has run.
-export const resultCountClass = 'mt-10 mb-6';
+// `data-section-type="search-template"` root spacing — the section sits under the chrome with the
+// theme's `.page-width` rhythm; the inner blocks carry their own vertical gaps.
+export const pageClass = 'search-template flex flex-col';
 
-// 1-up mobile → 2-up small → 3-up desktop product grid (collection rhythm).
-export const productGridClass = 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3';
+// `.text-center > h1.h2` — the centered heading (title when idle, result-count line once a search
+// runs). The heading itself uses the Heading primitive (real h2 ramp); this just centers + spaces it.
+export const headingBlockClass = 'text-center';
 
-// Empty / no-results panel: centered icon, title, hint, and a browse CTA.
-export const emptyStateClass = 'mt-12 flex flex-col items-center gap-4 text-center';
+// `.search-page-form` row sits under the heading with the theme's section breathing room.
+export const formRowClass = 'mt-[35px] md:mt-[40px]';
 
-export const emptyIconClass = 'text-muted';
+// `.SearchGrid.grid` — the results grid. Faithful flexbox-style responsive grid: 1-up mobile →
+// 2-up small → 3-up desktop (the store's `grid: 3` card layout), 11px-ish gutter via gap.
+export const resultsGridClass =
+  'SearchGrid mt-[55px] grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3';
 
-// Muted hint paragraph under empty-state titles.
-export const emptyHintClass = 'max-w-md';
+// `.rte.search--no-results-found.text-center` — empty-state message block (no matches for the query).
+export const noResultsClass =
+  'search--no-results-found mt-[55px] flex flex-col items-center gap-[15px] text-center';
 
-export const emptyCtaClass = 'mt-2';
+// The empty/no-results magnifier glyph (theme `icon-search-loop`), muted, centered above the copy.
+export const noResultsIconClass = 'size-[56px] text-muted';
+
+// Muted hint paragraph under the no-results / idle prompt.
+export const noResultsHintClass = 'max-w-[480px]';

@@ -1,32 +1,50 @@
 import { cva } from 'class-variance-authority';
 
-// One cart row. Desktop: product cell | quantity | line total, matching the column header grid.
-// Mobile: the cells stack, with quantity + total sharing a row under the product info.
+// `.CartItem` (cart-page.css §14). On desktop the Liquid renders a `display:table-row`; we mirror
+// the same column order with a grid (product | quantity | line total | remove) so the row tracks
+// the `.Cart__Head` labels. Cells get `padding:30px 15px` + `border-bottom:1px solid #ccc`; the
+// last row drops its border. On mobile (<749px) the cells stack into the `.CartItemMobile` card.
 export const rowClass =
-  'grid grid-cols-1 items-center gap-4 border-border border-b py-6 md:grid-cols-[1fr_auto_auto] md:gap-6';
+  'grid grid-cols-1 items-center gap-4 border-b border-[#ccc] py-[20px] last:border-b-0 md:grid-cols-[1fr_120px_minmax(120px,auto)_40px] md:gap-[15px] md:py-[30px]';
 
-// Product cell: thumbnail + (title, variant, remove) stack.
-export const productCellClass = 'flex items-start gap-4';
+// `.CartItem__MainInfo` — the product cell: `padding-left:30px; width:500px`, image + info inline.
+export const productCellClass = 'flex items-center gap-[20px] md:pl-[30px]';
 
-// Fixed-size square thumbnail with a rounded clip; the image fills it.
+// `.CartItem__ImageWrapper { width:120px }` — fixed 120px square thumbnail, rounded media clip.
 export const thumbnailClass =
-  'relative size-20 shrink-0 overflow-hidden rounded-md border border-border bg-elevated';
+  'relative aspect-square w-[80px] shrink-0 overflow-hidden rounded-[10px] border border-border bg-surface md:w-[120px]';
 
-export const thumbnailImageClass = 'object-cover';
+export const thumbnailImageClass = 'object-contain';
 
-// Title + variant + remove-link stack to the right of the thumbnail.
-export const productInfoClass = 'flex min-w-0 flex-col gap-1';
+// `.CartItem__Info` — title + variant + (mobile) remove stack to the right of the thumbnail.
+export const productInfoClass = 'flex min-w-0 flex-col';
 
-export const productTitleClass = 'line-clamp-2';
+// `.CartItem__Title { font-weight:normal }` — the line title is NOT bold in the cart table.
+export const productTitleClass = 'line-clamp-2 font-normal hover:text-primary';
 
-// The inline remove control under the title — small, muted, with a leading icon.
+// `.CartItem__Variant { margin-top:10px }`.
+export const variantClass = 'mt-[10px]';
+
+// `.CartItem__QuantitySelector` cell — centers the qty pill (`margin:0 auto` on the pill).
+export const quantityCellClass =
+  'flex items-center justify-between gap-4 md:justify-center';
+
+// `.CartItem__LinePriceList { text-align:center }` — the bold dual line total.
+export const totalCellClass =
+  'flex items-center justify-between gap-4 md:justify-center md:text-center';
+
+// `.CartItem__RemoveWrapper { text-align:center; padding-right:30px }` — the close (×) control.
+export const removeCellClass = 'hidden md:flex md:items-center md:justify-center md:pr-[10px]';
+
+// `.CartItem__Remove` close glyph — a muted × that turns pink on hover.
 export const removeButtonClass =
-  'mt-1 inline-flex w-fit items-center gap-1 text-muted transition-colors hover:text-primary';
+  'inline-flex items-center justify-center text-muted transition-colors hover:text-primary';
 
-// On mobile the quantity + line total sit on one row; on desktop they are their own grid cells.
-export const quantityCellClass = 'flex items-center justify-between gap-4 md:justify-center';
+export const removeIconClass = 'w-[14px]';
 
-export const totalCellClass = 'flex items-center justify-between gap-4 md:min-w-24 md:justify-end';
+// Mobile-only inline remove link beneath the title (the table cell is hidden <749px).
+export const mobileRemoveClass =
+  'mt-[10px] inline-flex w-fit items-center gap-1 text-muted transition-colors hover:text-primary md:hidden';
 
-// Mobile-only inline labels echoing the (hidden) desktop column headers.
+// Mobile-only inline labels echoing the (hidden) desktop `.Cart__Head` labels.
 export const mobileLabelClass = 'md:hidden';

@@ -1,62 +1,55 @@
+import { routes } from '@/config/routes';
 import { Button } from '@/design-system/primitives/Button/Button';
+import { Heading } from '@/design-system/primitives/Heading/Heading';
 import { Link } from '@/design-system/primitives/Link/Link';
 import { Text } from '@/design-system/primitives/Text/Text';
-import { routes } from '@/config/routes';
-import { Container } from '@/features/_shared/Container/Container';
 import { Section } from '@/features/_shared/Section/Section';
-import { NotFoundSearch } from './components/NotFoundSearch/NotFoundSearch';
 import {
   notFoundActionsClass,
-  notFoundCodeClass,
-  notFoundEyebrowClass,
-  notFoundMessageClass,
+  notFoundFooterClass,
+  notFoundSuptitleClass,
+  notFoundTitleClass,
   notFoundWrapperClass,
 } from './NotFound.styles';
 
+const COPYRIGHT_YEAR = new Date().getFullYear();
+
 /**
- * 404 page body — mirrors the Shopify `main-404` section: eyebrow, mega "404", a friendly BG
- * message, primary "back home" + secondary "contact" CTAs, and a search affordance. The
- * header/footer come from the locale layout, so this only renders the centred content band.
+ * 404 page body — 1:1 with the Shopify `main-404.liquid` section. Inside
+ * `.page-width-small > .empty-page-content.text-left.page-404-content`:
+ *   • h3 suptitle "Страницата не е намерена ;(" (#232323)
+ *   • h1 `.mega-title--large` "Страница 404" (the big pink #ff1b5c numeral title)
+ *   • `.btn_wrapper`: primary CTA "Обратно в начало" → routes.home,
+ *     transparent_secondary CTA "Свържете се с нас!" → routes.contact
+ *   • `.page-404-footer`: copyright "© {year}, easytech3d"
+ * Each theme CTA wraps its label in a `<span>` and links via `href`; here that's a `Button asChild`
+ * carrying the `.btn` classes over a `Link`. Header/footer come from the locale layout, so this
+ * renders only the page-width-small content band.
  */
 export function NotFound() {
   return (
-    <Section>
-      <Container size="narrow">
-        <div className={notFoundWrapperClass}>
-          <Text
-            as="span"
-            color="primary"
-            size="sm"
-            weight="semibold"
-            className={notFoundEyebrowClass}
-            value="Опа! Нещо липсва"
-          />
-          <Text as="span" className={notFoundCodeClass} value="404" />
-          <Text as="h1" size="3xl" weight="bold" color="text" value="Страницата не е намерена" />
-          <Text
-            as="p"
-            size="lg"
-            color="muted"
-            className={notFoundMessageClass}
-            value="Изглежда, че страницата, която търсите, не съществува или е била преместена."
-          />
+    <Section background="default">
+      <div className={notFoundWrapperClass}>
+        <Heading as="h3" level="h3" className={notFoundSuptitleClass} value="Страницата не е намерена ;(" />
+        <Heading as="h1" level="h1" className={notFoundTitleClass} value="Страница 404" />
 
-          <NotFoundSearch />
-
-          <div className={notFoundActionsClass}>
-            <Button asChild variant="primary" size="lg">
-              <Link href={routes.home} variant="unstyled">
-                Към началната страница
-              </Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href={routes.contact} variant="unstyled">
-                Свържете се с нас
-              </Link>
-            </Button>
-          </div>
+        <div className={notFoundActionsClass}>
+          <Button asChild variant="primary">
+            <Link href={routes.home} variant="unstyled">
+              <Text as="span" color="current" value="Обратно в начало" />
+            </Link>
+          </Button>
+          <Button asChild variant="transparent_secondary">
+            <Link href={routes.contact} variant="unstyled">
+              <Text as="span" color="current" value="Свържете се с нас!" />
+            </Link>
+          </Button>
         </div>
-      </Container>
+
+        <div className={notFoundFooterClass}>
+          <Text as="span" color="muted" value="© {year}, easytech3d" params={{ year: COPYRIGHT_YEAR }} />
+        </div>
+      </div>
     </Section>
   );
 }
