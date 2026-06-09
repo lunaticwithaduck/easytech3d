@@ -189,7 +189,7 @@ export function Slideshow({ slides, settings }: Props): ReactElement | null {
 
             {/* Text block — vertically aligned over the image, content-height via py-[150px]. */}
             <div className={cn('relative z-[1] flex min-h-[300px] flex-col', verticalClass(textV))}>
-              <div className="mx-5 px-0 py-[150px] md:mx-20 md:max-w-[1280px] md:px-[55px]">
+              <div className="mx-auto px-5 py-[150px] md:max-w-[1280px] md:px-[55px]">
                 <div className={cn('flex flex-col', horizontalClass(textH))}>
                   {/* Title + subheading are constrained to 60 % of the text block — matches the live
                       site's `.slideshow__text-content-list { max-width: 60% }` which causes the
@@ -238,7 +238,7 @@ export function Slideshow({ slides, settings }: Props): ReactElement | null {
 
       {/* ── Controls (dots + arrows) ── pinned to the bottom, over the active slide. */}
       {slideCount > 1 && (settings.showDots || settings.showButtons) && (
-        <div className="absolute inset-x-0 bottom-[30px] z-[3] mx-5 flex items-center justify-between px-0 md:mx-20 md:max-w-[1280px] md:px-[55px]">
+        <div className="absolute inset-x-0 bottom-[30px] z-[3] mx-auto flex items-center justify-between px-5 md:max-w-[1280px] md:px-[55px]">
           {settings.showDots ? (
             <ul className="flex items-center">
               {slides.map((_slide, i) => {

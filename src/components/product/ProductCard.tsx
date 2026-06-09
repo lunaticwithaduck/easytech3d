@@ -44,7 +44,7 @@ export function ProductCard({
       aria-label={product.title}
       className={cn(
         'relative block w-full',
-        list ? 'h-[200px]' : 'mb-4 h-[200px]',
+        list ? 'h-[200px]' : 'mb-4 h-[215px]',
       )}
     >
       <Image
@@ -52,7 +52,9 @@ export function ProductCard({
         alt={product.featuredImage.alt || product.title}
         fill
         sizes={list ? '269px' : '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'}
-        className="object-contain"
+        // When there's a hover image, fade the primary OUT as the alternate fades IN (clean
+        // cross-fade — otherwise both stack and the alternate shows over the primary).
+        className={cn('object-contain', alternate && 'transition-opacity duration-300 group-hover:opacity-0')}
       />
       {alternate && (
         <Image
@@ -60,10 +62,7 @@ export function ProductCard({
           alt=""
           fill
           sizes={list ? '269px' : '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'}
-          className={cn(
-            'object-contain opacity-0 transition-opacity duration-300',
-            'group-hover:opacity-100',
-          )}
+          className="object-contain opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         />
       )}
     </Link>
@@ -92,13 +91,14 @@ export function ProductCard({
 
       <Price price={product.price} compareAtPrice={product.compareAtPrice} className="mb-4" />
 
+      {/* Live card CTAs are the standard .btn: 16px / 50px tall / padding 13px 20px 13px 23px. */}
       <div className={cn('mt-auto flex flex-col gap-3', list && 'sm:max-w-[400px]')}>
-        <Button variant="primary" size="card" block aria-label="Добави в количката">
-          <Text as="span" size="xs" weight="bold" color="white" value="Добави в количката" />
+        <Button variant="primary" block aria-label="Добави в количката">
+          <Text as="span" weight="bold" color="white" value="Добави в количката" />
           <Icon name="cart" className="size-[18px] shrink-0" />
         </Button>
-        <Button variant="primary" size="card" block aria-label="Бърз преглед">
-          <Text as="span" size="xs" weight="bold" color="white" value="Бърз преглед" />
+        <Button variant="primary" block aria-label="Бърз преглед">
+          <Text as="span" weight="bold" color="white" value="Бърз преглед" />
           <Icon name="tail-right" className="size-4 shrink-0" />
         </Button>
       </div>

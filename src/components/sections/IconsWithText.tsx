@@ -70,8 +70,8 @@ type IconsWithTextSectionType = typeof iconsWithTextSection;
 export function IconsWithText({ section }: { section: IconsWithTextSectionType }) {
   return (
     <Section>
-      {/* `.page-width-small`: max-width 1280px, 55px gutters, 80px desktop margins (matches live). */}
-      <div className="mx-5 w-full px-0 md:mx-20 md:max-w-[1280px] md:px-[55px]">
+      {/* `.page-width-small`: max-width 1280px, CENTERED (margin: 0 auto), 55px gutters. */}
+      <div className="mx-auto w-full px-5 md:max-w-[1280px] md:px-[55px]">
         {(section.title || section.subtitle) && (
           <SectionHeader eyebrow={section.subtitle || undefined} title={section.title || undefined} />
         )}
