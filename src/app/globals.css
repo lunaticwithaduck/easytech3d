@@ -20,6 +20,7 @@
 @layer reset, backstop, theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
+@import '../design-system/styles/prose.css';
 
 /* Minimal reset in the LOWEST layer (below the backstop). Since Tailwind preflight is omitted,
    migrated raw <button>s would show the UA default grey `2px outset` chrome and border utilities
@@ -47,6 +48,68 @@
     font: inherit;
     line-height: inherit;
     cursor: pointer;
+  }
+}
+
+/* Base — page defaults (the body bg/font + a small normalize). Replaces what the theme's core.css
+   provided once the backstop is removed. In the `base` layer so utilities still override. */
+@layer base {
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+  }
+  html {
+    -webkit-text-size-adjust: 100%;
+    font-family: var(--font-sans);
+    line-height: 1.5;
+  }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  p,
+  figure,
+  blockquote,
+  dl,
+  dd {
+    margin: 0;
+  }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+  input,
+  button,
+  textarea,
+  select {
+    font: inherit;
+  }
+  ul,
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 }
 

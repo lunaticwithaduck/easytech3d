@@ -9,14 +9,9 @@ import { Header } from '@/components/layout/Header/Header';
 import { Footer } from '@/components/layout/Footer/Footer';
 import { CartDrawer } from '@/components/layout/CartDrawer';
 
-// Root chrome — a 1:1 translation of layout/theme.liquid <body>:
-//   skip-link → announcement-bar → header → #PageContainer( main + footer ) → cart-drawer.
-// <html>/<body> live here (next-intl pattern); the real theme CSS (globals.css) styles every class.
-
-// The live theme CSS, pulled in via a single loader that places it all in a low-priority cascade
-// LAYER (see public/theme/backstop.css). This keeps it as a backstop for un-migrated surfaces while
-// guaranteeing the design-system utilities (unlayered) win on migrated markup.
-const THEME_STYLESHEETS = ['/theme/backstop.css'];
+// Root chrome: skip-link → announcement-bar → header → main → footer → cart-drawer.
+// <html>/<body> live here (next-intl pattern). Styling is 100% the design system (globals.css +
+// the @/design-system primitives) — there is no theme CSS anymore.
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -37,29 +32,19 @@ export default async function LocaleLayout({
   return (
     <html className={`js ${fontVariables}`} lang={locale}>
       <body>
-        {/* The live Shopify theme's own CSS, loaded via <link> (browser-parsed) like the real site.
-            React hoists these to <head> with a shared precedence so order + render-blocking hold. */}
-        {THEME_STYLESHEETS.map((href) => (
-          <link key={href} rel="stylesheet" href={href} precedence="theme" />
-        ))}
-
         <NextIntlClientProvider messages={messages}>
-          <a className="in-page-link visually-hidden skip-link" href="#MainContent">
+          <a className="sr-only focus:not-sr-only" href="#MainContent">
             Прескочи към съдържанието
           </a>
 
           <AnnouncementBar />
           <Header />
 
-          <div className="page-container drawer-page-content" id="PageContainer">
-            <main className="main-content js-focus-hidden" id="MainContent" role="main" tabIndex={-1}>
-              {children}
-            </main>
+          <main id="MainContent" role="main" tabIndex={-1}>
+            {children}
+          </main>
 
-            <Footer />
-          </div>
-
-          <div className="mobile_menu_overlay" />
+          <Footer />
           <CartDrawer />
         </NextIntlClientProvider>
       </body>

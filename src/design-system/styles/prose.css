@@ -1,0 +1,91 @@
+/* Prose — the design-system replacement for the theme's `.rte` rich-text styling. Used by the
+   Rte/Prose component for authored HTML (product descriptions, articles, page/contact bodies,
+   collection descriptions). Faithful to the theme: ink text, #000 underlined links (hover #3a3a3a),
+   disc/decimal lists, bordered tables. Lives in the `components` layer (above the backstop, below
+   utilities) so it owns prose styling once the theme CSS is removed. */
+@layer components {
+  .prose {
+    color: var(--color-ink);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  .prose p {
+    margin: 0 0 1em;
+  }
+  .prose > :last-child {
+    margin-bottom: 0;
+  }
+  .prose ul,
+  .prose ol {
+    margin: 0 0 1em;
+    padding-left: 1.4em;
+  }
+  .prose ul {
+    list-style: disc;
+  }
+  .prose ol {
+    list-style: decimal;
+  }
+  .prose li {
+    margin-bottom: 0.4em;
+  }
+  .prose a {
+    color: #000;
+    text-decoration: underline;
+  }
+  .prose a:hover {
+    color: #3a3a3a;
+  }
+  .prose strong,
+  .prose b {
+    font-weight: 700;
+  }
+  .prose em,
+  .prose i {
+    font-style: italic;
+  }
+  .prose h2 {
+    margin: 1.2em 0 0.5em;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .prose h3 {
+    margin: 1.2em 0 0.5em;
+    font-size: 22px;
+    font-weight: 700;
+  }
+  .prose h4 {
+    margin: 1em 0 0.5em;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .prose blockquote {
+    margin: 0 0 1em;
+    padding-left: 1em;
+    border-left: 3px solid var(--color-border);
+  }
+  .prose img {
+    margin: 1em 0;
+    border-radius: 10px;
+  }
+  .prose table {
+    width: 100%;
+    margin: 1.25em 0;
+    border-collapse: collapse;
+  }
+  .prose th,
+  .prose td {
+    padding: 8px 12px;
+    border: 1px solid var(--color-border);
+    text-align: left;
+  }
+  .prose th {
+    font-weight: 700;
+  }
+  .prose hr {
+    margin: 1.5em 0;
+    border: 0;
+    border-top: 1px solid var(--color-border);
+  }
+}

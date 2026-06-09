@@ -1,7 +1,7 @@
 import { cn } from '@/lib/cn';
 
-// Rich-text content (Shopify `{{ ... }}` HTML from descriptions, page content, blocks). The theme
-// styles authored HTML via the `.rte` class. This renders trusted, build-time fixture HTML.
+// Rich-text content (authored HTML from descriptions, page content, blocks). Styled by the
+// design-system `.prose` rules (src/design-system/styles/prose.css). Renders trusted fixture HTML.
 export function Rte({ html, className }: { html: string; className?: string }) {
-  return <div className={cn('rte', className)} dangerouslySetInnerHTML={{ __html: html }} />;
+  return <div className={cn('prose', className)} dangerouslySetInnerHTML={{ __html: html }} />;
 }

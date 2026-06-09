@@ -71,7 +71,7 @@ function AnnouncementBarInner() {
       onMouseLeave={startTimer}
     >
       {/* Message content — centered, fills available width between arrows */}
-      <div className="flex items-center justify-center px-10 [&_.rte]:text-white [&_.rte_*]:text-white [&_.rte_a]:text-white [&_.rte_a:hover]:underline">
+      <div className="flex items-center justify-center px-10 [&_.prose]:text-white [&_.prose_*]:text-white [&_.prose_a]:text-white [&_.prose_a:hover]:underline">
         {block.link ? (
           <a href={block.link} className="text-white hover:underline">
             <Rte html={block.contentHtml} />
