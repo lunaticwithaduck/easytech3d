@@ -189,7 +189,11 @@ export function Slideshow({ slides, settings }: Props): ReactElement | null {
 
             {/* Text block — vertically aligned over the image, content-height via py-[150px]. */}
             <div className={cn('relative z-[1] flex min-h-[300px] flex-col', verticalClass(textV))}>
-              <div className="mx-auto px-5 py-[150px] md:max-w-[1280px] md:px-[55px]">
+              {/* w-full is required: this is a flex item (parent is flex-col), and mx-auto without an
+                  explicit width makes a flex item shrink to content + auto-center — which floats the
+                  text to the middle. w-full makes it a true centered 1280px column (left edge matches
+                  the live hero title position). */}
+              <div className="mx-auto w-full px-5 py-[150px] md:max-w-[1280px] md:px-[55px]">
                 <div className={cn('flex flex-col', horizontalClass(textH))}>
                   {/* Title + subheading are constrained to 60 % of the text block — matches the live
                       site's `.slideshow__text-content-list { max-width: 60% }` which causes the
