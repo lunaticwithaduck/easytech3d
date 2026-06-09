@@ -68,10 +68,11 @@ function CollectionsGridItem({ collection }: { collection: ShopCollection }) {
         )}
       </Link>
 
-      {/* Info — pt-[30px] px-5 pb-[50px] (probed top/sides; extra bottom for airiness) */}
-      <div className="flex flex-1 flex-col px-5 pt-[30px] pb-[50px]">
-        {/* Title — 32px / 700 / leading-none / tracking-[1px] (probed .collection-grid-item__title) */}
-        <Heading as="h2" level={3} className="text-[32px] leading-none tracking-[1px]">
+      {/* Info — centered (live .collection-grid-item__info is text-align:center); extra bottom for airiness */}
+      <div className="flex flex-1 flex-col items-center px-5 pt-[30px] pb-[50px] text-center">
+        {/* Title — 32px / 700 / leading-none / tracking-[1px] (probed .collection-grid-item__title).
+            `!` so the literal 32px beats the Heading ladder's md:text-h3 (40px) at desktop. */}
+        <Heading as="h2" level={3} className="text-[32px]! leading-none tracking-[1px]">
           <Link href={collection.title ? collection.url : '#'} className="hover:text-primary">
             {collection.title || 'Примерна колекция'}
           </Link>

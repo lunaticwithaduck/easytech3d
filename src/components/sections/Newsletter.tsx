@@ -43,14 +43,14 @@ export function Newsletter({ section }: { section: NewsletterSection }) {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label htmlFor={`${FORM_ID}-first-name`} className="sr-only">
-                  Собствено Ime
+                  Първо име
                 </label>
                 <Input
                   type="text"
                   name="contact[first_name]"
                   id={`${FORM_ID}-first-name`}
-                  placeholder="Собствено Ime"
-                  aria-label="Собствено Ime"
+                  placeholder="Първо име"
+                  aria-label="Първо име"
                   autoComplete="given-name"
                   autoCorrect="off"
                   autoCapitalize="words"
@@ -58,14 +58,14 @@ export function Newsletter({ section }: { section: NewsletterSection }) {
               </div>
               <div>
                 <label htmlFor={`${FORM_ID}-last-name`} className="sr-only">
-                  Фамилия
+                  Фамилно име
                 </label>
                 <Input
                   type="text"
                   name="contact[last_name]"
                   id={`${FORM_ID}-last-name`}
-                  placeholder="Фамилия"
-                  aria-label="Фамилия"
+                  placeholder="Фамилно име"
+                  aria-label="Фамилно име"
                   autoComplete="family-name"
                   autoCorrect="off"
                   autoCapitalize="words"

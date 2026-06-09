@@ -17,9 +17,38 @@
    layer) wins on migrated markup, while un-migrated theme-class markup still resolves inside the
    backstop layer. Using proper Tailwind layers also keeps variant ordering correct (md: beats base).
    The order is pinned here so `backstop` is below Tailwind's layers regardless of <link> timing. */
-@layer backstop, theme, base, components, utilities;
+@layer reset, backstop, theme, base, components, utilities;
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
+
+/* Minimal reset in the LOWEST layer (below the backstop). Since Tailwind preflight is omitted,
+   migrated raw <button>s would show the UA default grey `2px outset` chrome and border utilities
+   wouldn't render (no default border-style). This restores the preflight essentials at the lowest
+   priority, so the theme backstop (higher layer) still wins for un-migrated theme-class markup,
+   while migrated elements get clean borderless buttons + working `border-*` utilities. */
+@layer reset {
+  *,
+  ::before,
+  ::after {
+    border-width: 0;
+    border-style: solid;
+  }
+  button,
+  [type='button'],
+  [type='submit'],
+  [type='reset'] {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: transparent;
+    background-image: none;
+    border-radius: 0;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    cursor: pointer;
+  }
+}
 
 @theme {
   /* ---- Fonts (next/font families, set on <html> via fonts.ts) ---- */
