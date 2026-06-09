@@ -1,46 +1,52 @@
-// Translation of sections/collection-template.liquid (template config templates/collection.json).
-//
-// Config drives the static branches we render:
-//   show_banner                       → default FALSE (plain text header); a small allowlist of
-//                                       collections (see BANNER_COLLECTION_HANDLES) renders the
-//                                       dark image banner instead, matching the live store.
-//   show_breadcrumbs: true            → breadcrumbs render inside the banner (custom_page_header)
-//   image_overlay_color: "#000000"    → dark overlay div
-//   image_overlay_opacity: 40         → overlay opacity 40%
-//   grid: 3                           → max_height 345, grid_item_width "medium-up--one-third"
-//   grid_mobile: "1"                  → grid_item_mobile_width "small--one-whole"
-//   show_collection_description: "bottom" → description (Rte) after the grid
-//   sort_enable: false                → no sort control
-//
-// The banner markup is the inlined translation of snippets/custom_page_header.liquid (image + dark
-// overlay + h1.page_header_heading + breadcrumbs + filters toolbar). The Warehouse flexbox product
-// grid and the bottom description are translated from the section. Class names are verbatim so the
-// theme's own CSS (already loaded globally) styles everything.
-//
-// Ground truth: tools/output/reference/mirror/collections/abs/index.html
-//   header.collection-header (1620), grid--view-items wrapper (1689),
-//   collection-description.rte.bottom_collection_description (2782).
-
-import { Breadcrumbs } from '@/components/snippets/Breadcrumbs';
-import { Icon } from '@/components/snippets/Icon';
+import { Button, Container, Heading, Icon, Image, Link, Text, cn } from '@/design-system';
 import { Rte } from '@/components/snippets/Rte';
-import { ProductCardItem } from '@/components/product/ProductCardItem';
-import { imageUrl, imageSrcset } from '@/lib/shopify/image';
+import { ProductCard } from '@/components/product/ProductCard';
+import { imageUrl } from '@/lib/shopify/image';
 import type { ShopCollection, ShopProduct } from '@/lib/shopify/types';
 
-// {% case section.settings.grid %} {% when 3 %} {%- assign max_height = 345 -%}
-const MAX_HEIGHT = 345;
-
-// Overlay from section.settings: color #000000, opacity 40 → `background: #000; opacity: 40%`.
-const IMAGE_OVERLAY_COLOR = '#000000';
-const IMAGE_OVERLAY_OPACITY = 40;
-
-// On the live store almost every collection renders the PLAIN text header (show_banner == false);
-// only a handful (the ones whose per-collection template enables collection_image_mode 'banner'
-// with a featured image) get the dark image banner. We model that with an explicit allowlist so
-// the default is the plain header. `nozzles` (Дюзи за 3D принтер) is the canonical banner page —
-// see tools/output/reference/mirror/collections/nozzles/index.html.
+// Collection page — design-system version (primitives only). Plain text header is the default
+// (matches the live store); a small allowlist of collections renders the dark image banner instead.
+// Grid: 3-up desktop / 1-up mobile (grid 3 / grid_mobile 1), 11px gutter, 30px row gap.
 const BANNER_COLLECTION_HANDLES = new Set(['nozzles']);
+
+function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
+  // breadcrumbs_color #ff1b5c → pink crumbs (see the computed :root).
+  return (
+    <nav aria-label="breadcrumbs" className="mb-5 flex flex-wrap items-center gap-2">
+      {items.map((item, i) => {
+        const last = i === items.length - 1;
+        return (
+          <span key={`${item.title}-${i}`} className="flex items-center gap-2">
+            {item.url && !last ? (
+              <Link href={item.url} className="text-sm text-primary hover:underline">
+                {item.title}
+              </Link>
+            ) : (
+              <Text as="span" size="sm" color="primary" value={item.title} />
+            )}
+            {!last && <Text as="span" size="sm" color="primary" value="›" />}
+          </span>
+        );
+      })}
+    </nav>
+  );
+}
+
+function FiltersToolbar({ count }: { count: number }) {
+  return (
+    <div className="flex items-center gap-3">
+      <Text as="span" size="sm" color="muted" value={`${count} продукта`} />
+      <div className="ml-2 flex items-center gap-1">
+        <button type="button" aria-label="Мрежа" className="text-ink/70 hover:text-ink">
+          <Icon name="grid" className="size-5" />
+        </button>
+        <button type="button" aria-label="Лист" className="text-ink/40 hover:text-ink">
+          <Icon name="list" className="size-5" />
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export function CollectionTemplate({
   collection,
@@ -50,153 +56,56 @@ export function CollectionTemplate({
   products: ShopProduct[];
 }) {
   const { image } = collection;
-  // {%  assign show_banner = false %} … banner mode + collection.image present → true.
-  // Default to the plain header; only the allowlisted handles (with an image) get the banner.
   const showBanner = image != null && BANNER_COLLECTION_HANDLES.has(collection.handle);
-
-  // Breadcrumbs: home + current collection (matches snippets/breadcrumbs.liquid for a collection).
   const breadcrumbItems = [
     { title: 'Начало', url: '/' },
     { title: collection.title, url: collection.url },
   ];
 
   return (
-    <div
-      data-section-type="collection-template"
-      data-pagination_mode="standart"
-      className=""
-    >
-      <header className="collection-header">
-        {showBanner && image && (
-          // {% render 'custom_page_header' ... %} — inlined translation (snippets/custom_page_header.liquid).
-          <div className="custom_page_header_section">
-            <img
-              className=""
-              srcSet={imageSrcset(image.src, image.width)}
-              src={imageUrl(image.src, 750)}
-              sizes="100vw"
-              loading="lazy"
-              alt={image.alt || collection.title}
-              width={image.width}
-              height={image.height}
-            />
-
-            <div
-              className="custom_page_header_opacity"
-              style={{
-                background: IMAGE_OVERLAY_COLOR,
-                opacity: `${IMAGE_OVERLAY_OPACITY}%`,
-              }}
-            />
-
-            <div className="page-width">
-              <h1 className="h2 page_header_heading">{collection.title}</h1>
-
-              <Breadcrumbs items={breadcrumbItems} />
-
-              <div className="custom_header-filters-toolbar-block">
-                <div className="filters-toolbar">
-                  {/* filters_view_mode !== 'no_sidebar' → off_canvas_sidebar shows the mobile open button */}
-                  <button type="button" className="btn btn--primary open_mobile_sidebar">
-                    <span>Филтър</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="collection__layout-button is-selected"
-                    aria-label="Мрежа"
-                    data-action="change-layout"
-                    data-layout-mode="grid"
-                  >
-                    <Icon name="grid" />
-                  </button>
-                  <button
-                    type="button"
-                    className="collection__layout-button "
-                    aria-label="Лист"
-                    data-action="change-layout"
-                    data-layout-mode="list"
-                  >
-                    <Icon name="list" />
-                  </button>
-                </div>
-              </div>
-            </div>
+    <div className="pb-14">
+      {showBanner && image ? (
+        <header className="relative mb-8 flex h-[280px] items-center overflow-hidden md:h-[360px]">
+          <Image src={imageUrl(image.src, 1500)} alt={image.alt || collection.title} fill sizes="100vw" className="object-cover" />
+          <div className="absolute inset-0 bg-black/40" />
+          <Container className="relative">
+            <Heading as="h1" level={1} color="white">
+              {collection.title}
+            </Heading>
+          </Container>
+        </header>
+      ) : (
+        <Container as="header" className="pt-8 md:pt-12">
+          <Breadcrumbs items={breadcrumbItems} />
+          <div className="mb-8 flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-end md:justify-between">
+            <Heading as="h1" level={2}>
+              {collection.title}
+            </Heading>
+            <FiltersToolbar count={collection.productsCount} />
           </div>
+        </Container>
+      )}
+
+      <Container>
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-x-[11px] gap-y-[30px] md:grid-cols-3',
+            showBanner && 'mt-6',
+          )}
+        >
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
+        </div>
+
+        {products.length === 0 && (
+          <Text as="p" color="muted" className="py-16 text-center" value="Няма продукти в тази колекция." />
         )}
 
-        {/* The section always emits this .page-width. In banner mode its conditional contents
-            (the show_banner==false section-header and the image-mode <img>) are skipped; in the
-            default plain mode it holds the breadcrumbs + collection heading + filters toolbar. */}
-        <div className="page-width">
-          {/* {% if show_banner == false %} — the plain text header (default on the live store).
-              Ground truth: tools/output/reference/mirror/collections/abs/index.html (1627). */}
-          {!showBanner && (
-            <div className="section-header">
-              <Breadcrumbs items={breadcrumbItems} />
-              <div className="section-header-wrapper">
-                <div className="section-header-wrapper-collection">
-                  <span className="visually-hidden">Колекция: </span>
-                  <h1 className="h2">{collection.title}</h1>
-                  <span className="filters-toolbar__product-count">
-                    {collection.productsCount} продукти
-                  </span>
-                </div>
-
-                <div className="filters-toolbar">
-                  {/* filters_view_mode !== 'no_sidebar' → off_canvas_sidebar shows the mobile open button */}
-                  <button
-                    type="button"
-                    className="lap-and-up--hide open_mobile_sidebar  btn btn--primary"
-                  >
-                    <span>Филтър</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="collection__layout-button is-selected"
-                    aria-label="Мрежа"
-                    data-action="change-layout"
-                    data-layout-mode="grid"
-                  >
-                    <Icon name="grid" />
-                  </button>
-                  <button
-                    type="button"
-                    className="collection__layout-button "
-                    aria-label="Лист"
-                    data-action="change-layout"
-                    data-layout-mode="list"
-                  >
-                    <Icon name="list" />
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </header>
-
-      <div className="page-width">
-        <div className="Collection_Section filters_view_mode_off_canvas_sidebar">
-          <div id="Collection">
-            {/* pagination_mode "standart" → no AjaxinateContainer id */}
-            <div className="CollectionGrid ">
-              <div className="zoom-fade-animation grid use_align_height Collection-wrapper grid--uniform grid--view-items zoomFade-animation">
-                {products.map((product) => (
-                  <ProductCardItem key={product.id} product={product} maxHeight={MAX_HEIGHT} />
-                ))}
-              </div>
-            </div>
-
-            {/* show_collection_description == 'bottom' && collection.description != blank */}
-            {collection.descriptionHtml && (
-              <Rte
-                html={collection.descriptionHtml}
-                className="collection-description bottom_collection_description"
-              />
-            )}
-          </div>
-        </div>
-      </div>
+        {collection.descriptionHtml && (
+          <Rte html={collection.descriptionHtml} className="mt-12 max-w-3xl text-ink/80" />
+        )}
+      </Container>
     </div>
   );
 }

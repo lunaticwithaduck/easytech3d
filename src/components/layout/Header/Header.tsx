@@ -1,140 +1,82 @@
-import { Link } from '@/i18n/navigation';
-import { Icon } from '@/components/snippets/Icon';
 import { mainMenu } from '@/data/menus';
 import { shop } from '@/data/settings';
+import { Button, Container, cn, Icon, Image, Link, Text } from '@/design-system';
 import { DesktopNav } from './DesktopNav';
 import { HeaderSearch } from './HeaderSearch';
 import { MobileMenu } from './MobileMenu';
 
-// Translation of sections/header.liquid (+ snippets desktop-menu.liquid, categories-menu.liquid and
-// the predictive-search markup). The live store renders with `align_logo == 'inline'` and no
-// `categories_linklist`, so this mirrors the rendered ground truth at
-// tools/output/reference/mirror/index.html (the only place the real `main-menu` exists).
-//
-// The two scoped <style> blocks below are the header section's own CSS (uppercase nav via
-// `main_linklist_style`) and the theme's custom_css (logo `border-radius: 20px`, white nav links) —
-// both scoped under #shopify-section-header / #AccessibleNav exactly as the live site emits them.
-
+// Storefront header — design-system version (primitives + @theme utilities only; no theme classes).
+// Faithful to the live render (probed at https://easytech3d.com/, desktop 1440 + iPhone 12):
+//   • white surface, logo a 100px rounded-20 image (Image), uppercase font-nav links
+//   • desktop (≥md): top "account" row, then logo + nav, then the pink "Всички Категории" pill +
+//     55px-tall white search field + search icon + 53px pink cart circle
+//   • mobile (<md): logo left, three 45px pink circle buttons (search / cart / hamburger) on the
+//     right, and a slide-down dark drawer (MobileMenu owns the open/close state)
 export function Header() {
   return (
-    <div
-      id="shopify-section-header"
-      className="shopify-section showAlternateHeader no-overlap"
-      data-section-id="header"
-      data-section-type="header-section"
-      data-header-section
-    >
-      <style>{`
-  @media screen and (min-width:750px) {
-    .logo_element {
-      min-width: 100px;
-    }
-  }
-    #AccessibleNav .menu_block-image_heading h3,
-  #AccessibleNav .mega-menu__image-text,
-  #AccessibleNav .mega-menu__image-heading,
-  #AccessibleNav .mega-menu__title,
-  #AccessibleNav  .link {
-    text-transform: uppercase ;
-  }
-`}</style>
-
-      <header
-        className="site-header logo--inline "
-        role="banner"
-        data-enable_overlap_header="false"
-        data-enable_live_search="true"
-      >
-        {/* top bar: empty left column + right column (localization slot) */}
-        <div className=" header_top   grid grid--no-gutters">
-          <div className=" grid__item     medium-up--one-half tablet--two-thirds  ">
-            <div className="header_top_left_side" />
-          </div>
-
-          <div className="grid__item   medium-up--one-half tablet--one-third  ">
-            <ul className="top_navigation_links right_column">
-              {/* Моят Акаунт — static link for visual parity (accounts deferred).
-                  Mirrors header.liquid lines 491–522: customer_nav_menu__wrapper
-                  inside top_navigation_links right_column. */}
-              <li>
-                <div className="customer_nav_menu__wrapper">
-                  <div
-                    className="site-nav--has-dropdown site-nav--has-centered-dropdown customer_nav_dropdown__wrapper"
-                    data-has-dropdowns
-                  >
-                    <Link
-                      href="/account"
-                      className="site-nav__link site-nav__link--main customer_nav_button site-nav__link--button"
-                    >
-                      <Icon name="account" />
-                      <span>Моят Акаунт</span>
-                    </Link>
-                  </div>
-                </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        {/* main row: logo + desktop nav + icons (search / cart / mobile toggle + drawer) */}
-        <div className=" grid grid--no-gutters  site-header__mobile-nav  ">
-          <div className="medium-up--two-twelfths grid__item small--two-fifths  logo_element-wrapper ">
-            <div className="logo_element">
-              <h1 className="h4 site-header__logo">
-                <Link href="/" className="site-header__logo-image">
-                  <img
-                    className="js main_logo"
-                    src={shop.logo}
-                    srcSet={`${shop.logo} 1x, ${shop.logo} 2x`}
-                    loading="lazy"
-                    width={1200}
-                    height={1200}
-                    alt={shop.name}
-                    style={{ maxWidth: `${shop.logoMaxWidth}px` }}
-                  />
-                </Link>
-              </h1>
-            </div>
-          </div>
-
-          <nav
-            className="grid__item   medium-up--ten-twelfths small--hide"
-            id="AccessibleNav"
-            role="navigation"
+    <header className="relative bg-surface" role="banner">
+      {/* top account row — desktop only (the live `header_top` is display:none on mobile). The
+          localization/account slot lives here; accounts are deferred, so this is a static link. */}
+      <Container className="hidden py-[5px] md:block">
+        <div className="flex justify-end">
+          <Link
+            href="/account"
+            className="inline-flex items-center gap-2 text-xs text-ink hover:text-primary"
           >
-            <div className="navigation_wrapper">
-              <DesktopNav menu={mainMenu} />
-            </div>
-          </nav>
-
-          <div className="grid__item    small--three-fifths text-right site-header__icons site-header__icons--plus">
-            <div className="small--hide" />
-
-            <div className="site-header__icons-wrapper">
-              <HeaderSearch />
-
-              <div
-                className="header_cart_info  btn btn--primary "
-                id="HeaderCart"
-                data-link-type="drawer"
-                data-cart-count-bubble
-              >
-                <a href="/cart" className="cart_icon btn btn--primary">
-                  <Icon name="cart" />
-                  <span className="header_cart_count  shide" data-cart-count>
-                    0
-                  </span>
-                </a>
-              </div>
-
-              {/* toggle button + mobile drawer (single client component sharing open state) */}
-              <MobileMenu menu={mainMenu} />
-            </div>
-          </div>
+            <Icon name="account" className="size-4" />
+            <Text as="span" size="xs" value="Моят Акаунт" />
+          </Link>
         </div>
-      </header>
+      </Container>
 
-      <style>{`#shopify-section-header img {border-radius: 20px; position: relative; left: 25%;} @media (max-width: 1024px) {#shopify-section-header img {left: 0; }} #shopify-section-header a {color: white;} #shopify-section-header .predictive-search__column--image {margin-right: 8vw;} #shopify-section-header .header_top {padding: 5px;} #shopify-section-header .site-nav__link--button {font-size: 14px;} #shopify-section-header .nav-dropdown__link {color: black;}`}</style>
-    </div>
+      {/* logo + desktop nav + (mobile) icon row */}
+      <Container className="flex items-center justify-between gap-4 py-3 md:py-0">
+        <Link href="/" aria-label={shop.name} className="block shrink-0">
+          <Image
+            src={shop.logo}
+            alt={shop.name}
+            width={100}
+            height={100}
+            className="size-[100px] rounded-card object-cover"
+          />
+        </Link>
+
+        {/* desktop nav (hidden on mobile) */}
+        <nav className="hidden flex-1 md:block" aria-label="Основна навигация">
+          <DesktopNav menu={mainMenu} />
+        </nav>
+
+        {/* mobile icon cluster (hidden on desktop) — HeaderSearch + cart own the search circle &
+            cart; MobileMenu owns the hamburger + drawer. */}
+        <div className="flex items-center gap-[10px] md:hidden">
+          <HeaderSearch variant="mobile" />
+          <CartCircle variant="mobile" />
+          <MobileMenu menu={mainMenu} />
+        </div>
+      </Container>
+
+      {/* desktop search row: pink categories pill + search field + cart circle */}
+      <Container className="hidden items-center gap-[10px] pb-4 pt-1 md:flex">
+        <HeaderSearch variant="desktop" />
+        <CartCircle variant="desktop" />
+      </Container>
+    </header>
+  );
+}
+
+// The pink cart circle with its count bubble (Button size="circle" variant="primary" rendered onto a
+// Link via asChild). Desktop is 53px, mobile 45px (probed live). The bubble sits top-right with the
+// count; the live store updates it via JS (static "0" until cart is wired).
+function CartCircle({ variant }: { variant: 'desktop' | 'mobile' }) {
+  const size = variant === 'desktop' ? 'size-[53px]' : 'size-[45px]';
+  return (
+    <Button asChild variant="primary" size="circle" className={cn('relative shrink-0', size)}>
+      <Link href="/cart" aria-label="Количка">
+        <Icon name="cart" className="size-5" />
+        <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center text-xs font-bold leading-none">
+          0
+        </span>
+      </Link>
+    </Button>
   );
 }

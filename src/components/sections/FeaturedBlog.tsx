@@ -1,15 +1,7 @@
-import { Link } from '@/i18n/navigation';
+import { Card, Container, Heading, Image, Link, Section, SectionHeader, Text } from '@/design-system';
+import { imageUrl } from '@/lib/shopify/image';
 import type { featuredBlogSection } from '@/data/home';
 import type { ShopArticle } from '@/lib/shopify/types';
-import { imageUrl, imageSrcset } from '@/lib/shopify/image';
-
-// Grid class mapping: blogs_per_row → medium-up--one-{fraction}
-const GRID_CLASS: Record<number, string> = {
-  2: 'medium-up--one-half',
-  3: 'medium-up--one-third',
-  4: 'medium-up--one-quarter',
-  5: 'medium-up--one-fifth',
-};
 
 /** Format an ISO date string as the theme does: "July 29, 2024" */
 function formatArticleDate(iso: string): string {
@@ -27,108 +19,77 @@ export function FeaturedBlog({
   section: typeof featuredBlogSection;
   articles: ShopArticle[];
 }) {
-  const gridItemClass = GRID_CLASS[section.postsPerRow] ?? 'medium-up--one-quarter';
   const limited = articles.slice(0, section.postLimit);
 
   return (
-    <section
-      data-section-type="featured-blog"
-      className=""
-    >
-      <div className="page-width">
+    <Section data-section-type="featured-blog">
+      <Container>
         {(section.title || section.subtitle) && (
-          <header className="section-header text-center  homepage_subtitle_style_match_header">
-            {section.subtitle && (
-              <span className="h5">{section.subtitle}</span>
-            )}
-            {section.title && (
-              <h2>{section.title}</h2>
-            )}
-          </header>
+          <SectionHeader eyebrow={section.subtitle || undefined} title={section.title || undefined} />
         )}
 
         {/* enable_carousel is false — render the static grid */}
-        <ul className="zoom-fade-animation grid grid--uniform grid--blog">
+        <ul className="grid grid-cols-1 gap-x-[11px] gap-y-[30px] sm:grid-cols-2 lg:grid-cols-4">
           {limited.map((article, index) => (
-            <li
-              key={article.id}
-              className={`grid__item ${gridItemClass} zoom-fade-animation-element-wrapper`}
-            >
-              <article
-                className="article_block"
-                aria-labelledby={`FeaturedBlogTitle-${index}`}
-              >
-                <Link href={article.url} className="article__link">
-                  {article.image && (
-                    <>
-                      <div
-                        id={`ArticleImageWrapper-${article.id}`}
-                        className="article__grid-image-wrapper js"
-                      >
-                        <div className="article__grid-image-container">
-                          <img
-                            id={`ArticleImage-${article.id}`}
-                            className="article__grid-image zoom-fade-animation-element"
-                            srcSet={imageSrcset(article.image.src, article.image.width)}
-                            src={imageUrl(article.image.src, 535)}
-                            sizes={`(min-width: 750px) calc(100vw / ${section.postsPerRow}), 100vw`}
-                            loading="lazy"
-                            width={article.image.width}
-                            height={article.image.height}
-                            alt={article.image.alt || article.title}
-                          />
-                          <div className="load_media_spinner">
-                            <div className="rect1"></div>
-                            <div className="rect2"></div>
-                            <div className="rect3"></div>
-                            <div className="rect4"></div>
-                            <div className="rect5"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <noscript>
-                        <div className="article__grid-image-wrapper">
-                          <img
-                            src={imageUrl(article.image.src, 345)}
-                            alt={article.title}
-                            className="article__grid-image"
-                          />
-                        </div>
-                      </noscript>
-                    </>
-                  )}
-                </Link>
-
-                <div className="article_block_info">
-                  {section.showAuthor && (
-                    <span className="article__author text_name">
-                      {`от ${article.author}`}
-                    </span>
-                  )}
-
-                  <Link
-                    href={article.url}
-                    className="article__title h4"
-                    id={`FeaturedBlogTitle-${index}`}
-                  >
-                    {article.title}
+            <li key={article.id}>
+              <Card as="article" className="overflow-hidden" aria-labelledby={`FeaturedBlogTitle-${index}`}>
+                {/* Image — square 1:1 aspect (probed live: 324×324px), rounded top, object-cover */}
+                {article.image && (
+                  <Link href={article.url} className="relative block aspect-square overflow-hidden rounded-[10px]" tabIndex={-1} aria-hidden="true">
+                    <Image
+                      src={imageUrl(article.image.src, 535)}
+                      alt={article.image.alt || article.title}
+                      fill
+                      sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+                      className="object-cover"
+                    />
                   </Link>
+                )}
 
-                  <div className="article__grid-meta">
-                    {section.showDate && (
-                      <span className="article__date">
-                        <time dateTime={article.publishedAt}>
-                          {formatArticleDate(article.publishedAt)}
-                        </time>
-                      </span>
-                    )}
-                  </div>
+                {/* Info — probed padding: 30px 20px */}
+                <div className="px-5 py-[30px]">
+                  {section.showAuthor && article.author && (
+                    <Text
+                      as="span"
+                      size="xs"
+                      color="muted"
+                      className="mb-2 block"
+                      value={`от ${article.author}`}
+                    />
+                  )}
+
+                  {/* Title — probed: 22px 700, letter-spacing 1px, margin-bottom 11px */}
+                  <Heading
+                    level={4}
+                    as="h3"
+                    id={`FeaturedBlogTitle-${index}`}
+                    className="mb-[11px] font-bold tracking-[1px] leading-snug"
+                  >
+                    <Link
+                      href={article.url}
+                      className="hover:text-primary transition-colors duration-200"
+                    >
+                      {article.title}
+                    </Link>
+                  </Heading>
+
+                  {section.showDate && (
+                    <Text as="p" size="2xs" color="muted">
+                      <time dateTime={article.publishedAt}>
+                        {formatArticleDate(article.publishedAt)}
+                      </time>
+                    </Text>
+                  )}
+
+                  {article.excerpt && (
+                    <Text as="p" size="sm" color="muted" className="mt-2 line-clamp-3" value={article.excerpt} />
+                  )}
                 </div>
-              </article>
+              </Card>
             </li>
           ))}
         </ul>
-      </div>
-    </section>
+      </Container>
+    </Section>
   );
 }

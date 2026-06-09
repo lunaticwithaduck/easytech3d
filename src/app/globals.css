@@ -1,7 +1,89 @@
-/* Intentionally minimal.
+/* ============================================================================
+   Design-system tokens (Tailwind 4).
 
-   The storefront's styling is the live Shopify theme's own compiled CSS, served from /public/theme/
-   and loaded via <link rel="stylesheet"> in src/app/[locale]/layout.tsx — exactly как the live site
-   loads core.css / theme.css. We load it through <link> (browser-parsed) rather than bundler @import
-   because the theme's compiled CSS uses lenient syntax (e.g. `label: not(.header)`, malformed nested
-   comments) that strict bundler CSS parsers reject but every browser accepts. */
+   We import only `theme` + `utilities` — NOT `preflight`. The migration is phased:
+   the live Shopify theme CSS still backstops un-migrated surfaces (served via
+   <link> from /public/theme), and Tailwind's reset must not fight it. Migrated
+   surfaces use ONLY these tokens/utilities via the CVA primitives in
+   src/design-system/ — never the raw theme classes.
+
+   Every value below is the EXACT value extracted from the live theme (theme.css
+   + the computed :root from the captured mirror), so the tokens are faithful, not
+   approximated.
+============================================================================ */
+
+/* Tailwind theme tokens + utilities, imported UNLAYERED. The live theme CSS (the backstop for
+   un-migrated surfaces) is loaded via <link> and is itself unlayered, so any `@layer` here would
+   LOSE to it (unlayered beats layered regardless of specificity). Unlayered, our single-class
+   utilities (.text-primary, .font-bold, …) win on specificity over the theme's element selectors
+   (body/a/h1{…}) on migrated elements, while never touching un-migrated theme-class markup. */
+@import 'tailwindcss/theme.css';
+@import 'tailwindcss/utilities.css';
+
+@theme {
+  /* ---- Fonts (next/font families, set on <html> via fonts.ts) ---- */
+  --font-sans: var(--font-instrument-sans), 'Instrument Sans', sans-serif;
+  --font-nav: var(--font-archivo-narrow), 'Archivo Narrow', sans-serif;
+
+  /* ---- Brand + surface colours ---- */
+  --color-primary: #ff1b5c; /* color_button */
+  --color-primary-dark: #e70042; /* :after reveal / hover */
+  --color-secondary: #3a3a3a;
+  --color-ink: #232323; /* color_text / body text */
+  --color-page: #f4f4f4; /* color_body_bg */
+  --color-surface: #ffffff;
+  --color-border: #ebebeb; /* color_borders */
+  --color-sale: #ea0606; /* on-sale price text */
+  --color-sale-label: #00a500; /* green sale badge */
+  --color-soldout-label: #8a9297;
+  --color-announce: #fd5b2a; /* announcement bar */
+  --color-footer: #000000;
+  --color-footer-text: #ebebeb;
+  --color-footer-link: #cccccc;
+
+  /* ---- Type scale (desktop px; per-size line-height + letter-spacing) ----
+     type_header_base_size 40 → h1 80 / h2 52 / h3 40 / h4 22 / h5 18 / h6 16,
+     letter-spacing 2/2/1/1/0.5/0.5, line-height 1. */
+  --text-h1: 80px;
+  --text-h1--line-height: 1;
+  --text-h1--letter-spacing: 2px;
+  --text-h2: 52px;
+  --text-h2--line-height: 1;
+  --text-h2--letter-spacing: 2px;
+  --text-h3: 40px;
+  --text-h3--line-height: 1;
+  --text-h3--letter-spacing: 1px;
+  --text-h4: 22px;
+  --text-h4--line-height: 1.2;
+  --text-h4--letter-spacing: 1px;
+  --text-h5: 18px;
+  --text-h5--line-height: 1.2;
+  --text-h5--letter-spacing: 0.5px;
+  --text-h6: 16px;
+  --text-h6--line-height: 1.2;
+  --text-h6--letter-spacing: 0.5px;
+
+  /* Mobile heading sizes (used responsively by the Heading primitive). */
+  --text-h1-m: 56px;
+  --text-h2-m: 40px;
+  --text-h3-m: 26px;
+  --text-h4-m: 19px;
+  --text-h5-m: 18px;
+  --text-h6-m: 14px;
+
+  /* Body / UI sizes. */
+  --text-base: 16px;
+  --text-sm: 15px;
+  --text-xs: 14px;
+  --text-2xs: 13px;
+  --text-eyebrow: 18px; /* the .section-header `.h5` eyebrow */
+
+  /* ---- Radii ---- */
+  --radius-btn: 50px;
+  --radius-card: 20px;
+  --radius-media: 10px;
+  --radius-input: 2px;
+
+  /* ---- Layout ---- */
+  --container-page: 1660px; /* .page-width max-width */
+}

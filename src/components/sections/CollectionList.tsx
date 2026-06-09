@@ -6,13 +6,17 @@
 // Rendered ground-truth: tools/output/reference/mirror/index.html (lines 11817–11936)
 // Data contract: collectionListSection from @/data/home + ShopCollection[] from @/data/catalog
 //
-// The live theme uses Flickity for the carousel. Here we reproduce the exact markup/classes and
-// add a minimal React-state scroll-snap track with prev/next buttons.
+// Probed values (node tools/verify/shoot.cjs https://easytech3d.com/ …):
+//   .collection-grid-item          → border-radius 20px, padding 40px 20px, bg white
+//   .collection-grid-item img      → border-radius 50% (circle clip), margin-bottom 50px, auto x-margin
+//   .collection-grid-item__title   → 22px / 700 / letter-spacing 1px / line-height 22px
+//   .btn--circle-arrow             → 50% radius, white bg, color #8d8d8d
+//   .mega-title--large             → 100px / 700
+//   section background             → #f4f4f4 (bg-page)
 
 import { useRef, useState, useCallback } from 'react';
-import { Link } from '@/i18n/navigation';
-import { Icon } from '@/components/snippets/Icon';
-import { imageUrl, imageSrcset } from '@/lib/shopify/image';
+import { Button, Card, Container, Heading, Icon, Image, Link, Section, Text, cn } from '@/design-system';
+import { imageUrl } from '@/lib/shopify/image';
 import type { ShopCollection } from '@/lib/shopify/types';
 import type { collectionListSection as CollectionListSectionData } from '@/data/home';
 
@@ -28,143 +32,79 @@ interface CollectionListProps {
 }
 
 // ---------------------------------------------------------------------------
-// Grid-item width class — mirrors the {% case section.settings.grid %} block
-// in collection-list.liquid (carousel branch).
-// ---------------------------------------------------------------------------
-
-function gridItemWidth(grid: number): string {
-  switch (grid) {
-    case 2:
-      return 'medium-up--one-half';
-    case 3:
-      return 'medium-up--one-third';
-    case 4:
-      return 'medium-up--one-quarter';
-    case 5:
-      return 'medium-up--one-fifth tablet--one-quarter';
-    case 6:
-      return 'medium-up--one-sixth tablet--one-quarter';
-    default:
-      return 'medium-up--one-fifth tablet--one-quarter';
-  }
-}
-
-// ---------------------------------------------------------------------------
-// CollectionGridItem — translates snippets/collection-grid-item.liquid
-// (carousel context; no list-collections template extras).
+// CollectionGridItem — design-system version of snippets/collection-grid-item.liquid
+// (carousel context with image_style === 'circle').
 //
-// Mirror HTML (index.html ~11906):
-//
-//   <div class="collection-grid-item">
-//     <a href="/collections/nozzles" class="collection-grid-item__link">
-//       <div class="collection-grid-item__image-wrapper">
-//         <img … class="zoom-fade-animation-element" …>
-//         <div class="load_media_spinner"><div class="rect1">…</div></div>
-//         <span class="collection-grid-item__image-wrapper-overlay"></span>
-//       </div>
-//     </a>
-//     <div class="collection-grid-item__info">
-//       <div class="collection-grid-item__title h4">
-//         <a href="/collections/nozzles">Дюзи за 3D принтер</a>
-//       </div>
-//     </div>
-//   </div>
+// Probed card layout:
+//   - White card, border-radius 20px, padding 40px 20px
+//   - Image: 120×120 circle (border-radius 50%), centered, margin-bottom 50px (→ mb-[50px])
+//   - Title: 22px bold, letter-spacing 1px, line-height 22px, centered
 // ---------------------------------------------------------------------------
 
 function CollectionGridItem({ collection }: { collection: ShopCollection }) {
   const img = collection.image;
-  const href = collection.url || '#';
+  const href = (collection.url || '#') as `/${string}`;
 
   return (
-    <div className="collection-grid-item">
-      {/* The outer link wraps only the image (matching the Liquid snippet) */}
-      <a href={href} className="collection-grid-item__link">
-        {img ? (
-          <div className="collection-grid-item__image-wrapper">
-            <img
+    // White card — radius 20, vertical padding 40px, horizontal 20px (matches probe: padding 40px 20px)
+    <Card className="flex flex-col items-center py-[40px] px-[20px] text-center">
+      <Link href={href} aria-label={collection.title} className="block w-full">
+        {/* Circle image wrapper: 120×120, centered */}
+        <div className="mx-auto mb-[50px] size-[120px] overflow-hidden rounded-full">
+          {img ? (
+            <Image
               src={imageUrl(img.src, 535)}
-              srcSet={imageSrcset(img.src, img.width)}
               sizes="(min-width: 750px) calc(100vw / 5), 100vw"
+              width={120}
+              height={120}
               loading="lazy"
-              className="zoom-fade-animation-element"
-              width={img.width}
-              height={img.height}
               alt={img.alt || collection.title}
+              className="size-full object-cover"
             />
-            {/* load_media_spinner — translates {% render 'load_spinner' %} */}
-            <div className="load_media_spinner">
-              <div className="rect1"></div>
-              <div className="rect2"></div>
-              <div className="rect3"></div>
-              <div className="rect4"></div>
-              <div className="rect5"></div>
-            </div>
-            <span className="collection-grid-item__image-wrapper-overlay"></span>
-          </div>
-        ) : (
-          <div className="collection-grid-item__overlay"></div>
-        )}
-      </a>
-
-      <div className="collection-grid-item__info">
-        <div className="collection-grid-item__title h4">
-          <a href={href}>{collection.title || 'Колекция'}</a>
+          ) : (
+            // No image — render the circle as an empty grey placeholder
+            <div className="size-full bg-[#f4f4f4]" />
+          )}
         </div>
-      </div>
-    </div>
+      </Link>
+
+      {/* Title — 22px bold, letter-spacing 1px (text-h4 maps to 22px; add tracking override) */}
+      <Link href={href} className="block hover:text-primary">
+        <Heading
+          as="h3"
+          level={4}
+          className="text-center font-bold leading-[1.1] tracking-[1px]"
+        >
+          {collection.title || 'Колекция'}
+        </Heading>
+      </Link>
+    </Card>
   );
 }
 
 // ---------------------------------------------------------------------------
-// CollectionList — the carousel/circle mode (section_style === 'carousel',
-// image_style === 'circle').
+// CollectionList — the carousel/circle mode.
 //
-// Mirror HTML structure (index.html lines 11817–11936):
-//
-//   <section class="fade-in-animation section_style_carousel image_style_circle …">
-//     <div class="section_content carousel_section_content  without_image ">
-//       <div class="page-width">
-//         <div class="section-header homepage_subtitle_style_match_header">
-//           <div class="section-header-content">
-//             <h2 class="mega-title--large">Всички Категории</h2>
-//             <a class="btn collection-list__btn btn--primary">…</a>
-//           </div>
-//           <div class="slider_custom_arrows">
-//             <a … class="button-prev btn btn--circle-arrow">…</a>
-//             <a … class="button-next btn btn--circle-arrow">…</a>
-//           </div>
-//         </div>
-//         <div class="zoom-fade-animation collection-list__slider grid grid--uniform">
-//           <div class="zoom-fade-animation-element-wrapper collection-list__slide
-//                        grid__item medium-up--one-fifth tablet--one-quarter">
-//             <div class="collection-grid-item">…</div>
-//           </div>
-//           …
-//         </div>
-//       </div>
-//     </div>
-//   </section>
+// Layout from mirror HTML (index.html lines 11817–11936):
+//   section[bg-page] → Container → section-header row (title + CTA btn left, arrows right)
+//                                → scroll-snap track of tiles (~5 per row, flex-basis ~20%)
 // ---------------------------------------------------------------------------
 
 export function CollectionList({ section, collections }: CollectionListProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const itemWidth = gridItemWidth(section.grid);
   const total = collections.length;
 
-  // Scroll the track to bring the target slide into view.
-  // The live theme uses Flickity; we use a minimal scroll-snap / scrollLeft approach.
+  // Scroll the track to bring the target slide into view (wraps around).
   const scrollTo = useCallback(
     (index: number) => {
       const el = sliderRef.current;
       if (!el) return;
 
-      // Wrap-around
       const next = ((index % total) + total) % total;
       setCurrentIndex(next);
 
-      // Each slide is (100 / grid)% of the track width on desktop.
       const slideWidth = el.scrollWidth / total;
       el.scrollTo({ left: slideWidth * next, behavior: 'smooth' });
     },
@@ -175,89 +115,106 @@ export function CollectionList({ section, collections }: CollectionListProps) {
   const handleNext = () => scrollTo(currentIndex + 1);
 
   return (
-    <section
+    // Section band: bg-page (#f4f4f4), vertical rhythm py-10 md:py-14 from Section
+    <Section
       data-section-type="collection-list"
-      className="fade-in-animation section_style_carousel image_style_circle"
+      className="bg-page"
     >
-      {/*
-        No section background image in this data configuration
-        (collectionListSection has no image field).
-        The Liquid wraps content in .section_content only for the carousel branch,
-        and adds `without_image` when no image is set.
-      */}
+      <Container>
+        {/* ── Section header ──────────────────────────────────────────────────
+            Live: .section-header with padding 0 55px, margin-bottom 55px.
+            Container already provides px-5 md:px-[55px], so we only need mb.
+            Row: title+CTA on the left, arrows on the right.
+        ─────────────────────────────────────────────────────────────────── */}
+        <div className="mb-[55px] flex items-start justify-between">
+          {/* Left: eyebrow subtitle (if any), big title, CTA button */}
+          <div className="flex flex-col items-start gap-4">
+            {section.subtitle ? (
+              <Text
+                as="span"
+                size="eyebrow"
+                weight="bold"
+                color="primary"
+                className="tracking-[0.5px]"
+                value={section.subtitle}
+              />
+            ) : null}
 
-      <div className="section_content carousel_section_content  without_image ">
-        <div className="page-width">
-          {/* ── Section header ─────────────────────────────────────────────── */}
-          <div className="section-header homepage_subtitle_style_match_header">
-            <div className="section-header-content">
-              {section.subtitle && (
-                <span className="h5">{section.subtitle}</span>
-              )}
+            {section.title ? (
+              // .mega-title--large: 100px / 700 — not in the Heading ladder; use custom size.
+              // Closest semantic: h2 tag. We override the size with a literal class.
+              <Heading
+                as="h2"
+                level={2}
+                className="text-[52px] leading-[1] md:text-[100px]"
+              >
+                {section.title}
+              </Heading>
+            ) : null}
 
-              {section.title && (
-                <h2 className="mega-title--large">{section.title}</h2>
-              )}
-
-              {section.buttonText && (
-                <Link
-                  href={section.link}
-                  className="btn collection-list__btn btn--primary"
-                >
-                  <span>{section.buttonText}</span>
-                  <Icon name="tail-right" />
+            {section.buttonText ? (
+              // Primary pill CTA — Button asChild renders the pill onto a Link
+              <Button variant="primary" asChild>
+                <Link href={section.link as `/${string}`}>
+                  <Text as="span" weight="bold" color="white" value={section.buttonText} />
+                  <Icon name="tail-right" className="size-4 shrink-0" />
                 </Link>
-              )}
-            </div>
-
-            {/* Prev / Next arrows (show_arrows default: true; always shown for carousel) */}
-            <div className="slider_custom_arrows">
-              <a
-                href="javascript:void(0)"
-                className="button-prev btn btn--circle-arrow"
-                aria-label="Previous"
-                aria-describedby="button previous"
-                onClick={(e) => { e.preventDefault(); handlePrev(); }}
-              >
-                <Icon name="tail-left" />
-              </a>
-              <a
-                href="javascript:void(0)"
-                className="button-next btn btn--circle-arrow"
-                aria-label="Next"
-                aria-describedby="button next"
-                onClick={(e) => { e.preventDefault(); handleNext(); }}
-              >
-                <Icon name="tail-right" />
-              </a>
-            </div>
+              </Button>
+            ) : null}
           </div>
 
-          {/* ── Slider track ────────────────────────────────────────────────── */}
-          {/*
-            The Flickity-generated markup adds .flickity-enabled .is-draggable
-            and wraps items in .flickity-viewport > .flickity-slider. We don't
-            replicate Flickity internals — just the semantic wrapper + items,
-            which is what the theme CSS targets for layout and the circle style.
-            A scroll-snap container gives the equivalent drag/click behaviour.
+          {/* Right: prev/next circle arrows
+              Probed: white bg, border-radius 50%, color #8d8d8d (grey), margin 10px each.
+              Button size="circle" gives size-11 rounded-full, but color is grey not primary.
+              We use Button variant="white" size="circle" (white bg, ink colour → override to grey).
           */}
-          <div
-            ref={sliderRef}
-            className="zoom-fade-animation collection-list__slider grid grid--uniform"
-            style={{ overflowX: 'auto', scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
-          >
-            {collections.map((collection) => (
-              <div
-                key={collection.id}
-                className={`zoom-fade-animation-element-wrapper collection-list__slide grid__item ${itemWidth}`}
-                style={{ scrollSnapAlign: 'start' }}
-              >
-                <CollectionGridItem collection={collection} />
-              </div>
-            ))}
+          <div className="flex shrink-0 items-center gap-[10px] pt-2">
+            <button
+              type="button"
+              aria-label="Previous"
+              onClick={handlePrev}
+              className={cn(
+                'flex size-11 cursor-pointer items-center justify-center rounded-full',
+                'bg-white text-[#8d8d8d] transition-colors hover:text-ink',
+              )}
+            >
+              <Icon name="tail-left" className="size-4" />
+            </button>
+            <button
+              type="button"
+              aria-label="Next"
+              onClick={handleNext}
+              className={cn(
+                'flex size-11 cursor-pointer items-center justify-center rounded-full',
+                'bg-white text-[#8d8d8d] transition-colors hover:text-ink',
+              )}
+            >
+              <Icon name="tail-right" className="size-4" />
+            </button>
           </div>
         </div>
-      </div>
-    </section>
+
+        {/* ── Slider track ────────────────────────────────────────────────────
+            ~5 tiles per row at desktop (flex-basis ~20%).
+            Overflow-x scroll with scroll-snap; no scrollbar.
+            Each tile: min-w-[20%] on md, full width on mobile (min-w-full or min-w-[80%]).
+        ─────────────────────────────────────────────────────────────────── */}
+        <div
+          ref={sliderRef}
+          className="flex gap-[11px] overflow-x-auto"
+          style={{ scrollSnapType: 'x mandatory', scrollbarWidth: 'none' }}
+        >
+          {collections.map((collection) => (
+            <div
+              key={collection.id}
+              className="min-w-[80%] shrink-0 sm:min-w-[calc(50%-6px)] md:min-w-[calc(20%-9px)]"
+              style={{ scrollSnapAlign: 'start' }}
+            >
+              <CollectionGridItem collection={collection} />
+            </div>
+          ))}
+        </div>
+      </Container>
+    </Section>
   );
 }

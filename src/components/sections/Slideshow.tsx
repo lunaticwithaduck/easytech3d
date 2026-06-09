@@ -1,33 +1,41 @@
 'use client';
 
-// Slideshow section — translated from sections/slideshow.liquid.
-// Ground-truth markup verified against:
-//   tools/output/reference/mirror/index.html  (lines 1582–1876)
+// Slideshow section — design-system version (primitives only; no theme classes).
 //
-// "use client" is required: autorotate timer + dots active-state + prev/next
-// arrow clicks all need React state.
+// Faithful to the live full-bleed hero (probed against https://easytech3d.com/):
+//   • full-width image per slide, object-cover, behind a dark colour overlay whose
+//     colour + opacity come from the slide (slide.colorOverlay / slide.overlayOpacity).
+//   • a left-aligned text block (vertically centred, or bottom when the slide's
+//     textAlignment is "… bottom"), constrained to the page-width-small block
+//     (mx-20 / px-[55px] / max-w-[1280px] → content left edge ≈ 135px on a 1440 vp).
+//   • title 100px / 700 / lh 100 / tracking 2px white, mb-[65px]; subtitle 24px / 700
+//     / lh 36 white; primary pill button (16/700, 13px 20px 13px 23px, radius 50).
+//   • height is content-driven: the slide gets 150px top/bottom padding (live
+//     `.slideshow__slide{padding:150px 0}`) → ~707px desktop. small/medium/large only
+//     differ on mobile, and the hero is hidden on mobile, so desktop is one model.
+//   • controls pinned to the bottom (absolute, bottom-[30px], between mx-20/px-[55px]):
+//     dots left (65×4px pills, active #ff1b5c, inactive #e4e4e4), white circle arrows
+//     right (44×44, grey #8d8d8d tail icons).
 //
-// Mobile visibility: settings.hideOnMobile drives a wrapper data-attribute
-// `data-hide-on-mobile` which the theme's custom_css (from index.json) targets
-// with `@media (max-width:749px) { [data-hide-on-mobile] { display:none } }`.
-// That rule is injected as a <style> tag at the bottom of this component so
-// the theme CSS file does not need to be modified.
+// "use client" is required: autorotate timer + dots active-state + prev/next clicks.
+//
+// Mobile visibility: settings.hideOnMobile hides the slideshow under 750px via a
+// `hidden md:block` wrapper (the live site's index.json custom_css hides it on mobile).
 
-import type { ReactElement } from 'react';
+import type { CSSProperties, ReactElement } from 'react';
 import { useEffect, useRef, useState } from 'react';
-import { Link } from '@/i18n/navigation';
 import type { HomeSlide } from '@/data/home';
-import { Icon } from '@/components/snippets/Icon';
+import { Button, cn, Heading, Icon, Image, Link, Text } from '@/design-system';
 
 // ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
 export interface SlideshowSettings {
-  readonly width: string;         // 'full' | 'wrapper'
-  readonly height: string;        // 'small' | 'medium' | 'large' | 'adapt'
-  readonly mobileHeight: string;  // same values
-  readonly textSize: string;      // 'medium' | 'large'
+  readonly width: string; // 'full' | 'wrapper'
+  readonly height: string; // 'small' | 'medium' | 'large' | 'adapt'
+  readonly mobileHeight: string; // same values
+  readonly textSize: string; // 'medium' | 'large'
   readonly showButtons: boolean;
   readonly showDots: boolean;
   readonly autorotate: boolean;
@@ -53,6 +61,20 @@ function slideId(index: number): string {
 function parseAlignment(alignment: string): { h: string; v: string } {
   const parts = alignment.trim().split(/\s+/);
   return { h: parts[0] ?? 'center', v: parts[1] ?? 'center' };
+}
+
+/** Vertical alignment of the text block within the slide. */
+function verticalClass(v: string): string {
+  if (v === 'top') return 'justify-start';
+  if (v === 'bottom') return 'justify-end';
+  return 'justify-center';
+}
+
+/** Horizontal alignment of the text block content. */
+function horizontalClass(h: string): string {
+  if (h === 'right') return 'items-end text-right';
+  if (h === 'center') return 'items-center text-center';
+  return 'items-start text-left';
 }
 
 // ---------------------------------------------------------------------------
@@ -98,229 +120,153 @@ export function Slideshow({ slides, settings }: Props): ReactElement | null {
     goTo((activeIndex + 1) % slideCount);
   }
 
+  // Hide the whole hero under 750px when configured (live behaviour).
+  const wrapperHide = settings.hideOnMobile ? 'hidden md:block' : '';
+
   if (slideCount === 0) {
     return (
-      <div data-section-type="slideshow-section" className="fade-in-animation">
-        <div className={settings.width === 'wrapper' ? 'slideshow-section-wrapper page-width' : 'slideshow-section-wrapper '}>
-          <div className="placeholder-noblocks">
-            Все още няма съдържание
-          </div>
-        </div>
-      </div>
+      <section className={cn('w-full', wrapperHide)}>
+        <Text as="p" color="muted" className="py-24 text-center" value="Все още няма съдържание" />
+      </section>
     );
   }
 
-  const sectionId = 'home-slideshow';
-  const slideshowId = `Slideshow-${sectionId}`;
-
   return (
-    <>
-      {/* Mobile-hide rule: index.json custom_css hides the slideshow under 750px */}
-      {settings.hideOnMobile && (
-        <style>{`@media screen and (max-width:749px){[data-hide-on-mobile]{display:none}}`}</style>
-      )}
-
-      {/* Per-slide overlay + text-color styles — mirrors the inline <style> blocks in the .liquid */}
+    <section
+      className={cn('relative w-full overflow-hidden', wrapperHide)}
+      aria-label="slideshow"
+      aria-roledescription="carousel"
+    >
+      {/* ── Slides ── (active in flow drives the content-height; others stacked behind) */}
       {slides.map((slide, i) => {
         const id = slideId(i);
+        const isActive = i === activeIndex;
+        const { h: textH, v: textV } = parseAlignment(slide.textAlignment);
+        const showLinkButton = !!(slide.buttonLabel && slide.buttonLink);
+
+        // Dynamic overlay colour/opacity — genuinely per-slide values, so inline style.
+        const overlayStyle: CSSProperties = {
+          backgroundColor: slide.colorOverlay,
+          opacity: slide.overlayOpacity / 100,
+        };
+
         return (
-          <style key={id}>{`
-#slideshow__overlay_${id}::before{opacity:${slide.overlayOpacity}%;background-color:${slide.colorOverlay}}
-#slickSlide-${id} .slideshow__title,
-#slickSlide-${id} .slideshow__subtitle{color:${slide.textColor}}
-          `.trim()}</style>
+          <div
+            key={id}
+            aria-hidden={!isActive}
+            className={cn(
+              'inset-0 transition-opacity duration-500',
+              isActive
+                ? 'relative z-[2] opacity-100'
+                : 'absolute z-[1] opacity-0 pointer-events-none',
+            )}
+          >
+            {/* Image + colour overlay (full-bleed, behind the text). */}
+            <div className="absolute inset-0">
+              <Image
+                src={slide.image}
+                alt={slide.title}
+                fill
+                sizes="100vw"
+                priority={i === 0}
+                className="object-cover"
+                style={{ objectPosition: '50% 50%' }}
+              />
+              <div className="absolute inset-0" style={overlayStyle} />
+            </div>
+
+            {/* Text block — vertically aligned over the image, content-height via py-[150px]. */}
+            <div className={cn('relative z-[1] flex min-h-[300px] flex-col', verticalClass(textV))}>
+              <div className="mx-5 px-0 py-[150px] md:mx-20 md:max-w-[1280px] md:px-[55px]">
+                <div className={cn('flex flex-col', horizontalClass(textH))}>
+                  {slide.title && (
+                    <Heading
+                      as="h2"
+                      color="white"
+                      className="mb-[65px] text-[56px] leading-[56px] tracking-[2px] md:text-[100px] md:leading-[100px]"
+                    >
+                      {slide.title}
+                    </Heading>
+                  )}
+
+                  {slide.subheading && (
+                    <Text
+                      as="p"
+                      weight="bold"
+                      color="white"
+                      className="text-[24px] leading-[36px]"
+                      value={slide.subheading}
+                    />
+                  )}
+
+                  {showLinkButton && (
+                    <div className={cn(slide.title || slide.subheading ? 'mt-[70px]' : '')}>
+                      <Button asChild variant="primary" className="w-fit pr-5">
+                        <Link href={slide.buttonLink as Parameters<typeof Link>[0]['href']}>
+                          <Text as="span" weight="bold" color="white" value={slide.buttonLabel} />
+                          <Icon name="tail-right" className="size-4 shrink-0" />
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         );
       })}
 
-      <div
-        data-section-id={sectionId}
-        data-section-type="slideshow-section"
-        className="fade-in-animation"
-        {...(settings.hideOnMobile ? { 'data-hide-on-mobile': '' } : {})}
-      >
-        <div
-          className={
-            settings.width === 'wrapper'
-              ? 'slideshow-section-wrapper  page-width '
-              : 'slideshow-section-wrapper '
-          }
-        >
-          <div
-            id={`SlideshowWrapper-${sectionId}`}
-            className="slideshow-wrapper"
-            role="region"
-            aria-label="slideshow"
-            aria-describedby="slideshow-info"
-            tabIndex={-1}
-            data-slider=""
-          >
-            {/* ── Slides track ── */}
-            <div
-              className={`slideshow slideshow--${settings.height}  mobile-slideshow--${settings.mobileHeight}`}
-              id={slideshowId}
-              data-slideshow_height={settings.height}
-              data-autorotate={String(settings.autorotate)}
-              data-slider-container=""
-              data-speed={String(settings.autorotateSpeed * 1000)}
-              data-adapt-height="false"
-              data-slide-nav-a11y="Зареди слайд [slide_number]"
-            >
-              {slides.map((slide, i) => {
+      {/* ── Controls (dots + arrows) ── pinned to the bottom, over the active slide. */}
+      {slideCount > 1 && (settings.showDots || settings.showButtons) && (
+        <div className="absolute inset-x-0 bottom-[30px] z-[3] mx-5 flex items-center justify-between px-0 md:mx-20 md:max-w-[1280px] md:px-[55px]">
+          {settings.showDots ? (
+            <ul className="flex items-center">
+              {slides.map((_slide, i) => {
                 const id = slideId(i);
-                const isActive = i === activeIndex;
-                const { h: textH, v: textV } = parseAlignment(slide.textAlignment);
-
-                // button_label and button_link both set → show_link_button = true
-                const showLinkButton = !!(slide.buttonLabel && slide.buttonLink);
-
+                const isActiveDot = i === activeIndex;
                 return (
-                  <div
-                    key={id}
-                    id={`slickSlide-${id}`}
-                    className={`slideshow__slide slideshow__slide--${id} block_type__image${isActive ? ' slideshow__slide--active' : ''}`}
-                    data-slider-slide-index={i}
-                    data-slider-item=""
-                  >
-                    {/* ── Image wrapper ── */}
-                    <div className=" slideshow__image_wrapper">
-                      <img
-                        className="slideshow__image box"
-                        srcSet={[
-                          `${slide.image.replace(/(\.[^.]+)$/, '_375x$1')} 375w`,
-                          `${slide.image.replace(/(\.[^.]+)$/, '_720x$1')} 750w`,
-                          `${slide.image.replace(/(\.[^.]+)$/, '_1066x$1')} 1066w`,
-                          `${slide.image.replace(/(\.[^.]+)$/, '_1500x$1')} 1500w`,
-                          `${slide.image.replace(/(\.[^.]+)$/, '_1780x$1')} 1780w`,
-                          `${slide.image.replace(/(\.[^.]+)$/, '_2000x$1')} 2000w`,
-                        ].join(',')}
-                        src={slide.image.replace(/(\.[^.]+)$/, '_750x$1')}
-                        sizes="100vw"
-                        loading="lazy"
-                        alt={slide.title}
-                        aria-label={slide.title}
-                        style={{ objectPosition: '50.0% 50.0%' }}
-                      />
-                      <div
-                        className="slideshow__overlay"
-                        id={`slideshow__overlay_${id}`}
-                      />
-                    </div>
-
-                    {/* ── Text overlay ── */}
-                    <div className="slideshow__text-wrap slideshow__text-wrap--desktop">
-                      <div
-                        className={`slideshow__text-content slideshow__text-content--vertical-${textV} text-${textH}`}
-                      >
-                        <div className="page-width-small">
-                          {(slide.title || slide.subheading) && (
-                            <ul className="slideshow__text-content-list">
-                              {slide.title && (
-                                <li>
-                                  <h2
-                                    className={`h1 mega-title slideshow__title${settings.textSize === 'large' ? ' mega-title--large' : ''}`}
-                                  >
-                                    {slide.title}
-                                  </h2>
-                                </li>
-                              )}
-                              {slide.subheading && (
-                                <li>
-                                  <span
-                                    className={`mega-subtitle slideshow__subtitle${settings.textSize === 'large' ? ' mega-subtitle--large' : ''}`}
-                                  >
-                                    {slide.subheading}
-                                  </span>
-                                </li>
-                              )}
-                            </ul>
-                          )}
-
-                          {showLinkButton && (
-                            <div
-                              className={`slideshow__btn-wrapper${slide.title || slide.subheading ? ' slideshow__btn-wrapper--push' : ''}`}
-                            >
-                              <Link
-                                href={slide.buttonLink as Parameters<typeof Link>[0]['href']}
-                                className="btn slideshow__btn btn--primary"
-                              >
-                                <span>{slide.buttonLabel}</span>
-                                <Icon name="tail-right" />
-                              </Link>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <li key={id} className="m-[5px]">
+                    <button
+                      type="button"
+                      aria-label={`Зареди слайд ${i + 1}`}
+                      aria-controls={`slide-${id}`}
+                      {...(isActiveDot ? { 'aria-current': 'true' } : {})}
+                      onClick={() => goTo(i)}
+                      className={cn(
+                        'block h-[4px] w-[65px] cursor-pointer rounded-[20px] border-0 p-0 transition-colors',
+                        isActiveDot ? 'bg-primary' : 'bg-[#e4e4e4]',
+                      )}
+                    />
+                  </li>
                 );
               })}
-            </div>
+            </ul>
+          ) : (
+            <span />
+          )}
 
-            {/* ── Controls (dots + arrows) ── */}
-            <div
-              className={`slideshow__controls page-width-small${!settings.showDots ? ' arrows_only' : ''}`}
-            >
-              {slideCount > 1 && (
-                <>
-                  {settings.showDots && (
-                    <ul className="slick-dots" data-slider-indicators="">
-                      {slides.map((slide, i) => {
-                        const id = slideId(i);
-                        const isActiveDot = i === activeIndex;
-                        // The theme puts `roll="button"` on the <li>; not a standard HTML
-                        // attribute, so we spread it to satisfy strict TS.
-                        const liExtra: Record<string, string> = { roll: 'button' };
-                        return (
-                          <li
-                            key={id}
-                            className={isActiveDot ? 'slick-active' : ''}
-                            data-slider-indicator=""
-                            {...liExtra}
-                          >
-                            <a
-                              href={`#${slideshowId}`}
-                              aria-label={`Зареди слайд ${i + 1}`}
-                              data-slide-number={i}
-                              aria-controls={`slickSlide-${id}`}
-                              {...(isActiveDot ? { 'aria-current': 'true' } : {})}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                goTo(i);
-                              }}
-                            />
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  )}
-
-                  {settings.showButtons && (
-                    <div className="slideshow__arrows">
-                      <button
-                        className="slideshow__arrow slideshow__arrow-previous btn btn--circle-arrow"
-                        aria-label="Предишен слайд"
-                        data-slider-button=""
-                        onClick={goPrev}
-                      >
-                        <Icon name="tail-left" />
-                      </button>
-                      <button
-                        className="slideshow__arrow slideshow__arrow-next btn btn--circle-arrow"
-                        aria-label="Следващ слайд"
-                        data-slider-button=""
-                        data-slider-button-next=""
-                        onClick={goNext}
-                      >
-                        <Icon name="tail-right" />
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
+          {settings.showButtons && (
+            <div className="flex items-center">
+              <button
+                type="button"
+                aria-label="Предишен слайд"
+                onClick={goPrev}
+                className="mx-[10px] flex size-11 cursor-pointer items-center justify-center rounded-full border-0 bg-white text-[#8d8d8d]"
+              >
+                <Icon name="tail-left" className="size-4" />
+              </button>
+              <button
+                type="button"
+                aria-label="Следващ слайд"
+                onClick={goNext}
+                className="mx-[10px] flex size-11 cursor-pointer items-center justify-center rounded-full border-0 bg-white text-[#8d8d8d]"
+              >
+                <Icon name="tail-right" className="size-4" />
+              </button>
             </div>
-          </div>
+          )}
         </div>
-      </div>
-    </>
+      )}
+    </section>
   );
 }

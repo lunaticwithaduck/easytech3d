@@ -4,19 +4,18 @@
 // Settings read from @/data/settings (announcementBar). No props — the data layer
 // is imported directly (this is the chrome, always rendered with the same config).
 //
-// The Liquid uses Flickity for sliding; we reproduce the markup + classes faithfully
-// and drive rotation with a minimal React interval + useState. prev/next arrows use
-// the theme's Icon component (tail-left / tail-right) as per the translation guide.
+// Rotation driven with a minimal React interval + useState. prev/next arrows use
+// Icon tail-left / tail-right, hidden by default, revealed on hover via group/opacity
+// utilities; absolutely-positioned so the bar stays a single line.
 //
 // Block HTML is rendered via Rte (dangerouslySetInnerHTML with .rte wrapper).
 
 import { useEffect, useRef, useState } from 'react';
 import { announcementBar } from '@/data/settings';
-import { Icon } from '@/components/snippets/Icon';
+import { Icon } from '@/design-system';
 import { Rte } from '@/components/snippets/Rte';
 
-const { enabled, background, textColor, showArrows, autoplay, cycleSpeed, blocks } =
-  announcementBar;
+const { enabled, showArrows, autoplay, cycleSpeed, blocks } = announcementBar;
 
 export function AnnouncementBar() {
   if (!enabled) return null;
@@ -67,56 +66,42 @@ function AnnouncementBarInner() {
 
   return (
     <div
-      id="shopify-section-announcement-bar"
-      className="shopify-section"
-      style={{ background, color: textColor }}
+      className="group relative flex h-10 items-center justify-center bg-announce text-white text-sm"
+      onMouseEnter={clearTimer}
+      onMouseLeave={startTimer}
     >
-      <section
-        id="section-announcement-bar"
-        data-section-id="announcement-bar"
-        data-section-type="announcement-bar"
-      >
-        <div className="AnnouncementBar">
-          <div className="AnnouncementBar__Wrapper">
-            <div
-              className="AnnouncementBar__Slider"
-              onMouseEnter={clearTimer}
-              onMouseLeave={startTimer}
-            >
-              <div className="AnnouncementBar__Content">
-                {block.link ? (
-                  <a href={block.link}>
-                    <Rte html={block.contentHtml} />
-                  </a>
-                ) : (
-                  <Rte html={block.contentHtml} />
-                )}
-              </div>
+      {/* Message content — centered, fills available width between arrows */}
+      <div className="flex items-center justify-center px-10 [&_.rte]:text-white [&_.rte_*]:text-white [&_.rte_a]:text-white [&_.rte_a:hover]:underline">
+        {block.link ? (
+          <a href={block.link} className="text-white hover:underline">
+            <Rte html={block.contentHtml} />
+          </a>
+        ) : (
+          <Rte html={block.contentHtml} />
+        )}
+      </div>
 
-              {showArrows && total > 1 && (
-                <>
-                  <button
-                    type="button"
-                    className="AnnouncementBar__Arrow AnnouncementBar__Arrow--prev"
-                    aria-label="Предишно"
-                    onClick={prev}
-                  >
-                    <Icon name="tail-left" />
-                  </button>
-                  <button
-                    type="button"
-                    className="AnnouncementBar__Arrow AnnouncementBar__Arrow--next"
-                    aria-label="Следващо"
-                    onClick={next}
-                  >
-                    <Icon name="tail-right" />
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* prev / next arrows — absolutely positioned, hidden until hover */}
+      {showArrows && total > 1 && (
+        <>
+          <button
+            type="button"
+            aria-label="Предишно"
+            onClick={prev}
+            className="absolute left-3 flex items-center justify-center text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:opacity-80"
+          >
+            <Icon name="tail-left" className="size-4" />
+          </button>
+          <button
+            type="button"
+            aria-label="Следващо"
+            onClick={next}
+            className="absolute right-3 flex items-center justify-center text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:opacity-80"
+          >
+            <Icon name="tail-right" className="size-4" />
+          </button>
+        </>
+      )}
     </div>
   );
 }

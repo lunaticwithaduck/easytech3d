@@ -1,8 +1,11 @@
-// No PostCSS transforms. The storefront is styled by the live Shopify theme's own compiled CSS
-// (src/styles/theme/*, already vendor-prefixed). Tailwind was removed in the Liquid→Next port, so
-// the @tailwindcss/postcss plugin is gone — its strict parser also rejected the theme's CSS.
+// Tailwind 4 via PostCSS. We import only theme + utilities (NOT preflight) in globals.css, so
+// Tailwind's reset never fights the live theme CSS that still backstops un-migrated surfaces during
+// the phased design-system migration. Tailwind only ever processes globals.css (the theme CSS is
+// served separately via <link> from /public/theme).
 const config = {
-  plugins: {},
+  plugins: {
+    '@tailwindcss/postcss': {},
+  },
 };
 
 export default config;

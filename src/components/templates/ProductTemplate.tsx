@@ -1,33 +1,47 @@
-// Translation of sections/product-template.liquid (the PDP).
+// Product detail page (PDP) — migrated to design-system primitives (no theme classes).
 //
-// Block order from templates/product.json:
-//   sku_block · product_title · rating · product_vendor · product_price ·
-//   product_options_block · quantity_block · product_buttons · back_in_stock ·
-//   product_description (desc_display: "full_width").
+// Layout faithful to the live `.page-width-small` / `.product-single` surface:
+//   • pink Breadcrumbs (Начало › product)  — same inline pattern as CollectionTemplate
+//   • two-column grid on desktop / stacked on mobile:
+//       left  = <ProductMedia/>  (gallery: square contained main image + thumbnail row)
+//       right = <ProductForm/>   (buy-box: vendor · title · price · qty · buttons)
+//   • full-width product description below the grid (Rte)
 //
-// media_size is "medium" → media column `medium-up--one-half`, description column
-// `medium-up--one-half` (Liquid `case section.settings.media_size`). show_breadcrumbs is true.
-//
-// The two columns:
-//   • <ProductMedia/>  — the `.product-single__media-group` gallery (client; thumbnail switching)
-//   • <ProductForm/>   — the `.product-single__meta` buy box (client; variants / qty / buttons)
-// The description block uses desc_display "full_width", so it renders BELOW the grid as
-// `.full_product-single__description` (Liquid: show_product_desc_full_width loop at end of section).
-//
-// Structure/classes verified against the rendered ground truth:
-//   tools/output/reference/mirror/products/elegoo-pla-red-filament/index.html (lines 1682-2178)
+// Contract unchanged: ProductTemplate({ product }). The two children own their own client logic.
 
 import type { ReactElement } from 'react';
-import { Breadcrumbs } from '@/components/snippets/Breadcrumbs';
+import { Container, Link, Text } from '@/design-system';
 import { Rte } from '@/components/snippets/Rte';
 import { ProductMedia } from '@/components/product/ProductMedia';
 import { ProductForm } from '@/components/product/ProductForm';
 import type { ShopProduct } from '@/lib/shopify/types';
 
+// breadcrumbs_color #ff1b5c → pink crumbs (same as CollectionTemplate).
+function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
+  return (
+    <nav aria-label="breadcrumbs" className="mb-5 flex flex-wrap items-center gap-2">
+      {items.map((item, i) => {
+        const last = i === items.length - 1;
+        return (
+          <span key={`${item.title}-${i}`} className="flex items-center gap-2">
+            {item.url && !last ? (
+              <Link href={item.url} className="text-sm text-primary hover:underline">
+                {item.title}
+              </Link>
+            ) : (
+              <Text as="span" size="sm" color="primary" value={item.title} />
+            )}
+            {!last && <Text as="span" size="sm" color="primary" value="›" />}
+          </span>
+        );
+      })}
+    </nav>
+  );
+}
+
 export function ProductTemplate({ product }: { product: ShopProduct }): ReactElement {
   return (
-    <div className="page-width-small" data-section-type="product">
-      {/* {% render 'breadcrumbs' product:product %} → Home + current product */}
+    <Container as="div" className="pb-14 pt-8 md:pt-12" data-section-type="product">
       <Breadcrumbs
         items={[
           { title: 'Начало', url: '/' },
@@ -35,21 +49,16 @@ export function ProductTemplate({ product }: { product: ShopProduct }): ReactEle
         ]}
       />
 
-      <div className="grid product-single">
-        {/* ── media column (grid__item product-single__media-group medium-up--one-half) ── */}
+      <div className="grid grid-cols-1 gap-x-[22px] gap-y-8 md:grid-cols-2 md:items-start">
+        {/* ── media column ── */}
         <ProductMedia media={product.media} title={product.title} />
 
-        {/* ── info column (grid__item medium-up--one-half) ── */}
-        <div className="grid__item medium-up--one-half">
-          <ProductForm product={product} />
-        </div>
+        {/* ── buy-box column ── */}
+        <ProductForm product={product} />
       </div>
 
-      {/* ── product_description (desc_display: full_width) ──────────────────────── */}
-      <Rte
-        html={product.descriptionHtml}
-        className="product-single__description main-product-description-main full_product-single__description"
-      />
-    </div>
+      {/* ── full-width description ── */}
+      <Rte html={product.descriptionHtml} className="mt-[30px] mb-[35px] max-w-none text-ink" />
+    </Container>
   );
 }

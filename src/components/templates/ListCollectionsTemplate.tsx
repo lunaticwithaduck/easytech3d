@@ -1,7 +1,6 @@
+import { Button, Card, Container, Heading, Icon, Image, Link, Text } from '@/design-system';
+import { imageUrl } from '@/lib/shopify/image';
 import type { ShopCollection } from '@/lib/shopify/types';
-import { imageUrl, imageSrcset } from '@/lib/shopify/image';
-import { Icon } from '@/components/snippets/Icon';
-import { Breadcrumbs } from '@/components/snippets/Breadcrumbs';
 
 // Translation of:
 //   sections/list-collections-template.liquid
@@ -12,80 +11,88 @@ import { Breadcrumbs } from '@/components/snippets/Breadcrumbs';
 // The live site renders with "display_type: all" + "sort: alphabetical" + "grid: 3" +
 // "grid_mobile: 1" (from settings_data.json / rendered HTML).
 //
-// grid_item_width (grid=3, grid_mobile=1) resolves to:
-//   "small--one-half tablet--one-third medium-up--one-third mobile--one-whole  small--one-whole"
+// Probed computed styles (tools/verify/shoot.cjs https://easytech3d.com/collections):
+//   .collection-grid-item        → border-radius 20px, bg white (→ <Card>)
+//   .collection-grid-item__image-with-placeholder-wrapper → margin-bottom 15px
+//   .collection-grid-item__info  → padding 30px 20px
+//   .collection-grid-item__title → 32px / 700 / tracking 1px / color #232323 (→ Heading level={3})
+//   .collection-grid-item-products-count → margin-top 10px, 16px / 400
+//   .btn--secondary              → bg #3a3a3a, radius 50px, padding 13px 20px 13px 23px, mt 50px
+//   .section-header h1           → 47px / 700 / tracking 2px (→ Heading as="h1" level={2})
 //
-// custom_page_header: no image on this route → plain branch:
-//   <div class="page-width"><div class="section-header">
-//     <h1 class=" h2 page_header_heading">Колекции</h1>
-//     <Breadcrumbs />
-//   </div></div>
-//
-// Translations (locales/bg.json):
-//   collections.general.products         → "продукти"
-//   collections.general.browse_collections → "Разгледай"
-//   homepage.onboarding.collection_title → "Примерна колекция"
-
-const GRID_ITEM_CLASS =
-  'zoom-fade-animation-element-wrapper grid__item small--one-half tablet--one-third medium-up--one-third mobile--one-whole  small--one-whole';
+// Grid: grid-cols-1 sm:grid-cols-2 md:grid-cols-3, gap-x-[11px] gap-y-5 (grid__item: pl-[11px] mb-5)
 
 const ITEMS_PER_ROW = 3;
 
+function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
+  // Pink inline breadcrumbs — mirrors the pattern from CollectionTemplate.
+  return (
+    <nav aria-label="breadcrumbs" className="mb-5 flex flex-wrap items-center gap-2">
+      {items.map((item, i) => {
+        const last = i === items.length - 1;
+        return (
+          <span key={`${item.title}-${i}`} className="flex items-center gap-2">
+            {item.url && !last ? (
+              <Link href={item.url} className="text-sm text-primary hover:underline">
+                {item.title}
+              </Link>
+            ) : (
+              <Text as="span" size="sm" color="primary" value={item.title} />
+            )}
+            {!last && <Text as="span" size="sm" color="primary" value="›" />}
+          </span>
+        );
+      })}
+    </nav>
+  );
+}
+
 function CollectionsGridItem({ collection }: { collection: ShopCollection }) {
   const image = collection.image;
-  const collectionUrl = collection.url;
-  const paddingTop = image ? `${(1 / image.aspectRatio) * 100}%` : '100%';
 
   return (
-    <div className="collection-grid-item  full_image ">
+    <Card className="flex h-full flex-col overflow-hidden">
+      {/* Image area — full-width cover image, aspect ratio ~1:1 (square) */}
+      <Link href={collection.url} aria-label={collection.title} className="relative block w-full overflow-hidden" style={{ paddingTop: image ? `${(1 / image.aspectRatio) * 100}%` : '100%' }}>
+        {image ? (
+          <Image
+            src={imageUrl(image.src, 535)}
+            sizes={`(min-width: 750px) calc(100vw / ${ITEMS_PER_ROW}), 100vw`}
+            alt={image.alt || collection.title}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          /* Placeholder when no image */
+          <div className="absolute inset-0 bg-[#f4f4f4]" />
+        )}
+      </Link>
 
-      <div className="collection-grid-item__image-with-placeholder-wrapper">
-        <a href={collectionUrl} className="collection-grid-item__link">
-          {image ? (
-            <div className="collection-grid-item__image-wrapper">
-              <div style={{ paddingTop }}>
-                <img
-                  src={imageUrl(image.src, 535)}
-                  srcSet={imageSrcset(image.src, image.width)}
-                  sizes={`(min-width: 750px) calc(100vw / ${ITEMS_PER_ROW}), 100vw`}
-                  loading="lazy"
-                  width={image.width}
-                  height={image.height}
-                  className="zoom-fade-animation-element"
-                  alt={image.alt || collection.title}
-                />
-                <div className="load_media_spinner">
-                  <div className="rect1"></div>
-                  <div className="rect2"></div>
-                  <div className="rect3"></div>
-                  <div className="rect4"></div>
-                  <div className="rect5"></div>
-                </div>
-              </div>
-            </div>
-          ) : null}
-        </a>
-      </div>
-
-      <div className="collection-grid-item__info collections-grid-item__info">
-        <div className="collection-grid-item__title h3">
-          <a href={collection.title ? collectionUrl : '#'}>
+      {/* Info — padding 30px 20px (probed) */}
+      <div className="flex flex-1 flex-col px-5 pb-[30px] pt-[30px]">
+        {/* Title — 32px / 700 / tracking-[1px] (probed .collection-grid-item__title → h3 level) */}
+        <Heading as="h2" level={3} className="text-ink">
+          <Link href={collection.title ? collection.url : '#'} className="hover:text-primary">
             {collection.title || 'Примерна колекция'}
-          </a>
-        </div>
+          </Link>
+        </Heading>
 
-        <div className="collection-grid-item-products-count">
-          <span> {collection.productsCount} продукти</span>
-        </div>
-        <div className="collection-grid-item__button_wrapper">
-          <a href={collectionUrl} className="btn btn--secondary">
-            <span>Разгледай</span>
-            <Icon name="tail-right" />
-          </a>
+        {/* Product count — mt-[10px] / 16px / muted (probed) */}
+        <Text as="p" size="base" color="muted" className="mt-[10px]">
+          {collection.productsCount} продукти
+        </Text>
+
+        {/* "Разгледай →" button — secondary (bg #3a3a3a), mt-[50px] (probed) */}
+        <div className="mt-[50px]">
+          <Button variant="secondary" asChild>
+            <Link href={collection.url}>
+              <Text as="span" weight="bold" color="white" value="Разгледай" />
+              <Icon name="tail-right" className="size-4 shrink-0" />
+            </Link>
+          </Button>
         </div>
       </div>
-
-    </div>
+    </Card>
   );
 }
 
@@ -95,40 +102,28 @@ export function ListCollectionsTemplate({
   collections: ShopCollection[];
 }) {
   return (
-    // Section wrapper — mirrors rendered HTML:
-    //   <div id="shopify-section-…__main" class="shopify-section">
-    // wrapping both the page header and the collections grid.
-    <div className="shopify-section">
-      {/* custom_page_header — no image branch: page-width > section-header > h1 + breadcrumbs */}
-      <div className="page-width">
-        <div className="section-header">
-          <h1 className=" h2 page_header_heading">Колекции</h1>
+    <div className="pb-14">
+      {/* Page header — mirrors: <div class="page-width"><div class="section-header"><h1 class="h2"> */}
+      <Container as="header" className="pt-8 md:pt-12">
+        <Breadcrumbs
+          items={[
+            { title: 'Начало', url: '/' },
+            { title: 'Колекции', url: '/collections' },
+          ]}
+        />
+        <Heading as="h1" level={2} className="mb-6 border-b border-border pb-5">
+          Колекции
+        </Heading>
+      </Container>
 
-          <Breadcrumbs
-            items={[
-              { title: 'Начало', url: '/' },
-              { title: 'Колекции', url: '/collections' },
-            ]}
-          />
+      {/* Collections grid — grid-cols-1 sm:grid-cols-2 md:grid-cols-3, 11px col gap, 20px row gap */}
+      <Container>
+        <div className="grid grid-cols-1 gap-x-[11px] gap-y-5 sm:grid-cols-2 md:grid-cols-3">
+          {collections.map((collection) => (
+            <CollectionsGridItem key={collection.id} collection={collection} />
+          ))}
         </div>
-      </div>
-
-      {/* section wrapper — mirrors rendered HTML:
-            <section id="section-{id}" data-section-id="{id}">
-              <div class="page-width">
-                <ul class="zoom-fade-animation grid grid--uniform list-collections-grid use_align_height zoomFade-animation">
-      */}
-      <section>
-        <div className="page-width">
-          <ul className="zoom-fade-animation grid grid--uniform list-collections-grid use_align_height zoomFade-animation">
-            {collections.map((collection) => (
-              <li key={collection.id} className={GRID_ITEM_CLASS}>
-                <CollectionsGridItem collection={collection} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      </Container>
     </div>
   );
 }
