@@ -155,7 +155,7 @@ export function ProductForm({ product }: { product: ShopProduct }) {
           <Button
             variant="primary"
             block
-            className="flex-1 bg-page text-primary hover:bg-[#e6e6e6]"
+            className="flex-1 border border-primary bg-page text-primary hover:bg-[#e6e6e6]"
             aria-label="Купете сега"
           >
             <Text as="span" weight="bold" color="primary" value="Купете сега" />

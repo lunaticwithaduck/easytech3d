@@ -71,8 +71,8 @@ export function ContactTemplate({
       </Container>
 
       <Container className="pb-14">
-        {/* mirrors medium-up--five-sixths / push-one-twelfth: centred, max 3xl */}
-        <div className="mx-auto max-w-3xl">
+        {/* mirrors medium-up--five-sixths / push-one-twelfth: five-sixths width, one-twelfth left offset */}
+        <div className="w-5/6 ml-[8.333%]">
           <Rte html={contentHtml} />
         </div>
       </Container>
@@ -80,7 +80,7 @@ export function ContactTemplate({
       {/* ── Section 2: page-contact.liquid — contact form section ── */}
       <Section>
         <Container>
-          <div className="mx-auto max-w-3xl">
+          <div className="w-5/6 ml-[8.333%]">
             {/* section-header: subtitle (h5) + title (h2) + subheading */}
             <SectionHeader eyebrow="Пратете ни мейл" title="Свържете се с нас" />
 

@@ -31,7 +31,9 @@ export default async function LocaleLayout({
 
   return (
     <html className={`js ${fontVariables}`} lang={locale}>
-      <body>
+      {/* overflow-x-hidden clips the off-canvas drawers/submenus (translate-x-full) so they don't
+          create horizontal scroll on mobile. */}
+      <body className="overflow-x-hidden">
         <NextIntlClientProvider messages={messages}>
           <a className="sr-only focus:not-sr-only" href="#MainContent">
             Прескочи към съдържанието

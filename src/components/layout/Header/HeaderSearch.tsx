@@ -95,7 +95,7 @@ export function HeaderSearch({ variant = 'desktop' }: { variant?: 'desktop' | 'm
         </ul>
       </div>
 
-      <form action="/search" method="get" role="search" className="relative flex-1">
+      <form action="/search" method="get" role="search" className="relative flex-1 self-stretch">
         <Input
           type="text"
           name="q"
@@ -104,7 +104,9 @@ export function HeaderSearch({ variant = 'desktop' }: { variant?: 'desktop' | 'm
           autoComplete="off"
           autoCorrect="off"
           onFocus={() => setOpen(true)}
-          className="border-0 bg-transparent py-[10px] pl-[18px] pr-[45px] focus:border-0"
+          // h-full makes the field fill the 55px row (live is a 55px field, not 44px); input text
+          // stays vertically centered by default so the padding only governs the horizontal inset.
+          className="h-full border-0 bg-transparent py-0 pl-[18px] pr-[45px] focus:border-0"
         />
         <input type="hidden" name="options[prefix]" value="last" aria-hidden="true" />
         <button

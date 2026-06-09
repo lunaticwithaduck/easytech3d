@@ -77,7 +77,7 @@ export function CollectionTemplate({
       ) : (
         <Container as="header" className="pt-8 md:pt-12">
           <Breadcrumbs items={breadcrumbItems} />
-          <div className="mb-8 flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-end md:justify-between">
+          <div className="mb-14 flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
             <Heading as="h1" level={2}>
               {collection.title}
             </Heading>
@@ -89,7 +89,7 @@ export function CollectionTemplate({
       <Container>
         <div
           className={cn(
-            'grid grid-cols-1 gap-x-[11px] gap-y-[30px] md:grid-cols-3',
+            'grid grid-cols-1 gap-x-[11px] gap-y-5 md:grid-cols-3',
             showBanner && 'mt-6',
           )}
         >

@@ -193,11 +193,11 @@ export function FeaturedProducts({
                   key={product.id}
                   className={cn(
                     'shrink-0',
+                    // Mobile ~80% peek; md ~3-up; lg a FIXED ~294px card (matches live) so 3 cards
+                    // leave right-side whitespace under the arrows instead of stretching to fill.
                     'min-w-[80%]',
                     'md:min-w-[calc(33.333%-8px)]',
-                    navigationStyle === 'large'
-                      ? 'lg:min-w-[calc(33.333%-8px)]'
-                      : 'lg:min-w-[calc(25%-9px)]',
+                    'lg:min-w-[294px]',
                   )}
                   style={{ scrollSnapAlign: 'start' }}
                 >

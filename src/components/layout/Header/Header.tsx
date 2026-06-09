@@ -30,8 +30,9 @@ export function Header() {
         </div>
       </Container>
 
-      {/* logo + desktop nav + (mobile) icon row */}
-      <Container className="flex items-center justify-between gap-4 py-3 md:py-0">
+      {/* logo + desktop nav + (mobile) icon row. Desktop md:py-[18px] adds the vertical breathing
+          room the live header has (≈240px total; the 100px logo sits centered with padding). */}
+      <Container className="flex items-center justify-between gap-4 py-3 md:py-[18px]">
         <Link href="/" aria-label={shop.name} className="block shrink-0">
           <Image
             src={shop.logo}
@@ -57,7 +58,7 @@ export function Header() {
       </Container>
 
       {/* desktop search row: pink categories pill + search field + cart circle */}
-      <Container className="hidden items-center gap-[10px] pb-4 pt-1 md:flex">
+      <Container className="hidden items-center gap-[10px] pt-2 pb-[18px] md:flex">
         <HeaderSearch variant="desktop" />
         <CartButton variant="desktop" />
       </Container>

@@ -3,7 +3,8 @@
 // Faithful to the live /search?q=… surface (sections/search-page.liquid, layout
 // "sidebar_fixed_left"): a Container, a results heading ("{n} резултати за “{query}”"), a left
 // facet rail (Наличност checkboxes + Цена range — static markup, no faceting backend) sitting
-// beside a responsive results grid of the SHARED <ProductCard>, plus the empty / no-results state.
+// beside a single-column list of the SHARED <ProductCard list /> (the live search view-mode is a
+// list of wide horizontal cards, ~935px wide, 30px apart), plus the empty / no-results state.
 //
 // Exact values baked from probing https://easytech3d.com/search?q=pla:
 //   • heading → h2 ladder (46.8px @1440, weight 700, tracking 2px, mb ~17.5px)
@@ -236,9 +237,9 @@ export function SearchTemplate({
               )}
 
               {resultsCount > 0 && (
-                <div className="grid grid-cols-1 gap-x-[11px] gap-y-[30px] sm:grid-cols-2 lg:grid-cols-3">
+                <div className="flex flex-col gap-y-[30px]">
                   {results.map((product) => (
-                    <ProductCard key={product.id} product={product} showVendor />
+                    <ProductCard key={product.id} product={product} showVendor list />
                   ))}
                 </div>
               )}

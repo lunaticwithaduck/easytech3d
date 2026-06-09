@@ -53,14 +53,14 @@ function CollectionsGridItem({ collection }: { collection: ShopCollection }) {
   return (
     <Card className="flex h-full flex-col overflow-hidden">
       {/* Image area — uniform square (aspect-ratio 1/1), object-cover */}
-      <Link href={collection.url} aria-label={collection.title} className="relative block w-full overflow-hidden rounded-t-card" style={{ paddingTop: '100%' }}>
+      <Link href={collection.url} aria-label={collection.title} className="relative block h-[200px] w-full overflow-hidden rounded-t-card mb-[15px]">
         {image ? (
           <Image
             src={imageUrl(image.src, 535)}
             sizes={`(min-width: 750px) calc(100vw / ${ITEMS_PER_ROW}), 100vw`}
             alt={image.alt || collection.title}
             fill
-            className="object-cover"
+            className="object-contain"
           />
         ) : (
           /* Placeholder when no image */
@@ -112,7 +112,7 @@ export function ListCollectionsTemplate({
             { title: 'Колекции', url: '/collections' },
           ]}
         />
-        <Heading as="h1" level={2} className="mb-6 border-b border-border pb-5">
+        <Heading as="h1" level={2} className="mb-[18px]">
           Колекции
         </Heading>
       </Container>

@@ -41,7 +41,7 @@ function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
 
 export function ProductTemplate({ product }: { product: ShopProduct }): ReactElement {
   return (
-    <Container as="div" className="pb-14 pt-8 md:pt-12" data-section-type="product">
+    <Container as="div" size="small" className="pb-14 pt-8 md:pt-12" data-section-type="product">
       <Breadcrumbs
         items={[
           { title: 'Начало', url: '/' },
@@ -49,7 +49,7 @@ export function ProductTemplate({ product }: { product: ShopProduct }): ReactEle
         ]}
       />
 
-      <div className="grid grid-cols-1 gap-x-[22px] gap-y-8 md:grid-cols-2 md:items-start">
+      <div className="grid grid-cols-1 gap-x-[22px] gap-y-8 md:grid-cols-[1fr_minmax(0,510px)] md:items-start md:gap-x-[60px]">
         {/* ── media column ── */}
         <ProductMedia media={product.media} title={product.title} />
 

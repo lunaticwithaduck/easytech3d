@@ -33,9 +33,13 @@ export function SectionHeader({
         className,
       )}
     >
-      {/* Live `.section-header .h5` eyebrow: ink, uppercase, 14px / 700 / +0.5px tracking. */}
+      {/* Live `.section-header .h5` eyebrow: ink, uppercase, 14px / 700 / +0.5px tracking, with a
+          short leading rule ("— TEXT"). */}
       {eyebrow ? (
-        <Text size="xs" weight="bold" color="ink" uppercase className="tracking-[0.5px]" value={eyebrow} />
+        <span className="inline-flex items-center gap-3">
+          <span aria-hidden className="h-[2px] w-6 bg-ink" />
+          <Text size="xs" weight="bold" color="ink" uppercase className="tracking-[0.5px]" value={eyebrow} />
+        </span>
       ) : null}
       {title ? <Heading level={2}>{title}</Heading> : null}
     </div>

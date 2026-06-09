@@ -13,17 +13,20 @@ export function Footer() {
   const activeSocials = socialEntries.filter((s) => s.url);
 
   return (
-    // Probed live: bg #000, padding-top 80px, padding-bottom 35px, text 12px / #ebebeb
+    // Probed live: bg #000, padding-top 80px, padding-bottom 35px, text 12px / #ebebeb.
+    // The footer itself is a flex row that centers its content (justify-center) so the columns
+    // form a compact ~744px cluster in the middle of the page rather than full-width thirds.
     <footer
-      className="bg-footer pt-[80px] pb-[35px] text-[12px] leading-[18px] text-footer-text"
+      className="flex justify-center bg-footer pt-[80px] pb-[35px] text-[12px] leading-[18px] text-footer-text"
       role="contentinfo"
     >
       <Container>
-        {/* Three columns: flex row, each col px-[15px] mb-[45px] */}
-        <div className="flex flex-wrap">
+        {/* Columns: centered, shrink-to-content flex row. Each col px-[15px] mb-[45px], min 180px
+            wide on desktop, separated by a 40px horizontal gap. */}
+        <div className="flex flex-wrap justify-center gap-x-[40px]">
 
           {/* Column 1: "Последвайте ни" + social icon pills */}
-          <div className="w-full px-[15px] mb-[45px] md:w-1/3">
+          <div className="w-full px-[15px] mb-[45px] md:w-auto md:min-w-[180px]">
             {/* Heading: 13.5px bold white letter-spacing 0.5px mb 17.5px */}
             <Text
               as="p"
@@ -54,7 +57,7 @@ export function Footer() {
           </div>
 
           {/* Column 2: "Бързи Линкове" menu links */}
-          <div className="w-full px-[15px] mb-[45px] md:w-1/3">
+          <div className="w-full px-[15px] mb-[45px] md:w-auto md:min-w-[180px]">
             <Text
               as="p"
               className="text-[13.5px] leading-[13.5px] font-bold text-white tracking-[0.5px] mb-[17.5px]"
@@ -77,7 +80,7 @@ export function Footer() {
           </div>
 
           {/* Column 3: copyright */}
-          <div className="w-full px-[15px] mb-[45px] md:w-1/3">
+          <div className="w-full px-[15px] mb-[45px] md:w-auto md:min-w-[180px]">
             <Text
               as="p"
               className="text-[13.5px] leading-[13.5px] font-bold text-white tracking-[0.5px]"

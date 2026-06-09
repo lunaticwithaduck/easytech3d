@@ -66,12 +66,15 @@ function AnnouncementBarInner() {
 
   return (
     <div
-      className="group relative flex h-10 items-center justify-center bg-announce text-white text-sm"
+      // min-h-10 + py-2 so the bar grows to fit wrapped copy on mobile (a fixed h-10 clips/off-centers
+      // the multi-line text); reduced mobile side padding (px-6) keeps the centered text from crowding
+      // the arrows. Desktop stays a single line, so it still reads as the 40px-tall bar.
+      className="group relative flex min-h-10 items-center justify-center bg-announce px-6 py-2 text-center text-sm text-white md:px-10"
       onMouseEnter={clearTimer}
       onMouseLeave={startTimer}
     >
       {/* Message content — centered, fills available width between arrows */}
-      <div className="flex items-center justify-center px-10 [&_.prose]:text-white [&_.prose_*]:text-white [&_.prose_a]:text-white [&_.prose_a:hover]:underline">
+      <div className="flex items-center justify-center [&_.prose]:text-white [&_.prose_*]:text-white [&_.prose_a]:text-white [&_.prose_a:hover]:underline">
         {block.link ? (
           <a href={block.link} className="text-white hover:underline">
             <Rte html={block.contentHtml} />

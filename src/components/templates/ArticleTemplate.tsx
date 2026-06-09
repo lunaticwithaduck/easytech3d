@@ -52,21 +52,10 @@ export function ArticleTemplate({ article }: { article: ShopArticle }) {
   ];
 
   return (
-    <Container as="article" className="max-w-3xl py-10 md:py-14">
+    // Outer frame: page-width-small (~1280px). Breadcrumb + H1 + hero span the full inner
+    // width (probed live: H1 ~1170px); only the body Rte is constrained to a reading column.
+    <Container as="article" size="small" className="py-10 md:py-14">
       <Breadcrumbs items={breadcrumbs} />
-
-      {image && (
-        <div className="relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-media">
-          <Image
-            src={imageUrl(image.src, 1500)}
-            alt={image.alt || article.title}
-            fill
-            sizes="(min-width: 768px) 768px, 100vw"
-            className="object-cover"
-            priority
-          />
-        </div>
-      )}
 
       <Heading as="h1" level={2} className="mb-4 md:text-[60px]">
         {article.title}
@@ -80,7 +69,23 @@ export function ArticleTemplate({ article }: { article: ShopArticle }) {
         <Text as="span" size="sm" color="muted" value={`от ${article.author}`} />
       </div>
 
-      <Rte html={article.contentHtml} />
+      {image && (
+        <div className="relative mb-8 aspect-[16/9] w-full overflow-hidden rounded-media">
+          <Image
+            src={imageUrl(image.src, 1500)}
+            alt={image.alt || article.title}
+            fill
+            sizes="(min-width: 1024px) 1170px, 100vw"
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
+
+      {/* Body reading column — ~768px (max-w-3xl), centered within the wider article frame. */}
+      <div className="mx-auto max-w-3xl">
+        <Rte html={article.contentHtml} />
+      </div>
     </Container>
   );
 }

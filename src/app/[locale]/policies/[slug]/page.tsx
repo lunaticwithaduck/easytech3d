@@ -49,8 +49,8 @@ export default async function PolicyPage({ params }: Props) {
 
   return (
     <Container className="py-10 md:py-14">
-      <div className="mx-auto max-w-3xl">
-        <Heading as="h1" level={1} className="mb-8">
+      <div className="mx-auto max-w-[693px]">
+        <Heading as="h1" level={1} className="mb-8 text-center">
           {policyTitle(slug)}
         </Heading>
         <Rte html={policyBody(slug)} />

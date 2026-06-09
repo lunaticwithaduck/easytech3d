@@ -7,68 +7,119 @@ import type { ShopProduct } from '@/lib/shopify/types';
 // card: white surface radius 20 / padding 20, ~200px contained image with an alternate hover image,
 // outlined green sale label, dual лв/€ price, 22px regular title, and the two pink pill buttons
 // (Добави в количката + Бърз преглед). Fills its grid cell (h-full); the parent provides the cell.
-export function ProductCard({ product, showVendor = false }: { product: ShopProduct; showVendor?: boolean }) {
+//
+// Two layouts (export/props otherwise identical):
+//   • default (grid)  → vertical card; image on top, info stacked below (collection / featured).
+//   • list (`list`)   → horizontal row used on the search results page. Probed from live
+//     /search?q=pla (.product-card list view): flex-row, padding 20, a fixed ~269px object-contain
+//     image box on the LEFT, and a flex-1 info column on the RIGHT (vendor 13px, 22px title, dual
+//     price, then the two stacked pill buttons ~400px wide) with a 50px gap to the image.
+export function ProductCard({
+  product,
+  showVendor = false,
+  list = false,
+}: {
+  product: ShopProduct;
+  showVendor?: boolean;
+  list?: boolean;
+}) {
   const onSale = product.compareAtPrice != null && product.compareAtPrice > product.price;
   const soldOut = !product.available;
   const alternate = product.media[1];
 
-  return (
-    <Card className="group relative flex h-full flex-col p-5">
-      {(onSale || soldOut) && (
-        <div className="absolute left-5 top-5 z-10 flex flex-col items-start gap-2">
-          {onSale && product.compareAtPrice != null && (
-            <ProductLabel tone="sale">
-              На промоция от: {percentSavings(product.price, product.compareAtPrice)} !
-            </ProductLabel>
-          )}
-          {soldOut && <ProductLabel tone="soldout">Изкупено</ProductLabel>}
-        </div>
+  const labels = (onSale || soldOut) && (
+    <div className="absolute left-5 top-5 z-10 flex flex-col items-start gap-2">
+      {onSale && product.compareAtPrice != null && (
+        <ProductLabel tone="sale">
+          На промоция от: {percentSavings(product.price, product.compareAtPrice)} !
+        </ProductLabel>
       )}
+      {soldOut && <ProductLabel tone="soldout">Изкупено</ProductLabel>}
+    </div>
+  );
 
-      <Link href={product.url} aria-label={product.title} className="relative mb-4 block h-[200px] w-full">
+  const media = (
+    <Link
+      href={product.url}
+      aria-label={product.title}
+      className={cn(
+        'relative block w-full',
+        list ? 'h-[200px]' : 'mb-4 h-[200px]',
+      )}
+    >
+      <Image
+        src={imageUrl(product.featuredImage.src, 535)}
+        alt={product.featuredImage.alt || product.title}
+        fill
+        sizes={list ? '269px' : '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'}
+        className="object-contain"
+      />
+      {alternate && (
         <Image
-          src={imageUrl(product.featuredImage.src, 535)}
-          alt={product.featuredImage.alt || product.title}
+          src={imageUrl(alternate.src, 535)}
+          alt=""
           fill
-          sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
-          className="object-contain"
+          sizes={list ? '269px' : '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'}
+          className={cn(
+            'object-contain opacity-0 transition-opacity duration-300',
+            'group-hover:opacity-100',
+          )}
         />
-        {alternate && (
-          <Image
-            src={imageUrl(alternate.src, 535)}
-            alt=""
-            fill
-            sizes="(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw"
-            className={cn(
-              'object-contain opacity-0 transition-opacity duration-300',
-              'group-hover:opacity-100',
-            )}
-          />
-        )}
+      )}
+    </Link>
+  );
+
+  const info = (
+    <div
+      className={cn(
+        'flex min-w-0 flex-1 flex-col',
+        list && 'sm:pl-[50px]',
+      )}
+    >
+      {showVendor && product.vendor ? (
+        <Text as="span" size="xs" color="muted" className="mb-1" value={product.vendor} />
+      ) : null}
+
+      <Link href={product.url} aria-label={product.title} className="mb-2 block">
+        <Text
+          as="span"
+          size="h4"
+          weight="normal"
+          className="line-clamp-2 leading-none hover:text-primary"
+          value={product.title}
+        />
       </Link>
 
-      <div className="flex flex-1 flex-col">
-        {showVendor && product.vendor ? (
-          <Text as="span" size="xs" color="muted" className="mb-1" value={product.vendor} />
-        ) : null}
+      <Price price={product.price} compareAtPrice={product.compareAtPrice} className="mb-4" />
 
-        <Link href={product.url} aria-label={product.title} className="mb-2 block">
-          <Text as="span" size="h4" weight="normal" className="line-clamp-2 leading-none hover:text-primary" value={product.title} />
-        </Link>
-
-        <Price price={product.price} compareAtPrice={product.compareAtPrice} className="mb-4" />
-
-        <div className="mt-auto flex flex-col gap-3">
-          <Button variant="primary" size="card" block aria-label="Добави в количката">
-            <Text as="span" size="xs" weight="bold" color="white" value="Добави в количката" />
-            <Icon name="cart" className="size-[18px] shrink-0" />
-          </Button>
-          <Button variant="primary" size="card" block aria-label="Бърз преглед">
-            <Text as="span" size="xs" weight="bold" color="white" value="Бърз преглед" />
-            <Icon name="tail-right" className="size-4 shrink-0" />
-          </Button>
-        </div>
+      <div className={cn('mt-auto flex flex-col gap-3', list && 'sm:max-w-[400px]')}>
+        <Button variant="primary" size="card" block aria-label="Добави в количката">
+          <Text as="span" size="xs" weight="bold" color="white" value="Добави в количката" />
+          <Icon name="cart" className="size-[18px] shrink-0" />
+        </Button>
+        <Button variant="primary" size="card" block aria-label="Бърз преглед">
+          <Text as="span" size="xs" weight="bold" color="white" value="Бърз преглед" />
+          <Icon name="tail-right" className="size-4 shrink-0" />
+        </Button>
       </div>
+    </div>
+  );
+
+  if (list) {
+    return (
+      <Card className="group relative flex flex-col gap-5 p-5 sm:flex-row">
+        {labels}
+        <div className="relative w-full shrink-0 sm:w-[269px]">{media}</div>
+        {info}
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="group relative flex h-full flex-col p-5">
+      {labels}
+      {media}
+      {info}
     </Card>
   );
 }

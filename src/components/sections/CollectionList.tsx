@@ -126,9 +126,10 @@ export function CollectionList({ section, collections }: CollectionListProps) {
             Container already provides px-5 md:px-[55px], so we only need mb.
             Row: title+CTA on the left, arrows on the right.
         ─────────────────────────────────────────────────────────────────── */}
-        <div className="mb-[55px] flex items-start justify-between">
-          {/* Left: eyebrow subtitle (if any), big title, CTA button */}
-          <div className="flex flex-col items-start gap-4">
+        <div className="mb-[55px] flex items-end justify-between">
+          {/* Left: eyebrow subtitle (if any), big title, CTA button.
+              ~65px breathing space between the mega-title and the CTA, matching live. */}
+          <div className="flex flex-col items-start gap-[65px]">
             {section.subtitle ? (
               <Text
                 as="span"
