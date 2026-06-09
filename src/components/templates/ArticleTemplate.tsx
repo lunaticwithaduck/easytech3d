@@ -68,7 +68,7 @@ export function ArticleTemplate({ article }: { article: ShopArticle }) {
         </div>
       )}
 
-      <Heading as="h1" level={2} className="mb-4">
+      <Heading as="h1" level={2} className="mb-4 md:text-[60px]">
         {article.title}
       </Heading>
 

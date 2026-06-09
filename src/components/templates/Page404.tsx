@@ -21,8 +21,8 @@ export function Page404() {
         value="Страницата не е намерена ;("
       />
 
-      <Heading as="h1" level={1} className="mb-8">
-        Страница 404
+      <Heading as="h1" level={1} color="primary" className="mb-8 md:text-[100px]">
+        404
       </Heading>
 
       <div className="flex flex-wrap items-center justify-center gap-4">

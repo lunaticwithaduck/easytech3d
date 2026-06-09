@@ -9,6 +9,9 @@ const twMerge = extendTailwindMerge({
       'font-size': [
         { text: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'h1-m', 'h2-m', 'h3-m', 'h4-m', 'h5-m', 'h6-m', 'eyebrow', '2xs'] },
       ],
+      // Custom --container-page token → max-w-page, so a `max-w-3xl` override on <Container> dedupes
+      // and wins (a narrow reading column overrides the page width).
+      'max-w': [{ 'max-w': ['page'] }],
     },
   },
 });
