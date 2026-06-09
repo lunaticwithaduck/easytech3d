@@ -1,0 +1,165 @@
+/* ============================================================================
+   Computed theme CSS custom properties.
+
+   This is the `:root {}` block that the live easytech3d.com server emitted from
+   `snippets/css-variables.liquid` — i.e. every Liquid filter (color_darken,
+   color_modify, adaptive-color, the heading-size ladder from
+   type_header_base_size: 40) ALREADY RESOLVED. Copied verbatim from the captured
+   mirror (tools/output/reference/mirror/index.html) so nothing is re-derived by
+   hand. `core.css` / `theme.css` consume these.
+
+   The only intentional change: the three --font-stack-* vars are re-pointed at the
+   self-hosted next/font families (see src/app/fonts.ts) instead of the literal
+   "Instrument Sans"/"Archivo Narrow" the live site loaded from Shopify's font CDN.
+   Same families, no layout shift. Latin-only — Cyrillic falls back exactly as the
+   live site does.
+============================================================================ */
+
+:root {
+  --header_megamenu_bg: #ffffff;
+  --header_nav_2_bg: #ffffff;
+  --header_nav_2_color_text: #232323;
+  --search_bar_bg: #ffffff;
+
+  --header_search_categories_bg: #ffffff;
+  --header_search_categories_color_text: #232323;
+  --alternateHeader_bg_color: #ffffff;
+  --alternateHeader_text_color: #232323;
+  --logo_text_color: #232323;
+  --header_color_text: #232323;
+  --header_nav_hover_link: #ff1b5c;
+
+  --secondary_nav_color_text: #ffffff;
+  --secondary_nav_color_lighter: rgba(255, 255, 255, 0.3);
+
+  --white-color: #ffffff;
+
+  --letter-spacing: 0;
+  --font-size: 1;
+  --rating-star-bg: rgba(35, 35, 35, 0.15);
+
+  --color-text: #232323;
+  --color-text-rgb: 35, 35, 35;
+  --color-body-text: #232323;
+  --breadcrumbs_color: #FF1B5C;
+
+  --rte__link_color: #000;
+  --rte_hover_link_color: #3a3a3a;
+
+  --color-sale-text: #EA0606;
+  --color-small-button-text-border: #ffffff;
+  --color-text-field: #ffffff;
+  --color-text-field-text: #232323;
+  --color-text-field-text-rgb: 35, 35, 35;
+
+  --color-btn-primary: #ff1b5c;
+  --color-btn-primary-darker: #e70042;
+  --color-btn-primary-text: #ffffff;
+
+  --color-btn-secondary: #3a3a3a;
+
+  --color--btn-white-darker: #e6e6e6;
+
+  --color-blankstate: rgba(35, 35, 35, 0.35);
+  --color-blankstate-border: rgba(35, 35, 35, 0.2);
+  --color-blankstate-background: rgba(35, 35, 35, 0.1);
+
+  --color-text-focus: #494949;
+
+  --color-btn-primary-focus: #e70042;
+  --color-btn-secondary-focus: #606060;
+  --color-btn-white-focus: #e6e6e6;
+
+  --color-btn-social-focus: #d2d2d2;
+  --color-small-button-text-border-focus: #e6e6e6;
+  --predictive-search-focus: #e7e7e7;
+
+  --color-body: #f4f4f4;
+  --color-bg: #f4f4f4;
+  --color-bg-rgb: 244, 244, 244;
+  --color-bg-alt: rgba(35, 35, 35, 0.05);
+  --color-bg-currency-selector: rgba(35, 35, 35, 0.2);
+  --opacity-image-overlay: 0.4;
+  --hover-overlay-opacity: 0.8;
+
+  --color-border: #ebebeb;
+  --color-border-form: #cccccc;
+  --color-border-form-darker: #b3b3b3;
+
+  --svg-select-icon: url(//www.easytech3d.com/cdn/shop/t/5/assets/ico-select.svg?v=147383828099726678601679748410);
+  --svg-select-white-icon: url(//www.easytech3d.com/cdn/shop/t/5/assets/ico-white-select.svg?v=145037530105049233381679748376);
+  --slick-img-url: url(//www.easytech3d.com/cdn/shop/t/5/assets/ajax-loader.gif?v=41356863302472015721679748376);
+
+  --font-weight-body--bold: 700;
+  --font-weight-body--bolder: 700;
+
+  --font-stack-header: "Instrument Sans", sans-serif;
+  --font-style-header: normal;
+  --font-weight-header: 700;
+
+  --font-stack-navigation: "Archivo Narrow", sans-serif;
+  --font-style-navigation: normal;
+  --font-weight-navigation: 400;
+
+  --font-stack-body: "Instrument Sans", sans-serif;
+  --font-style-body: normal;
+  --font-weight-body: 400;
+
+  --font-size-header: 40;
+  --font-size-navigation: 16;
+
+  --heading1-letter-spacing: 2px;
+  --heading2-letter-spacing: 2px;
+  --heading3-letter-spacing: 1.0px;
+  --heading4-letter-spacing: 1.0px;
+  --heading5-letter-spacing: 0.5px;
+  --heading6-letter-spacing: 0.5px;
+
+  --heading-line-height: 1;
+
+  --font-size-base: 16;
+
+  --font-h1-desktop: 80;
+  --font-h1-mobile: 56;
+
+  --font-h2-desktop: 52;
+  --font-h2-mobile: 40;
+
+  --font-h3-desktop: 40;
+  --font-h3-mobile: 26;
+
+  --font-h4-desktop: 22;
+  --font-h4-mobile: 19;
+
+  --font-h5-desktop: 18;
+  --font-h5-mobile: 18;
+
+  --font-h6-desktop: 16;
+  --font-h6-mobile: 14;
+
+  --font-mega-title-large-desktop: 100;
+
+  --font-rich-text-large: 18;
+  --font-rich-text-small: 14;
+
+  --color-video-bg: #e7e7e7;
+
+  --global-color-image-loader-primary: rgba(35, 35, 35, 0.06);
+  --global-color-image-loader-secondary: rgba(35, 35, 35, 0.12);
+
+  --product_label_sale_color: #00a500;
+  --product_label_sold_out_color: #8a9297;
+  --product_label_1_color: #0774d7;
+  --product_label_2_color: #000;
+
+  --product-image-height: 200px;
+}
+
+/* Re-point the font stacks at the self-hosted next/font families (fonts.ts sets
+   --font-instrument-sans / --font-archivo-narrow on <html>). Declared after the
+   block above so these win. Literal family names kept as fallback. */
+:root {
+  --font-stack-header: var(--font-instrument-sans), "Instrument Sans", sans-serif;
+  --font-stack-body: var(--font-instrument-sans), "Instrument Sans", sans-serif;
+  --font-stack-navigation: var(--font-archivo-narrow), "Archivo Narrow", sans-serif;
+}

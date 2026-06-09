@@ -1,26 +1,37 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
-import { CollectionPage } from '@/features/collection/CollectionPage';
-import { parseSort } from '@/features/collection/config/constants';
-import { getCollection, getProductsInCollection } from '@/server/catalog/data';
+import type { Metadata } from 'next';
+import { BodyClass } from '@/components/util/BodyClass';
+import { CollectionTemplate } from '@/components/templates/CollectionTemplate';
+import { getCollection, getProductsInCollection } from '@/data/catalog';
 
 type Props = {
   params: Promise<{ locale: string; handle: string }>;
-  searchParams: Promise<{ sort?: string | string[] }>;
 };
 
-// /collections/[handle] — a single collection listing. Loads the collection and its products
-// (sorted per `?sort=`), 404s when the handle is unknown. Pure Server Component data-fetch; the
-// sort control inside the feature is the only client island.
-export default async function CollectionRoute({ params, searchParams }: Props) {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { handle } = await params;
+  const collection = getCollection(decodeURIComponent(handle));
+  if (!collection) return {};
+  return { title: `${collection.title} – easytech3d` };
+}
+
+// /collections/[handle] — a single collection listing (templates/collection.json → collection-template).
+// Looks up the collection + its products; 404s when the handle is unknown. Server Component.
+export default async function CollectionRoute({ params }: Props) {
   const { locale, handle } = await params;
   setRequestLocale(locale);
 
-  const collection = getCollection(handle);
+  const decodedHandle = decodeURIComponent(handle);
+  const collection = getCollection(decodedHandle);
   if (!collection) notFound();
 
-  const sort = parseSort((await searchParams).sort);
-  const products = getProductsInCollection(handle, sort);
+  const products = getProductsInCollection(decodedHandle);
 
-  return <CollectionPage collection={collection} products={products} sort={sort} />;
+  return (
+    <>
+      <BodyClass name="template-collection" />
+      <CollectionTemplate collection={collection} products={products} />
+    </>
+  );
 }

@@ -1,21 +1,32 @@
+import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
-import { BlogIndex } from '@/features/blog/BlogIndex';
-import { getArticles } from '@/server/catalog/data';
+import type { Metadata } from 'next';
+import { getBlog } from '@/data/catalog';
+import { BodyClass } from '@/components/util/BodyClass';
+import { BlogTemplate } from '@/components/templates/BlogTemplate';
 
 type Props = {
   params: Promise<{ locale: string; blog: string }>;
 };
 
-// Blog index route: /blogs/[blog]. Renders the blog header + article grid for the requested blog.
-// In Next 16 `params` is a Promise — await it before use, then enable static rendering for the locale.
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { blog: blogParam } = await params;
+  const blog = getBlog(decodeURIComponent(blogParam));
+  if (!blog) return {};
+  return { title: `${blog.title} – easytech3d` };
+}
+
 export default async function BlogPage({ params }: Props) {
-  const { locale, blog } = await params;
+  const { locale, blog: blogHandle } = await params;
   setRequestLocale(locale);
 
-  // The mock catalog serves a single blog; filter defensively so the route stays correct once the
-  // backend serves multiple blogs. Fall back to all articles so the page always populates.
-  const all = getArticles();
-  const articles = all.filter((article) => article.blogHandle === blog);
+  const blog = getBlog(decodeURIComponent(blogHandle));
+  if (!blog) notFound();
 
-  return <BlogIndex articles={articles.length > 0 ? articles : all} />;
+  return (
+    <>
+      <BodyClass name="template-blog" />
+      <BlogTemplate blog={blog} articles={blog.articles} />
+    </>
+  );
 }

@@ -1,14 +1,7 @@
-@import "tailwindcss";
-@import "../design-system/theme.css";
+/* Intentionally minimal.
 
-@theme {
-  --font-sans: var(--font-instrument-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-nav: var(--font-archivo-narrow), var(--font-instrument-sans), ui-sans-serif, sans-serif;
-}
-
-html,
-body {
-  background: var(--color-background);
-  color: var(--color-text);
-  font-family: var(--font-sans);
-}
+   The storefront's styling is the live Shopify theme's own compiled CSS, served from /public/theme/
+   and loaded via <link rel="stylesheet"> in src/app/[locale]/layout.tsx — exactly как the live site
+   loads core.css / theme.css. We load it through <link> (browser-parsed) rather than bundler @import
+   because the theme's compiled CSS uses lenient syntax (e.g. `label: not(.header)`, malformed nested
+   comments) that strict bundler CSS parsers reject but every browser accepts. */

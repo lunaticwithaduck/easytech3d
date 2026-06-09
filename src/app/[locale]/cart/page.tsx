@@ -1,6 +1,9 @@
+import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
-import { CartPage } from '@/features/cart/CartPage';
-import { getAllProducts } from '@/server/catalog/data';
+import { BodyClass } from '@/components/util/BodyClass';
+import { CartTemplate } from '@/components/templates/CartTemplate';
+
+export const metadata: Metadata = { title: 'Количка – easytech3d' };
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -8,12 +11,10 @@ export default async function CartRoute({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  // No live cart this session — seed the stub line-item rows from the catalog.
-  const sampleProducts = getAllProducts();
-
   return (
-    <main>
-      <CartPage sampleProducts={sampleProducts} />
-    </main>
+    <>
+      <BodyClass name="template-cart" />
+      <CartTemplate />
+    </>
   );
 }

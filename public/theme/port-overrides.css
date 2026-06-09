@@ -1,0 +1,264 @@
+/* ===========================================================================
+   port-overrides.css
+   ---------------------------------------------------------------------------
+   Static-port adaptations for behaviour the live Shopify theme got from
+   Flickity (the carousel JS) and from Shopify section-scoped inline <style>
+   blocks that were not ported. We never run Flickity, so several layout rules
+   in theme.css are gated on `.flickity-enabled` / `.flickity-viewport` /
+   `.flickity-slider` and therefore never take effect here.
+
+   This sheet is loaded LAST (after theme.css) and contains ONLY targeted
+   overrides — it deliberately mirrors the live rendered result.
+
+   Sections:
+     A) Announcement bar      — un-hide + center the static content
+     B) Featured-products      — horizontal card row (Flickity replacement)
+     C) Collection-list circles — single non-wrapping row + arrows top-right
+     D) Footer                 — black footer from the missing section <style>
+     E) PDP title              — .product-single__title size (live = 32px)
+     F) Mobile header icons    — pink filled circles, white glyphs
+     G) Search-categories pill — keep the label on one line
+   ========================================================================== */
+
+
+/* ---------------------------------------------------------------------------
+   A) ANNOUNCEMENT BAR
+   ---------------------------------------------------------------------------
+   theme.css hides the slider until Flickity initialises
+   (`.AnnouncementBar__Slider:not(.flickity-enabled){opacity:0}`) and only
+   centers the content under `.flickity-viewport .AnnouncementBar__Content`.
+   With no Flickity, force the slider visible and center the single static
+   block so the white text shows and the bar collapses to its ~40px height.
+   --------------------------------------------------------------------------- */
+.AnnouncementBar__Slider {
+  opacity: 1 !important;
+}
+.AnnouncementBar__Content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.AnnouncementBar__Content .rte,
+.AnnouncementBar__Content p {
+  margin: 0;
+}
+/* The prev/next arrows are custom buttons (not Flickity's). Take them out of
+   normal flow so the bar stays a single ~40px line, drop the default grey button
+   chrome, and reveal them on hover like the live site. */
+.AnnouncementBar__Slider {
+  position: relative;
+}
+.AnnouncementBar__Arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.AnnouncementBar__Arrow--prev {
+  left: 12px;
+}
+.AnnouncementBar__Arrow--next {
+  right: 12px;
+}
+.AnnouncementBar__Slider:hover .AnnouncementBar__Arrow {
+  opacity: 1;
+}
+.AnnouncementBar__Arrow svg {
+  width: 10px;
+  height: 10px;
+  fill: currentColor;
+}
+
+
+/* ---------------------------------------------------------------------------
+   B) FEATURED-PRODUCTS CAROUSEL
+   ---------------------------------------------------------------------------
+   On desktop the live row came from Flickity (`.flickity-slider`). Without it
+   the `.product-item-block` cards stack vertically. theme.css only makes the
+   track a flex/overflow row at <=749px; recreate that for desktop with a
+   scroll-snap track. 3-up >=750px, 4-up >=990px (matching the live 4 columns).
+   Also guarantee only the active tab renders (theme's active selector has
+   higher specificity, so override explicitly).
+   --------------------------------------------------------------------------- */
+.index-tabs-content_block:not(.active) {
+  display: none !important;
+}
+
+@media screen and (min-width: 750px) {
+  .index-tabs-content_block__slider {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: 11px;
+    scroll-snap-type: x mandatory;
+    -ms-overflow-style: none; /* IE/Edge: hide scrollbar */
+    scrollbar-width: none;    /* Firefox: hide scrollbar */
+  }
+  /* Chrome/Safari: hide scrollbar */
+  .index-tabs-content_block__slider::-webkit-scrollbar {
+    display: none;
+  }
+  .index-tabs-content_block__slider > .product-item-block {
+    flex: 0 0 calc(33.333% - 8px);
+    margin: 0;
+    scroll-snap-align: start;
+  }
+}
+
+@media screen and (min-width: 990px) {
+  .index-tabs-content_block__slider > .product-item-block {
+    flex-basis: calc(25% - 9px); /* 4-up like the live site */
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   C) COLLECTION-LIST CIRCLES
+   ---------------------------------------------------------------------------
+   Same Flickity-absence: the `.collection-list__slider grid grid--uniform`
+   track floats its tiles, so >5 items wrap onto a second row. Make it a single
+   non-wrapping horizontal scroll-snap row (~20% per tile = 5-up) at >=750px.
+   The live theme positions `.slider_custom_arrows` at the top-RIGHT of the
+   header (a row, right-aligned); the rendered section only carries
+   `data-section-type="collection-list"` (not `.collection-list-section`), so
+   the theme's right-align rules never match — re-create them here.
+   --------------------------------------------------------------------------- */
+@media screen and (min-width: 750px) {
+  [data-section-type="collection-list"] .collection-list__slider {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    margin: 0;
+  }
+  [data-section-type="collection-list"]
+    .collection-list__slider::-webkit-scrollbar {
+    display: none;
+  }
+  [data-section-type="collection-list"]
+    .collection-list__slider
+    > .collection-list__slide {
+    flex: 0 0 20%; /* 5-up */
+    max-width: 20%;
+    width: 20%;
+    margin: 0;
+    scroll-snap-align: start;
+  }
+
+  /* Header: title block left, arrows top-right in a row. */
+  [data-section-type="collection-list"] .section-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    width: 100%;
+  }
+  [data-section-type="collection-list"]
+    .section-header
+    .section-header-content {
+    flex: 1 1 auto;
+  }
+  [data-section-type="collection-list"]
+    .section-header
+    .slider_custom_arrows {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    margin: 0 0 0 30px;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   D) FOOTER
+   ---------------------------------------------------------------------------
+   The live black footer came from a Shopify section inline <style> that was
+   not ported. Restore the black background, light body text, white bold
+   headings, and light-grey links.
+   --------------------------------------------------------------------------- */
+.site-footer {
+  background-color: #000;
+  color: #ebebeb;
+  font-size: 12px;
+}
+/* Headings (rendered as `.h5` inside the footer items) — white + bold. */
+.site-footer .site-footer__item-inner .h5,
+.site-footer__content .site-footer__item-inner .h5 {
+  color: #ffffff;
+  font-weight: 700;
+}
+/* Links — light grey. */
+.site-footer a,
+.site-footer__linklist-item a {
+  color: #cccccc;
+}
+
+
+/* ---------------------------------------------------------------------------
+   E) PDP TITLE
+   ---------------------------------------------------------------------------
+   `.product-single__title` is a `.h3`, but the live 32px size lives only under
+   `.rte .h3`, so the bare title computes to ~22px locally. Pin it to the live
+   value.
+   --------------------------------------------------------------------------- */
+.product-single__title {
+  font-size: 32px;
+  line-height: 32px;
+  letter-spacing: 1px;
+}
+
+
+/* ---------------------------------------------------------------------------
+   F) MOBILE HEADER ICONS
+   ---------------------------------------------------------------------------
+   On mobile the search button, cart icon link, and mobile-menu toggle should
+   be solid pink (var(--color-btn-primary) = #ff1b5c) filled circles with white
+   glyphs. theme.css makes the search button and menu toggle WHITE circles with
+   pink glyphs — override to pink-fill / white-glyph below 990px.
+   --------------------------------------------------------------------------- */
+@media screen and (max-width: 989px) {
+  .site-header .header-search-button,
+  .site-header .header_cart_info .cart_icon,
+  .site-header .site-header__menu.js-mobile-nav-toggle {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-btn-primary);
+    color: #fff;
+  }
+  /* White glyphs. */
+  .site-header .header-search-button svg,
+  .site-header .header_cart_info .cart_icon svg,
+  .site-header .site-header__menu.js-mobile-nav-toggle svg {
+    fill: #fff;
+    stroke: #fff;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   G) SEARCH-CATEGORIES PILL
+   ---------------------------------------------------------------------------
+   The "Всички Категории" pill label wraps to two lines — keep it on one.
+   --------------------------------------------------------------------------- */
+.search_categories_button__label {
+  white-space: nowrap;
+}

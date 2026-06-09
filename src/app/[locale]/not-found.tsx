@@ -1,8 +1,20 @@
-import { NotFound } from '@/features/not-found/NotFound';
+// Locale-scoped 404. Next.js renders this inside [locale]/layout.tsx which already calls
+// setRequestLocale and provides the NextIntlClientProvider, so locale context is available.
+// not-found files do not receive route params.
+//
+// BodyClass sets `body.template-404` client-side so theme CSS rules keyed on that class apply.
 
-// Locale-scoped 404. Next renders this inside `[locale]/layout.tsx`, which already calls
-// setRequestLocale and provides the NextIntlClientProvider, so the Text primitive resolves
-// here without this file receiving `params` (not-found files don't get route props).
+import type { Metadata } from 'next';
+import { BodyClass } from '@/components/util/BodyClass';
+import { Page404 } from '@/components/templates/Page404';
+
+export const metadata: Metadata = { title: 'Страница 404 – easytech3d' };
+
 export default function NotFoundPage() {
-  return <NotFound />;
+  return (
+    <>
+      <BodyClass name="template-404" />
+      <Page404 />
+    </>
+  );
 }
