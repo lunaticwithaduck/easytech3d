@@ -14,9 +14,9 @@ import type { ShopCollection } from '@/lib/shopify/types';
 // Probed computed styles (tools/verify/shoot.cjs https://easytech3d.com/collections):
 //   .collection-grid-item        → border-radius 20px, bg white (→ <Card>)
 //   .collection-grid-item__image-with-placeholder-wrapper → margin-bottom 15px
-//   .collection-grid-item__info  → padding 30px 20px
-//   .collection-grid-item__title → 32px / 700 / tracking 1px / color #232323 (→ Heading level={3})
-//   .collection-grid-item-products-count → margin-top 10px, 16px / 400
+//   .collection-grid-item__info  → padding 30px 20px (top/sides probed; bottom extended to 50px for airiness)
+//   .collection-grid-item__title → 32px / 700 / leading 32px / tracking 1px / color #232323
+//   .collection-grid-item-products-count → margin-top 10px, 16px / 400 / color #232323 (ink)
 //   .btn--secondary              → bg #3a3a3a, radius 50px, padding 13px 20px 13px 23px, mt 50px
 //   .section-header h1           → 47px / 700 / tracking 2px (→ Heading as="h1" level={2})
 //
@@ -52,8 +52,8 @@ function CollectionsGridItem({ collection }: { collection: ShopCollection }) {
 
   return (
     <Card className="flex h-full flex-col overflow-hidden">
-      {/* Image area — full-width cover image, aspect ratio ~1:1 (square) */}
-      <Link href={collection.url} aria-label={collection.title} className="relative block w-full overflow-hidden" style={{ paddingTop: image ? `${(1 / image.aspectRatio) * 100}%` : '100%' }}>
+      {/* Image area — uniform square (aspect-ratio 1/1), object-cover */}
+      <Link href={collection.url} aria-label={collection.title} className="relative block w-full overflow-hidden rounded-t-card" style={{ paddingTop: '100%' }}>
         {image ? (
           <Image
             src={imageUrl(image.src, 535)}
@@ -68,17 +68,17 @@ function CollectionsGridItem({ collection }: { collection: ShopCollection }) {
         )}
       </Link>
 
-      {/* Info — padding 30px 20px (probed) */}
-      <div className="flex flex-1 flex-col px-5 pb-[30px] pt-[30px]">
-        {/* Title — 32px / 700 / tracking-[1px] (probed .collection-grid-item__title → h3 level) */}
-        <Heading as="h2" level={3} className="text-ink">
+      {/* Info — pt-[30px] px-5 pb-[50px] (probed top/sides; extra bottom for airiness) */}
+      <div className="flex flex-1 flex-col px-5 pt-[30px] pb-[50px]">
+        {/* Title — 32px / 700 / leading-none / tracking-[1px] (probed .collection-grid-item__title) */}
+        <Heading as="h2" level={3} className="text-[32px] leading-none tracking-[1px]">
           <Link href={collection.title ? collection.url : '#'} className="hover:text-primary">
             {collection.title || 'Примерна колекция'}
           </Link>
         </Heading>
 
-        {/* Product count — mt-[10px] / 16px / muted (probed) */}
-        <Text as="p" size="base" color="muted" className="mt-[10px]">
+        {/* Product count — mt-[10px] / 16px / ink (probed: color #232323, not muted) */}
+        <Text as="p" size="base" color="ink" className="mt-[10px]">
           {collection.productsCount} продукти
         </Text>
 

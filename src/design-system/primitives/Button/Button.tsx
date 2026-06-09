@@ -19,6 +19,8 @@ export const buttonVariants = cva(
       size: {
         default: 'px-[23px] py-[13px]',
         sm: 'px-4 py-[9px]',
+        /* Product-card CTA: live .product-card .btn--primary is 14px / padding 9px 20px. */
+        card: 'px-5 py-[9px] text-xs',
         lg: 'px-7 py-4',
         circle: 'p-0 size-11 justify-center gap-0 rounded-full',
       },

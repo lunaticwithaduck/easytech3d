@@ -127,8 +127,10 @@ export function FeaturedProducts({
                     aria-pressed={active}
                     onClick={() => setActiveIndex(index)}
                     className={cn(
-                      'mr-[90px] shrink-0 cursor-pointer whitespace-nowrap transition-opacity last:mr-0',
-                      active ? 'opacity-100' : 'opacity-50 hover:opacity-80',
+                      'mr-[90px] shrink-0 cursor-pointer whitespace-nowrap pb-1 transition-opacity last:mr-0',
+                      active
+                        ? 'border-b-2 border-primary opacity-100'
+                        : 'opacity-50 hover:opacity-80',
                     )}
                   >
                     <Heading
@@ -177,7 +179,7 @@ export function FeaturedProducts({
             hidden={index !== activeIndex}
             className={cn(index !== activeIndex && 'hidden')}
           >
-            {/* Horizontal scroll-snap row: ~4 cards/row at lg, ~3 at md, ~80% on mobile.
+            {/* Horizontal scroll-snap row: large → 3 cards/row at lg, normal → 4. ~3 at md, ~80% mobile.
                 11px gutter (matches the live .product-item-block padding-left). */}
             <div
               ref={(el) => {
@@ -189,7 +191,14 @@ export function FeaturedProducts({
               {tab.products.map((product) => (
                 <div
                   key={product.id}
-                  className="min-w-[80%] shrink-0 md:min-w-[calc(33.333%-8px)] lg:min-w-[calc(25%-9px)]"
+                  className={cn(
+                    'shrink-0',
+                    'min-w-[80%]',
+                    'md:min-w-[calc(33.333%-8px)]',
+                    navigationStyle === 'large'
+                      ? 'lg:min-w-[calc(33.333%-8px)]'
+                      : 'lg:min-w-[calc(25%-9px)]',
+                  )}
                   style={{ scrollSnapAlign: 'start' }}
                 >
                   <ProductCard product={product} />

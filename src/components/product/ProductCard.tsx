@@ -53,18 +53,18 @@ export function ProductCard({ product, showVendor = false }: { product: ShopProd
         ) : null}
 
         <Link href={product.url} aria-label={product.title} className="mb-2 block">
-          <Text as="span" size="h4" weight="normal" className="line-clamp-2 hover:text-primary" value={product.title} />
+          <Text as="span" size="h4" weight="normal" className="line-clamp-2 leading-none hover:text-primary" value={product.title} />
         </Link>
 
         <Price price={product.price} compareAtPrice={product.compareAtPrice} className="mb-4" />
 
-        <div className="mt-auto flex flex-col gap-2">
-          <Button variant="primary" block aria-label="Добави в количката">
-            <Text as="span" weight="bold" color="white" value="Добави в количката" />
-            <Icon name="cart" className="size-5 shrink-0" />
+        <div className="mt-auto flex flex-col gap-3">
+          <Button variant="primary" size="card" block aria-label="Добави в количката">
+            <Text as="span" size="xs" weight="bold" color="white" value="Добави в количката" />
+            <Icon name="cart" className="size-[18px] shrink-0" />
           </Button>
-          <Button variant="primary" block aria-label="Бърз преглед">
-            <Text as="span" weight="bold" color="white" value="Бърз преглед" />
+          <Button variant="primary" size="card" block aria-label="Бърз преглед">
+            <Text as="span" size="xs" weight="bold" color="white" value="Бърз преглед" />
             <Icon name="tail-right" className="size-4 shrink-0" />
           </Button>
         </div>

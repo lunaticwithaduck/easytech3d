@@ -73,7 +73,7 @@ function CartCircle({ variant }: { variant: 'desktop' | 'mobile' }) {
     <Button asChild variant="primary" size="circle" className={cn('relative shrink-0', size)}>
       <Link href="/cart" aria-label="Количка">
         <Icon name="cart" className="size-5" />
-        <span className="absolute -right-1 -top-1 inline-flex min-w-4 items-center justify-center text-xs font-bold leading-none">
+        <span className="absolute -right-1 -top-1 inline-flex size-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold leading-none text-surface ring-2 ring-surface">
           0
         </span>
       </Link>

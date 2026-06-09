@@ -12,13 +12,14 @@
    approximated.
 ============================================================================ */
 
-/* Tailwind theme tokens + utilities, imported UNLAYERED. The live theme CSS (the backstop for
-   un-migrated surfaces) is loaded via <link> and is itself unlayered, so any `@layer` here would
-   LOSE to it (unlayered beats layered regardless of specificity). Unlayered, our single-class
-   utilities (.text-primary, .font-bold, …) win on specificity over the theme's element selectors
-   (body/a/h1{…}) on migrated elements, while never touching un-migrated theme-class markup. */
-@import 'tailwindcss/theme.css';
-@import 'tailwindcss/utilities.css';
+/* Cascade layer order (low → high priority). The live theme CSS is imported into `backstop`
+   (public/theme/backstop.css) — the LOWEST layer — so every Tailwind utility (in the `utilities`
+   layer) wins on migrated markup, while un-migrated theme-class markup still resolves inside the
+   backstop layer. Using proper Tailwind layers also keeps variant ordering correct (md: beats base).
+   The order is pinned here so `backstop` is below Tailwind's layers regardless of <link> timing. */
+@layer backstop, theme, base, components, utilities;
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
 
 @theme {
   /* ---- Fonts (next/font families, set on <html> via fonts.ts) ---- */
@@ -47,7 +48,7 @@
   --text-h1: 80px;
   --text-h1--line-height: 1;
   --text-h1--letter-spacing: 2px;
-  --text-h2: 52px;
+  --text-h2: 46.8px; /* live `.section-header h2` / page h1 computes 46.8px at desktop (52 base × 0.9) */
   --text-h2--line-height: 1;
   --text-h2--letter-spacing: 2px;
   --text-h3: 40px;

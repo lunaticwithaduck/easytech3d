@@ -13,20 +13,10 @@ import { CartDrawer } from '@/components/layout/CartDrawer';
 //   skip-link → announcement-bar → header → #PageContainer( main + footer ) → cart-drawer.
 // <html>/<body> live here (next-intl pattern); the real theme CSS (globals.css) styles every class.
 
-// Load order mirrors layout/theme.liquid: computed :root → flickity → core → theme, then the
-// page-scoped sheets. Served from /public/theme/.
-const THEME_STYLESHEETS = [
-  '/theme/variables-root.css',
-  '/theme/flickity.min.css',
-  '/theme/core.css',
-  '/theme/theme.css',
-  '/theme/component-rating.css',
-  '/theme/collection-page.css',
-  '/theme/cart-page.css',
-  // Static-port adaptations (loaded LAST so it overrides theme.css): behaviour the
-  // live theme got from Flickity / Shopify section inline <style> that we don't run.
-  '/theme/port-overrides.css',
-];
+// The live theme CSS, pulled in via a single loader that places it all in a low-priority cascade
+// LAYER (see public/theme/backstop.css). This keeps it as a backstop for un-migrated surfaces while
+// guaranteeing the design-system utilities (unlayered) win on migrated markup.
+const THEME_STYLESHEETS = ['/theme/backstop.css'];
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));

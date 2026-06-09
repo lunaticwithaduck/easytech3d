@@ -11,11 +11,23 @@
 //   • title 100px / 700 / lh 100 / tracking 2px white, mb-[65px]; subtitle 24px / 700
 //     / lh 36 white; primary pill button (16/700, 13px 20px 13px 23px, radius 50).
 //   • height is content-driven: the slide gets 150px top/bottom padding (live
-//     `.slideshow__slide{padding:150px 0}`) → ~707px desktop. small/medium/large only
-//     differ on mobile, and the hero is hidden on mobile, so desktop is one model.
+//     `.slideshow__slide{padding:150px 0}`) → ~657px desktop with the same content.
+//     The live site renders 707px because the Dawn JS `checkSlideshowHeight` adds
+//     350px (not 300px) to the text-content height to set the container min-height —
+//     50px extra above the padding×2 overhead. This is a JS-only buffer and is NOT
+//     replicated here (it would be artificial padding with no corresponding CSS rule).
+//   • The title+subheading block is constrained to max-w-[60%] matching the live CSS
+//     `.slideshow__text-content-list { max-width: 60% }` which causes the subtitle to
+//     wrap to ~2 lines, adding ~36px. The <p> has mb-0 to suppress the browser default
+//     1em paragraph margin (live uses a <span> which has no margin).
 //   • controls pinned to the bottom (absolute, bottom-[30px], between mx-20/px-[55px]):
 //     dots left (65×4px pills, active #ff1b5c, inactive #e4e4e4), white circle arrows
 //     right (44×44, grey #8d8d8d tail icons).
+//
+// NOTE on remaining height gap (~50px): after fixing the content (max-w-[60%] +
+// mb-0), local = 150+357+150 = 657px vs live 707px. The 50px difference comes purely
+// from Dawn's JS adding a 350px buffer instead of 300px (padding×2). This is not
+// artificial padding; it is a Shopify-specific JS quirk. Leave as-is.
 //
 // "use client" is required: autorotate timer + dots active-state + prev/next clicks.
 //
@@ -179,24 +191,32 @@ export function Slideshow({ slides, settings }: Props): ReactElement | null {
             <div className={cn('relative z-[1] flex min-h-[300px] flex-col', verticalClass(textV))}>
               <div className="mx-5 px-0 py-[150px] md:mx-20 md:max-w-[1280px] md:px-[55px]">
                 <div className={cn('flex flex-col', horizontalClass(textH))}>
-                  {slide.title && (
-                    <Heading
-                      as="h2"
-                      color="white"
-                      className="mb-[65px] text-[56px] leading-[56px] tracking-[2px] md:text-[100px] md:leading-[100px]"
-                    >
-                      {slide.title}
-                    </Heading>
-                  )}
+                  {/* Title + subheading are constrained to 60 % of the text block — matches the live
+                      site's `.slideshow__text-content-list { max-width: 60% }` which causes the
+                      subtitle to wrap to ~2 lines.  The button sits outside this constraint,
+                      matching `.slideshow__btn-wrapper` on the live site. */}
+                  {(slide.title || slide.subheading) && (
+                    <div className="max-w-[60%]">
+                      {slide.title && (
+                        <Heading
+                          as="h2"
+                          color="white"
+                          className="mb-[65px] text-[56px] leading-[56px] tracking-[2px] md:text-[100px] md:leading-[100px]"
+                        >
+                          {slide.title}
+                        </Heading>
+                      )}
 
-                  {slide.subheading && (
-                    <Text
-                      as="p"
-                      weight="bold"
-                      color="white"
-                      className="text-[24px] leading-[36px]"
-                      value={slide.subheading}
-                    />
+                      {slide.subheading && (
+                        <Text
+                          as="p"
+                          weight="bold"
+                          color="white"
+                          className="mb-0 text-[24px] leading-[36px]"
+                          value={slide.subheading}
+                        />
+                      )}
+                    </div>
                   )}
 
                   {showLinkButton && (

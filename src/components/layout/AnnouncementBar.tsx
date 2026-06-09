@@ -88,7 +88,7 @@ function AnnouncementBarInner() {
             type="button"
             aria-label="Предишно"
             onClick={prev}
-            className="absolute left-3 flex items-center justify-center text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:opacity-80"
+            className="absolute left-3 flex items-center justify-center text-white opacity-100 md:opacity-0 transition-opacity duration-150 md:group-hover:opacity-100 hover:opacity-80"
           >
             <Icon name="tail-left" className="size-4" />
           </button>
@@ -96,7 +96,7 @@ function AnnouncementBarInner() {
             type="button"
             aria-label="Следващо"
             onClick={next}
-            className="absolute right-3 flex items-center justify-center text-white opacity-0 transition-opacity duration-150 group-hover:opacity-100 hover:opacity-80"
+            className="absolute right-3 flex items-center justify-center text-white opacity-100 md:opacity-0 transition-opacity duration-150 md:group-hover:opacity-100 hover:opacity-80"
           >
             <Icon name="tail-right" className="size-4" />
           </button>

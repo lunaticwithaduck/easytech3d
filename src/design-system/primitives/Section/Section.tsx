@@ -27,13 +27,14 @@ export function SectionHeader({
   return (
     <div
       className={cn(
-        'mb-8 flex flex-col gap-2',
+        'mb-[55px] flex flex-col gap-[17.5px]',
         align === 'center' ? 'items-center text-center' : 'items-start text-left',
         className,
       )}
     >
+      {/* Live `.section-header .h5` eyebrow: ink, uppercase, 14px / 700 / +0.5px tracking. */}
       {eyebrow ? (
-        <Text size="eyebrow" weight="bold" color="primary" className="tracking-[0.5px]" value={eyebrow} />
+        <Text size="xs" weight="bold" color="ink" uppercase className="tracking-[0.5px]" value={eyebrow} />
       ) : null}
       {title ? <Heading level={2}>{title}</Heading> : null}
     </div>

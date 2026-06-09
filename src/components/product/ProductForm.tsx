@@ -1,13 +1,15 @@
 'use client';
 
 // PDP buy-box — migrated to design-system primitives (no theme classes, no theme `.btn`/`.qty`/…).
-// Single-variant product (per the page contract): no option selectors / swatches — just vendor,
-// title, dual price, a quantity stepper, and the two action buttons. The variant-resolution and
-// quantity state are preserved; only the markup/styling changed. No backend, so the buttons are
-// type="button". Exact metrics probed on the live PDP (easytech3d.com/products/elegoo-pla-red-filament):
-//   title 32px/700, ls 1px · vendor 14px/400 · price 20px/400 (sale red #ea0606) · policy 15px ·
-//   qty stepper 150×50, bg #f4f4f4, radius 50px, pad 10px; minus/plus 30×30 round; input 70px/700 ·
-//   add-to-cart pink pill, buy-now #f4f4f4 bg / pink text pill (both 13/20/13/23 padding, radius 50).
+// Single-variant product (per the page contract): no option selectors / swatches — just SKU,
+// title, vendor, dual price, a quantity stepper, and the two action buttons. The variant-resolution
+// and quantity state are preserved; only the markup/styling changed. No backend, so the buttons are
+// type="button". Exact metrics probed on the live ABS PDP (easytech3d.com/products/nature3d-abs-red-filament):
+//   SKU → title 32px/700 ls 1px → vendor 14px/400 → price 20px/400 (sale red #ea0606) · policy 15px ·
+//   sale badge "Промоция" inline w/ price: bg #ea0606, text #f4f4f4, 10px/700 uppercase, pad 3.2/8, radius 2px ·
+//   qty: full-width WHITE pill (h70, radius 50, pad 10/30), label "Количество:" inside-left, grey inner
+//   stepper pill 150×50 (#f4f4f4, radius 50, pad 10) on the right; minus/plus 30×30 round; input 70px/700 ·
+//   actions side-by-side 50/50 on desktop: add-to-cart pink pill + buy-now #f4f4f4 bg / pink text pill.
 
 import { useState } from 'react';
 import { Button, Heading, Icon, Link, Text, cn } from '@/design-system';
@@ -47,7 +49,16 @@ export function ProductForm({ product }: { product: ShopProduct }) {
           </Text>
         )}
 
-        {/* ── vendor ────────────────────────────────────────────────────────── */}
+        {/* ── title (probed 32px / 700 / ls 1px) ────────────────────────────── */}
+        <Heading
+          as="h1"
+          level={4}
+          className="mb-2 text-[32px] leading-[32px] tracking-[1px] md:text-[32px]"
+        >
+          {product.title}
+        </Heading>
+
+        {/* ── vendor (live order: SKU → title → vendor → price) ─────────────── */}
         <div className="mb-2">
           <span className="sr-only">Доставчик</span>
           <Link
@@ -58,15 +69,6 @@ export function ProductForm({ product }: { product: ShopProduct }) {
             {product.vendor}
           </Link>
         </div>
-
-        {/* ── title (probed 32px / 700 / ls 1px) ────────────────────────────── */}
-        <Heading
-          as="h1"
-          level={4}
-          className="mb-2 text-[32px] leading-[32px] tracking-[1px] md:text-[32px]"
-        >
-          {product.title}
-        </Heading>
 
         {/* ── price (dual лв/€; sale styling — probed 20px / 400) ───────────── */}
         <div className="flex flex-wrap items-baseline gap-[10px]" data-product-policies-anchor>
@@ -79,54 +81,63 @@ export function ProductForm({ product }: { product: ShopProduct }) {
           {onSale && compareAtPrice != null && (
             <Text as="s" color="muted" className="text-[20px] leading-[30px]" value={money(compareAtPrice)} />
           )}
+          {/* Sale badge — inline w/ the price (probed: bg #ea0606, text #f4f4f4, 10px/700, uppercase). */}
+          {onSale && (
+            <Text
+              as="span"
+              weight="bold"
+              className="self-center rounded-input border border-sale bg-sale px-2 py-[3px] text-[10px] uppercase leading-[10px] text-page"
+              value="Промоция"
+            />
+          )}
         </div>
 
         <Text as="div" size="sm" className="mb-4 mt-[6px]" value="ДДС Включено." />
 
-        {/* ── quantity ──────────────────────────────────────────────────────── */}
-        <div className="mb-[10px]">
-          <div className="flex items-center">
-            <label className="mb-[5px] block font-bold" htmlFor="Quantity-main">
-              Количество:
-            </label>
-            <div className="ml-5 flex h-[50px] w-[150px] items-center justify-between rounded-btn bg-page p-[10px]">
-              <button
-                type="button"
-                aria-label="Намали количеството"
-                className="flex size-[30px] items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/10"
-                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              >
-                <Icon name="minus" className="size-[10px]" />
-              </button>
-              <input
-                type="text"
-                id="Quantity-main"
-                name="quantity"
-                value={quantity}
-                min={1}
-                pattern="[0-9]*"
-                inputMode="numeric"
-                className="w-[70px] border-0 bg-transparent text-center font-bold text-ink outline-none"
-                data-quantity-input=""
-                onChange={(e) => {
-                  const n = parseInt(e.target.value, 10);
-                  setQuantity(Number.isNaN(n) ? 1 : Math.max(1, n));
-                }}
-              />
-              <button
-                type="button"
-                aria-label="Увеличи количеството"
-                className="flex size-[30px] items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/10"
-                onClick={() => setQuantity((q) => q + 1)}
-              >
-                <Icon name="plus" className="size-[10px]" />
-              </button>
-            </div>
+        {/* ── quantity (full-width white pill: label inside-left, grey stepper right) ── */}
+        {/* Probed live ABS PDP: outer white pill w-full h-70 radius-50 pad 10px 30px; inner grey */}
+        {/* stepper pill 150×50 (#f4f4f4, radius 50, pad 10). */}
+        <div className="mb-[10px] flex h-[70px] w-full items-center justify-between rounded-btn bg-surface px-[30px] py-[10px]">
+          <label className="font-bold text-ink" htmlFor="Quantity-main">
+            Количество:
+          </label>
+          <div className="flex h-[50px] w-[150px] items-center justify-between rounded-btn bg-page p-[10px]">
+            <button
+              type="button"
+              aria-label="Намали количеството"
+              className="flex size-[30px] items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/10"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+            >
+              <Icon name="minus" className="size-[10px]" />
+            </button>
+            <input
+              type="text"
+              id="Quantity-main"
+              name="quantity"
+              value={quantity}
+              min={1}
+              pattern="[0-9]*"
+              inputMode="numeric"
+              className="w-[70px] border-0 bg-transparent text-center font-bold text-ink outline-none"
+              data-quantity-input=""
+              onChange={(e) => {
+                const n = parseInt(e.target.value, 10);
+                setQuantity(Number.isNaN(n) ? 1 : Math.max(1, n));
+              }}
+            />
+            <button
+              type="button"
+              aria-label="Увеличи количеството"
+              className="flex size-[30px] items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/10"
+              onClick={() => setQuantity((q) => q + 1)}
+            >
+              <Icon name="plus" className="size-[10px]" />
+            </button>
           </div>
         </div>
 
-        {/* ── action buttons ────────────────────────────────────────────────── */}
-        <div className="flex flex-col gap-[10px]">
+        {/* ── action buttons (side-by-side 50/50 on desktop, stacked on mobile) ── */}
+        <div className="flex flex-col gap-[10px] sm:flex-row">
           <Button
             variant="primary"
             block
@@ -134,6 +145,7 @@ export function ProductForm({ product }: { product: ShopProduct }) {
             aria-label="Добави в количката"
             disabled={!available}
             data-add-to-cart=""
+            className="flex-1"
           >
             <Text as="span" weight="bold" color="white" value={available ? 'Добави в количката' : 'Изпродадено'} />
             <Icon name="cart" className="size-5 shrink-0" />
@@ -143,7 +155,7 @@ export function ProductForm({ product }: { product: ShopProduct }) {
           <Button
             variant="primary"
             block
-            className="bg-page text-primary hover:bg-[#e6e6e6]"
+            className="flex-1 bg-page text-primary hover:bg-[#e6e6e6]"
             aria-label="Купете сега"
           >
             <Text as="span" weight="bold" color="primary" value="Купете сега" />
