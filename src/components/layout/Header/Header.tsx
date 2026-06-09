@@ -1,6 +1,7 @@
 import { mainMenu } from '@/data/menus';
 import { shop } from '@/data/settings';
-import { Button, Container, cn, Icon, Image, Link, Text } from '@/design-system';
+import { Container, Icon, Image, Link, Text } from '@/design-system';
+import { CartButton } from '../CartButton';
 import { DesktopNav } from './DesktopNav';
 import { HeaderSearch } from './HeaderSearch';
 import { MobileMenu } from './MobileMenu';
@@ -50,7 +51,7 @@ export function Header() {
             cart; MobileMenu owns the hamburger + drawer. */}
         <div className="flex items-center gap-[10px] md:hidden">
           <HeaderSearch variant="mobile" />
-          <CartCircle variant="mobile" />
+          <CartButton variant="mobile" />
           <MobileMenu menu={mainMenu} />
         </div>
       </Container>
@@ -58,25 +59,8 @@ export function Header() {
       {/* desktop search row: pink categories pill + search field + cart circle */}
       <Container className="hidden items-center gap-[10px] pb-4 pt-1 md:flex">
         <HeaderSearch variant="desktop" />
-        <CartCircle variant="desktop" />
+        <CartButton variant="desktop" />
       </Container>
     </header>
-  );
-}
-
-// The pink cart circle with its count bubble (Button size="circle" variant="primary" rendered onto a
-// Link via asChild). Desktop is 53px, mobile 45px (probed live). The bubble sits top-right with the
-// count; the live store updates it via JS (static "0" until cart is wired).
-function CartCircle({ variant }: { variant: 'desktop' | 'mobile' }) {
-  const size = variant === 'desktop' ? 'size-[53px]' : 'size-[45px]';
-  return (
-    <Button asChild variant="primary" size="circle" className={cn('relative shrink-0', size)}>
-      <Link href="/cart" aria-label="Количка">
-        <Icon name="cart" className="size-5" />
-        <span className="absolute -right-1 -top-1 inline-flex size-[18px] items-center justify-center rounded-full bg-primary text-[10px] font-bold leading-none text-surface ring-2 ring-surface">
-          0
-        </span>
-      </Link>
-    </Button>
   );
 }
