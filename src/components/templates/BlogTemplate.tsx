@@ -18,19 +18,10 @@ function formatDate(iso: string): string {
   });
 }
 
-export function BlogTemplate({
-  blog,
-  articles,
-}: {
-  blog: ShopBlog;
-  articles: ShopArticle[];
-}) {
+export function BlogTemplate({ blog, articles }: { blog: ShopBlog; articles: ShopArticle[] }) {
   // Sidebar list — most-recent articles first (live "blog-sidebar" rail, probed 350px / mr 50px).
   const recent = [...articles]
-    .sort(
-      (a, b) =>
-        new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
-    )
+    .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime())
     .slice(0, 8);
 
   return (
@@ -146,7 +137,13 @@ export function BlogTemplate({
                       <div className="mt-auto">
                         <Button variant="secondary" size="sm" asChild>
                           <Link href={article.url}>
-                            <Text as="span" size="xs" weight="bold" color="white" value="Прочетете още" />
+                            <Text
+                              as="span"
+                              size="xs"
+                              weight="bold"
+                              color="white"
+                              value="Прочетете още"
+                            />
                             <Icon name="tail-right" className="size-4 shrink-0" />
                           </Link>
                         </Button>

@@ -7,6 +7,8 @@ export const routes = {
   collection: (handle: string) => `/collections/${encodeURIComponent(handle)}` as const,
   product: (handle: string) => `/products/${encodeURIComponent(handle)}` as const,
   cart: '/cart',
+  checkout: '/checkout',
+  order: (id: string) => `/orders/${encodeURIComponent(id)}` as const,
   search: '/search',
   blog: '/blogs',
   /** Blog index for a specific blog handle (Liquid `blog.url` → `/blogs/{handle}`). */
@@ -20,5 +22,6 @@ export const routes = {
   account: {
     home: '/account',
     orders: '/account/orders',
+    login: '/account/login',
   },
 } as const;

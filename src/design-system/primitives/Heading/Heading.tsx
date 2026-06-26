@@ -1,6 +1,6 @@
-import type { HTMLAttributes, ReactNode } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import type { HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/design-system/lib/cn';
 
 // Headings — the exact responsive ladder from the theme (mobile size → desktop size at md).
@@ -15,7 +15,12 @@ export const headingVariants = cva('font-sans font-bold text-ink', {
       5: 'text-h5-m md:text-h5 tracking-[0.5px]',
       6: 'text-h6-m md:text-h6 tracking-[0.5px]',
     },
-    color: { ink: 'text-ink', primary: 'text-primary', white: 'text-white', current: 'text-current' },
+    color: {
+      ink: 'text-ink',
+      primary: 'text-primary',
+      white: 'text-white',
+      current: 'text-current',
+    },
   },
   defaultVariants: { level: 2, color: 'ink' },
 });
@@ -33,7 +38,15 @@ export interface HeadingProps
   children?: ReactNode;
 }
 
-export function Heading({ level = 2, as, color, asChild = false, className, children, ...rest }: HeadingProps) {
+export function Heading({
+  level = 2,
+  as,
+  color,
+  asChild = false,
+  className,
+  children,
+  ...rest
+}: HeadingProps) {
   const Tag = (as ?? (`h${level}` as const)) as 'h1';
   const Comp = asChild ? Slot : Tag;
   return (

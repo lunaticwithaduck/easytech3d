@@ -29,7 +29,7 @@ export const mainMenu: MenuLink[] = [
       { title: 'PLA Flex', url: '/collections/pla-flex' },
       { title: 'ABS', url: '/collections/abs' },
       { title: 'ASA', url: '/collections/asa' },
-      { title: 'HiTPLA', url: '/collections/hitpla-филаменти' },
+      { title: 'HiTPLA', url: '/collections/hitpla-filaments' },
       { title: 'UltraHiTPLA', url: '/collections/ultrahitpla-filaments' },
     ],
   },

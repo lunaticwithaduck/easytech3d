@@ -9,6 +9,10 @@ export function Input({ className, ...rest }: InputHTMLAttributes<HTMLInputEleme
   return <input className={cn(fieldClass, className)} {...rest} />;
 }
 
-export function Textarea({ className, rows = 5, ...rest }: TextareaHTMLAttributes<HTMLTextAreaElement>) {
+export function Textarea({
+  className,
+  rows = 5,
+  ...rest
+}: TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return <textarea rows={rows} className={cn(fieldClass, 'resize-y', className)} {...rest} />;
 }

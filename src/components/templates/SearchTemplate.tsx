@@ -1,54 +1,33 @@
-// Search results page — design-system version (primitives only; no theme classes).
-//
-// Faithful to the live /search?q=… surface (sections/search-page.liquid, layout
-// "sidebar_fixed_left"): a Container, a results heading ("{n} резултати за “{query}”"), a left
-// facet rail (Наличност checkboxes + Цена range — static markup, no faceting backend) sitting
-// beside a single-column list of the SHARED <ProductCard list /> (the live search view-mode is a
-// list of wide horizontal cards, ~935px wide, 30px apart), plus the empty / no-results state.
-//
-// Exact values baked from probing https://easytech3d.com/search?q=pla:
-//   • heading → h2 ladder (46.8px @1440, weight 700, tracking 2px, mb ~17.5px)
-//   • sidebar → fixed ~300px wide, padding 20px 25px 20px 0, margin-right 95px (desktop)
-//   • facet section title → 22px / 700 / tracking 1px / capitalize  → Text size="h4" weight="bold"
-//   • facet section → padding 30px 0 ; list item → padding-bottom 10px
-//   • price inputs → radius 2px (rounded-input), padding 10px  → <Input>
-//
-// BG strings inlined from locales (general.search.*):
-//   results_with_count.other → "{count} резултати за “{terms}”" · .one → "{count} резултат …"
-//   no_results → "Няма резултати. Пробвайте да промените ключовите думи"
-//   placeholder "Търсене" · submit "Потърси" · sidebar.mobile_open_button "Филтър"
-//   title (not performed) → "Потърсете в нашия сайт" · heading (plural) → "Резултати на търсенето"
-//
-// NOTE: the search form is interactive (controlled `q` param), so this is a Client Component.
-// The parent page.tsx is a Server Component that fetches data and passes it down.
+// Search results page — server-side faceted search (availability + price + sort) driven through the
+// URL: changing a facet navigates to /search?q=…&available=…&minPrice=…&maxPrice=…&sort=…, and the
+// server page re-fetches the filtered set. Client component (interactive facets + search box).
 
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Button, Container, Heading, Icon, Input, Text, cn } from '@/design-system';
+import { useState } from 'react';
 import { ProductCard } from '@/components/product/ProductCard';
-import type { ShopProduct } from '@/lib/shopify/types';
+import { Button, Container, cn, Heading, Icon, Input, Text } from '@/design-system';
+import type { SearchResult, SortKey } from '@/lib/shopify/types';
 
-// Replicate Liquid: {{ 'general.search.results_with_count' | t: terms, count }}.
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: 'manual', label: 'По подразбиране' },
+  { value: 'price-ascending', label: 'Цена (възх.)' },
+  { value: 'price-descending', label: 'Цена (низх.)' },
+  { value: 'title-ascending', label: 'Име (А-Я)' },
+  { value: 'title-descending', label: 'Име (Я-А)' },
+];
+
+type Filters = { available?: 'in' | 'out'; minPrice?: number; maxPrice?: number; sort?: SortKey };
+
 function resultsWithCount(terms: string, count: number): string {
-  const noun = count === 1 ? 'резултат' : 'резултати';
-  return `${count} ${noun} за “${terms}”`;
+  return `${count} ${count === 1 ? 'резултат' : 'резултати'} за “${terms}”`;
 }
 
-// One collapsible-looking facet block (static — no faceting backend, markup only).
 function FacetSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="border-b border-border py-[30px] first:pt-0">
-      <span className="flex items-center justify-between">
-        <Text
-          as="span"
-          size="h4"
-          weight="bold"
-          className="capitalize tracking-[1px]"
-          value={title}
-        />
-        <Icon name="caret" className="size-3 shrink-0 text-ink" />
-      </span>
+      <Text as="span" size="h4" weight="bold" className="capitalize tracking-[1px]" value={title} />
       <div className="mt-5">{children}</div>
     </div>
   );
@@ -56,193 +35,198 @@ function FacetSection({ title, children }: { title: string; children: React.Reac
 
 export function SearchTemplate({
   query,
-  results,
+  result,
+  filters,
 }: {
   query: string;
-  results: ShopProduct[];
+  result: SearchResult;
+  filters: Filters;
 }) {
   const router = useRouter();
+  const performed = query.trim().length > 0;
+  const results = result.products;
+  const noResults = performed && results.length === 0;
 
-  // In our data layer `query` is already the clean search term.
-  const searchTerms = query;
-  const performed = searchTerms.trim().length > 0;
-  const resultsCount = results.length;
-  const noResults = performed && resultsCount === 0;
-  const showSidebar = resultsCount > 0;
+  const [available, setAvailable] = useState<'in' | 'out' | undefined>(filters.available);
+  const [minPrice, setMinPrice] = useState(
+    filters.minPrice != null ? String(filters.minPrice) : '',
+  );
+  const [maxPrice, setMaxPrice] = useState(
+    filters.maxPrice != null ? String(filters.maxPrice) : '',
+  );
 
-  const headerHeading = performed
-    ? resultsWithCount(searchTerms, resultsCount)
-    : 'Потърсете в нашия сайт';
+  const boundMin = Math.floor(result.priceMinCents / 100);
+  const boundMax = Math.ceil(result.priceMaxCents / 100);
+  const hasFilters = Boolean(
+    available || minPrice || maxPrice || (filters.sort && filters.sort !== 'manual'),
+  );
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function go(next: Partial<Filters>) {
+    const a = 'available' in next ? next.available : available;
+    const mn = 'minPrice' in next ? next.minPrice : minPrice ? Number(minPrice) : undefined;
+    const mx = 'maxPrice' in next ? next.maxPrice : maxPrice ? Number(maxPrice) : undefined;
+    const s = 'sort' in next ? next.sort : filters.sort;
+    const sp = new URLSearchParams({ q: query });
+    if (a) sp.set('available', a);
+    if (mn != null && !Number.isNaN(mn)) sp.set('minPrice', String(mn));
+    if (mx != null && !Number.isNaN(mx)) sp.set('maxPrice', String(mx));
+    if (s && s !== 'manual') sp.set('sort', s);
+    router.push(`/search?${sp.toString()}`);
+  }
+
+  function clearFilters() {
+    setAvailable(undefined);
+    setMinPrice('');
+    setMaxPrice('');
+    router.push(`/search?q=${encodeURIComponent(query)}`);
+  }
+
+  function handleSearchSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const q = String(new FormData(e.currentTarget).get('q') ?? '').trim();
-    if (q) {
-      router.push(`/search?q=${encodeURIComponent(q)}`);
-    }
+    if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
   }
 
   return (
     <Container className="py-8 md:py-12">
-      <div className={cn('flex flex-col gap-8 lg:flex-row lg:gap-0')}>
-        {/* ── Facet rail (static) — fixed width beside the results on desktop ── */}
-        {showSidebar && (
-          <aside className="shrink-0 lg:w-[300px] lg:pr-[25px] lg:mr-[95px]">
-            <form className="flex flex-col" onSubmit={(e) => e.preventDefault()}>
-              <input type="hidden" name="q" value={searchTerms} />
-
-              {/* Наличност */}
-              <FacetSection title="Наличност">
-                <ul className="flex flex-col gap-[10px]">
-                  <li className="flex items-center gap-3">
+      <div className="flex flex-col gap-8 lg:flex-row lg:gap-0">
+        {/* ── Facet rail ── */}
+        {performed && (
+          <aside className="shrink-0 lg:mr-[60px] lg:w-[280px] lg:pr-[25px]">
+            <FacetSection title="Наличност">
+              <ul className="flex flex-col gap-[10px]">
+                {(
+                  [
+                    { v: 'in', label: 'В наличност' },
+                    { v: 'out', label: 'Изчерпан' },
+                  ] as const
+                ).map((opt) => (
+                  <li key={opt.v} className="flex items-center gap-3">
                     <input
                       type="checkbox"
-                      name="filter.v.availability"
-                      value="1"
-                      id="Filter-Availability-1"
+                      id={`avail-${opt.v}`}
+                      checked={available === opt.v}
+                      onChange={(e) => {
+                        const next = e.target.checked ? opt.v : undefined;
+                        setAvailable(next);
+                        go({ available: next });
+                      }}
                       className="size-4 shrink-0 accent-primary"
                     />
-                    <label htmlFor="Filter-Availability-1" className="cursor-pointer">
-                      <Text as="span" size="base" value="В наличност" />
+                    <label htmlFor={`avail-${opt.v}`} className="cursor-pointer">
+                      <Text as="span" size="base" value={opt.label} />
                     </label>
                   </li>
-                  <li className="flex items-center gap-3">
-                    <input
-                      type="checkbox"
-                      name="filter.v.availability"
-                      value="0"
-                      id="Filter-Availability-2"
-                      className="size-4 shrink-0 accent-primary"
-                    />
-                    <label htmlFor="Filter-Availability-2" className="cursor-pointer">
-                      <Text as="span" size="base" value="Изчерпан" />
-                    </label>
-                  </li>
-                </ul>
-              </FacetSection>
+                ))}
+              </ul>
+            </FacetSection>
 
-              {/* Цена */}
-              <FacetSection title="Цена">
-                <div className="flex items-center gap-3">
-                  <div className="flex-1">
-                    <label htmlFor="Filter-price-gte" className="sr-only">
-                      Мин. Цена
-                    </label>
-                    <Input
-                      id="Filter-price-gte"
-                      name="filter.v.price.gte"
-                      type="number"
-                      placeholder="0"
-                      min={0}
-                    />
-                  </div>
-                  <Text as="span" size="base" color="muted" value="-" />
-                  <div className="flex-1">
-                    <label htmlFor="Filter-price-lte" className="sr-only">
-                      Макс Цена
-                    </label>
-                    <Input
-                      id="Filter-price-lte"
-                      name="filter.v.price.lte"
-                      type="number"
-                      placeholder="2454"
-                      min={0}
-                    />
-                  </div>
-                </div>
+            <FacetSection title="Цена">
+              <div className="flex items-center gap-3">
+                <Input
+                  aria-label="Мин. цена"
+                  type="number"
+                  min={0}
+                  placeholder={String(boundMin)}
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  className="flex-1"
+                />
+                <Text as="span" size="base" color="muted" value="–" />
+                <Input
+                  aria-label="Макс. цена"
+                  type="number"
+                  min={0}
+                  placeholder={String(boundMax)}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  className="flex-1"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="primary"
+                size="sm"
+                className="mt-4 w-full"
+                onClick={() => go({})}
+              >
+                <Text as="span" size="sm" weight="bold" color="white" value="Приложи" />
+              </Button>
+            </FacetSection>
 
-                <div className="mt-5 flex flex-col gap-2">
-                  <input
-                    type="range"
-                    name="filter.v.price.gte.range"
-                    defaultValue={0}
-                    min={0}
-                    max={2454}
-                    step={1}
-                    aria-label="Мин. Цена"
-                    className="w-full accent-primary"
-                  />
-                  <input
-                    type="range"
-                    name="filter.v.price.lte.range"
-                    defaultValue={2454}
-                    min={0}
-                    max={2454}
-                    step={1}
-                    aria-label="Макс Цена"
-                    className="w-full accent-primary"
-                  />
-                </div>
-              </FacetSection>
-            </form>
+            {hasFilters && (
+              <button
+                type="button"
+                onClick={clearFilters}
+                className="mt-5 text-sm text-ink/50 underline-offset-2 hover:text-primary hover:underline"
+              >
+                Изчисти филтрите
+              </button>
+            )}
           </aside>
         )}
 
         {/* ── Results column ── */}
         <div className="min-w-0 flex-1">
-          {/* Heading (header_image blank → rendered inline) */}
           <div className="text-center">
             <Heading as="h1" level={2} className="mb-[18px]">
-              {performed && <span className="sr-only">Резултати на търсенето: </span>}
-              {headerHeading}
+              {performed ? resultsWithCount(query, results.length) : 'Потърсете в нашия сайт'}
             </Heading>
           </div>
 
-          {/* Search form (action /search → navigates client-side) */}
-          <div className="mx-auto mb-10 w-full max-w-xl">
+          <div className="mx-auto mb-8 w-full max-w-xl">
             {noResults && (
               <Text
                 as="p"
                 color="muted"
                 className="mb-6 text-center"
-                value="Няма резултати. Пробвайте да промените ключовите думи"
+                value="Няма резултати. Пробвайте да промените ключовите думи или филтрите."
               />
             )}
-
-            <form role="search" onSubmit={handleSubmit} className="flex items-stretch gap-2">
-              <label htmlFor="search-form__input_main" className="sr-only">
-                Търсене
-              </label>
-              <Input
-                id="search-form__input_main"
-                type="search"
-                name="q"
-                defaultValue={searchTerms}
-                placeholder="Търсене"
-                aria-label="Търсене"
-                className="flex-1"
-              />
-              <Button type="submit" size="circle" variant="primary" aria-label="Потърси">
-                <Icon name="search" className="size-5" />
-              </Button>
-            </form>
+            <search className="flex items-stretch gap-2">
+              <form onSubmit={handleSearchSubmit} className="contents">
+                <label htmlFor="search-form__input_main" className="sr-only">
+                  Търсене
+                </label>
+                <Input
+                  id="search-form__input_main"
+                  type="search"
+                  name="q"
+                  defaultValue={query}
+                  placeholder="Търсене"
+                  aria-label="Търсене"
+                  className="flex-1"
+                />
+                <Button type="submit" size="circle" variant="primary" aria-label="Потърси">
+                  <Icon name="search" className="size-5" />
+                </Button>
+              </form>
+            </search>
           </div>
 
-          {/* Results */}
-          {performed && (
+          {performed && results.length > 0 && (
             <>
-              <h2 className="sr-only">Резултати на търсенето</h2>
-
-              {showSidebar && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="sm"
-                  className="mb-6 lg:hidden"
-                  aria-label="Филтър"
+              {/* Sort */}
+              <div className="mb-6 flex items-center justify-end gap-2">
+                <Text as="span" size="sm" color="muted" value="Подреди:" />
+                <select
+                  value={filters.sort ?? 'manual'}
+                  onChange={(e) => go({ sort: e.target.value as SortKey })}
+                  className="rounded-input border border-border bg-surface px-3 py-1.5 text-sm text-ink outline-none focus:border-ink"
                 >
-                  <Text as="span" size="sm" weight="bold" color="white" value="Филтър" />
-                  <Icon name="filter" className="size-4 shrink-0" />
-                </Button>
-              )}
-
-              {resultsCount > 0 && (
-                <div className="flex flex-col gap-y-[30px]">
-                  {results.map((product) => (
-                    <ProductCard key={product.id} product={product} showVendor list />
+                  {SORT_OPTIONS.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
                   ))}
-                </div>
-              )}
+                </select>
+              </div>
+
+              <div className={cn('flex flex-col gap-y-[30px]')}>
+                {results.map((product) => (
+                  <ProductCard key={product.id} product={product} showVendor list />
+                ))}
+              </div>
             </>
           )}
         </div>

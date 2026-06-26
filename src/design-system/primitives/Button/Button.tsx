@@ -1,6 +1,6 @@
-import type { ButtonHTMLAttributes } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import type { ButtonHTMLAttributes } from 'react';
 import { cn } from '@/design-system/lib/cn';
 
 // The theme `.btn`: pill (radius 50px), padding 13px 23px, weight 700, line-height 1.4, inline-flex
@@ -36,7 +36,15 @@ export interface ButtonProps
   asChild?: boolean;
 }
 
-export function Button({ variant, size, block, asChild = false, className, type, ...rest }: ButtonProps) {
+export function Button({
+  variant,
+  size,
+  block,
+  asChild = false,
+  className,
+  type,
+  ...rest
+}: ButtonProps) {
   const Comp = asChild ? Slot : 'button';
   return (
     <Comp

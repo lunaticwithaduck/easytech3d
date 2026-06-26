@@ -1,6 +1,6 @@
-import { Heading, Section, SectionHeader, Text, cn } from '@/design-system';
 import { Rte } from '@/components/snippets/Rte';
-import { iconsWithTextSection } from '@/data/home';
+import type { iconsWithTextSection } from '@/data/home';
+import { cn, Heading, Section, SectionHeader, Text } from '@/design-system';
 
 // Inline SVGs sourced verbatim from the live FontAwesome payloads captured in the mirror HTML.
 // The theme's dynamic-icon.js resolves <load-icon name="…"> to these SVGs at runtime;
@@ -73,7 +73,10 @@ export function IconsWithText({ section }: { section: IconsWithTextSectionType }
       {/* `.page-width-small`: max-width 1280px, CENTERED (margin: 0 auto), 55px gutters. */}
       <div className="mx-auto w-full px-5 md:max-w-[1280px] md:px-[55px]">
         {(section.title || section.subtitle) && (
-          <SectionHeader eyebrow={section.subtitle || undefined} title={section.title || undefined} />
+          <SectionHeader
+            eyebrow={section.subtitle || undefined}
+            title={section.title || undefined}
+          />
         )}
 
         {section.blocks.length > 0 && (

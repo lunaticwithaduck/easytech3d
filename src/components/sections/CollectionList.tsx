@@ -14,11 +14,22 @@
 //   .mega-title--large             → 100px / 700
 //   section background             → #f4f4f4 (bg-page)
 
-import { useRef, useState, useCallback } from 'react';
-import { Button, Card, Container, Heading, Icon, Image, Link, Section, Text, cn } from '@/design-system';
+import { useCallback, useRef, useState } from 'react';
+import type { collectionListSection as CollectionListSectionData } from '@/data/home';
+import {
+  Button,
+  Card,
+  Container,
+  cn,
+  Heading,
+  Icon,
+  Image,
+  Link,
+  Section,
+  Text,
+} from '@/design-system';
 import { imageUrl } from '@/lib/shopify/image';
 import type { ShopCollection } from '@/lib/shopify/types';
-import type { collectionListSection as CollectionListSectionData } from '@/data/home';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -70,11 +81,7 @@ function CollectionGridItem({ collection }: { collection: ShopCollection }) {
 
       {/* Title — 22px bold, letter-spacing 1px (text-h4 maps to 22px; add tracking override) */}
       <Link href={href} className="block hover:text-primary">
-        <Heading
-          as="h3"
-          level={4}
-          className="text-center font-bold leading-[1.1] tracking-[1px]"
-        >
+        <Heading as="h3" level={4} className="text-center font-bold leading-[1.1] tracking-[1px]">
           {collection.title || 'Колекция'}
         </Heading>
       </Link>
@@ -116,10 +123,7 @@ export function CollectionList({ section, collections }: CollectionListProps) {
 
   return (
     // Section band: bg-page (#f4f4f4), vertical rhythm py-10 md:py-14 from Section
-    <Section
-      data-section-type="collection-list"
-      className="bg-page"
-    >
+    <Section data-section-type="collection-list" className="bg-page">
       <Container>
         {/* ── Section header ──────────────────────────────────────────────────
             Live: .section-header with padding 0 55px, margin-bottom 55px.
@@ -144,11 +148,7 @@ export function CollectionList({ section, collections }: CollectionListProps) {
             {section.title ? (
               // .mega-title--large: 100px / 700 — not in the Heading ladder; use custom size.
               // Closest semantic: h2 tag. We override the size with a literal class.
-              <Heading
-                as="h2"
-                level={2}
-                className="text-[52px] leading-[1] md:text-[100px]"
-              >
+              <Heading as="h2" level={2} className="text-[52px] leading-[1] md:text-[100px]">
                 {section.title}
               </Heading>
             ) : null}

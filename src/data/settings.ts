@@ -18,8 +18,16 @@ export const announcementBar = {
   autoplay: true,
   cycleSpeed: 4,
   blocks: [
-    { contentHtml: '<p><strong>Безплатна </strong>доставка за поръчки над <strong>150лв</strong>!</p>', link: '' },
-    { contentHtml: '<p><strong>EasyTech3d </strong> -<em><strong> Партньор във Вашия Творчески Свят</strong></em></p>', link: '' },
+    {
+      contentHtml:
+        '<p><strong>Безплатна </strong>доставка за поръчки над <strong>150лв</strong>!</p>',
+      link: '',
+    },
+    {
+      contentHtml:
+        '<p><strong>EasyTech3d </strong> -<em><strong> Партньор във Вашия Творчески Свят</strong></em></p>',
+      link: '',
+    },
   ],
 } as const;
 

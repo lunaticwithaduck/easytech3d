@@ -5,10 +5,13 @@
 // BodyClass sets `body.template-404` client-side so theme CSS rules keyed on that class apply.
 
 import type { Metadata } from 'next';
-import { BodyClass } from '@/components/util/BodyClass';
 import { Page404 } from '@/components/templates/Page404';
+import { BodyClass } from '@/components/util/BodyClass';
 
-export const metadata: Metadata = { title: 'Страница 404 – easytech3d' };
+export const metadata: Metadata = {
+  title: 'Страница 404',
+  robots: { index: false, follow: false },
+};
 
 export default function NotFoundPage() {
   return (

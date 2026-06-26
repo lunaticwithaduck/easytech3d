@@ -1,6 +1,6 @@
-import { Container, Icon, Link, Text } from '@/design-system';
-import { footer, social } from '@/data/settings';
 import { footerMenu } from '@/data/menus';
+import { footer, social } from '@/data/settings';
+import { Container, Icon, Link, Text } from '@/design-system';
 
 // Social entries: [name used in Icon, label, url]
 const socialEntries: { icon: string; label: string; url: string }[] = [
@@ -24,7 +24,6 @@ export function Footer() {
         {/* Columns: centered, shrink-to-content flex row. Each col px-[15px] mb-[45px], min 180px
             wide on desktop, separated by a 40px horizontal gap. */}
         <div className="flex flex-wrap justify-center gap-x-[40px]">
-
           {/* Column 1: "Последвайте ни" + social icon pills */}
           <div className="w-full px-[15px] mb-[45px] md:w-auto md:min-w-[180px]">
             {/* Heading: 13.5px bold white letter-spacing 0.5px mb 17.5px */}
@@ -36,7 +35,10 @@ export function Footer() {
             </Text>
             {activeSocials.length > 0 && (
               // Social icon list: flex row, pt 20px pb 15px
-              <ul className="flex flex-wrap pt-[20px] pb-[15px]" aria-label={footer.blocks.social.title}>
+              <ul
+                className="flex flex-wrap pt-[20px] pb-[15px]"
+                aria-label={footer.blocks.social.title}
+              >
                 {activeSocials.map(({ icon, label, url }) => (
                   // Each icon pill: bg #2b2b2b, circular, mr 10px mb 10px
                   <li key={icon} className="mr-[10px] mb-[10px]">
@@ -88,7 +90,6 @@ export function Footer() {
               {footer.blocks.copyright.title}
             </Text>
           </div>
-
         </div>
       </Container>
     </footer>

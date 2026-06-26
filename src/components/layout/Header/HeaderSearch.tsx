@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, cn, Icon, Input } from '@/design-system';
+import { routes } from '@/config/routes';
+import { Button, cn, Icon, Input, Link } from '@/design-system';
 
 // Header search — design-system version (primitives + @theme utilities only). Faithful to the live
 // render (probed):
@@ -32,31 +33,28 @@ export function HeaderSearch({ variant = 'desktop' }: { variant?: 'desktop' | 'm
         </Button>
 
         {open && (
-          <form
-            action="/search"
-            method="get"
-            role="search"
-            className="absolute inset-x-0 top-full z-30 bg-surface px-5 py-3 shadow-md"
-          >
-            <div className="relative">
-              <Input
-                type="text"
-                name="q"
-                placeholder="Търсене"
-                aria-label="Търсене"
-                autoComplete="off"
-                className="rounded-btn py-2 pl-[18px] pr-11"
-              />
-              <input type="hidden" name="options[prefix]" value="last" aria-hidden="true" />
-              <button
-                type="submit"
-                aria-label="Потърси"
-                className="absolute right-3 top-1/2 -translate-y-1/2 border-0 bg-transparent p-0 text-ink/60 hover:text-primary"
-              >
-                <Icon name="search-loop" className="size-5" />
-              </button>
-            </div>
-          </form>
+          <search className="absolute inset-x-0 top-full z-30 bg-surface px-5 py-3 shadow-md">
+            <form action="/search" method="get" className="contents">
+              <div className="relative">
+                <Input
+                  type="text"
+                  name="q"
+                  placeholder="Търсене"
+                  aria-label="Търсене"
+                  autoComplete="off"
+                  className="rounded-btn py-2 pl-[18px] pr-11"
+                />
+                <input type="hidden" name="options[prefix]" value="last" aria-hidden="true" />
+                <button
+                  type="submit"
+                  aria-label="Потърси"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 border-0 bg-transparent p-0 text-ink/60 hover:text-primary"
+                >
+                  <Icon name="search-loop" className="size-5" />
+                </button>
+              </div>
+            </form>
+          </search>
         )}
       </>
     );
@@ -85,38 +83,40 @@ export function HeaderSearch({ variant = 'desktop' }: { variant?: 'desktop' | 'm
           )}
         >
           <li>
-            <a
-              href="javascript:void(0)"
+            <Link
+              href={routes.collections}
               className="block px-5 py-2 text-sm text-ink hover:text-primary"
             >
               Всички Категории
-            </a>
+            </Link>
           </li>
         </ul>
       </div>
 
-      <form action="/search" method="get" role="search" className="relative flex-1 self-stretch">
-        <Input
-          type="text"
-          name="q"
-          placeholder="Търсене"
-          aria-label="Търсене"
-          autoComplete="off"
-          autoCorrect="off"
-          onFocus={() => setOpen(true)}
-          // h-full makes the field fill the 55px row (live is a 55px field, not 44px); input text
-          // stays vertically centered by default so the padding only governs the horizontal inset.
-          className="h-full border-0 bg-transparent py-0 pl-[18px] pr-[45px] focus:border-0"
-        />
-        <input type="hidden" name="options[prefix]" value="last" aria-hidden="true" />
-        <button
-          type="submit"
-          aria-label="Потърси"
-          className="absolute right-4 top-1/2 -translate-y-1/2 border-0 bg-transparent p-0 text-ink/60 hover:text-primary"
-        >
-          <Icon name="search-loop" className="size-5" />
-        </button>
-      </form>
+      <search className="relative flex-1 self-stretch">
+        <form action="/search" method="get" className="contents">
+          <Input
+            type="text"
+            name="q"
+            placeholder="Търсене"
+            aria-label="Търсене"
+            autoComplete="off"
+            autoCorrect="off"
+            onFocus={() => setOpen(true)}
+            // h-full makes the field fill the 55px row (live is a 55px field, not 44px); input text
+            // stays vertically centered by default so the padding only governs the horizontal inset.
+            className="h-full border-0 bg-transparent py-0 pl-[18px] pr-[45px] focus:border-0"
+          />
+          <input type="hidden" name="options[prefix]" value="last" aria-hidden="true" />
+          <button
+            type="submit"
+            aria-label="Потърси"
+            className="absolute right-4 top-1/2 -translate-y-1/2 border-0 bg-transparent p-0 text-ink/60 hover:text-primary"
+          >
+            <Icon name="search-loop" className="size-5" />
+          </button>
+        </form>
+      </search>
     </div>
   );
 }

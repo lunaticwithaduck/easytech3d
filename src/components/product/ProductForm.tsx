@@ -1,55 +1,74 @@
 'use client';
 
-// PDP buy-box — migrated to design-system primitives (no theme classes, no theme `.btn`/`.qty`/…).
-// Single-variant product (per the page contract): no option selectors / swatches — just SKU,
-// title, vendor, dual price, a quantity stepper, and the two action buttons. The variant-resolution
-// and quantity state are preserved; only the markup/styling changed. No backend, so the buttons are
-// type="button". Exact metrics probed on the live ABS PDP (easytech3d.com/products/nature3d-abs-red-filament):
-//   SKU → title 32px/700 ls 1px → vendor 14px/400 → price 20px/400 (sale red #ea0606) · policy 15px ·
-//   sale badge "Промоция" inline w/ price: bg #ea0606, text #f4f4f4, 10px/700 uppercase, pad 3.2/8, radius 2px ·
-//   qty: full-width WHITE pill (h70, radius 50, pad 10/30), label "Количество:" inside-left, grey inner
-//   stepper pill 150×50 (#f4f4f4, radius 50, pad 10) on the right; minus/plus 30×30 round; input 70px/700 ·
-//   actions side-by-side 50/50 on desktop: add-to-cart pink pill + buy-now #f4f4f4 bg / pink text pill.
+// PDP buy-box — design-system primitives. Now backed by the server cart: a variant selector (for
+// multi-option products), quantity stepper, and a real add-to-cart (+ buy-now → cart) wired to the
+// cart store. Single-variant products show no selector.
 
 import { useState } from 'react';
-import { Button, Heading, Icon, Link, Text, cn } from '@/design-system';
+import { requestBackInStock } from '@/actions/forms';
+import { cartActions, useCartPending } from '@/components/layout/cart-store';
+import { routes } from '@/config/routes';
+import { Button, cn, Heading, Icon, Link, Text } from '@/design-system';
+import { useRouter } from '@/i18n/navigation';
 import { dualPrice, money } from '@/lib/shopify/money';
 import type { ShopProduct, ShopVariant } from '@/lib/shopify/types';
 
 export function ProductForm({ product }: { product: ShopProduct }) {
-  const currentVariant: ShopVariant | undefined =
-    product.variants.find((v) => v.available) ?? product.variants[0];
+  const pending = useCartPending();
+  const router = useRouter();
 
+  const firstVariant = product.variants.find((v) => v.available) ?? product.variants[0];
+  const [selected, setSelected] = useState<string[]>(firstVariant?.options ?? []);
   const [quantity, setQuantity] = useState(1);
+  const [bisEmail, setBisEmail] = useState('');
+  const [bisStatus, setBisStatus] = useState<'idle' | 'sending' | 'done'>('idle');
+
+  const currentVariant: ShopVariant | undefined =
+    product.options.length > 0
+      ? (product.variants.find(
+          (v) =>
+            v.options.length === selected.length && v.options.every((o, i) => o === selected[i]),
+        ) ?? firstVariant)
+      : firstVariant;
 
   const sku = currentVariant?.sku;
   const available = currentVariant?.available ?? product.available;
-
   const price = currentVariant?.price ?? product.price;
   const compareAtPrice = currentVariant?.compareAtPrice ?? product.compareAtPrice;
   const onSale = compareAtPrice != null && compareAtPrice > price;
 
+  const setOption = (i: number, value: string) =>
+    setSelected((prev) => {
+      const next = [...prev];
+      next[i] = value;
+      return next;
+    });
+
+  const add = () => {
+    if (currentVariant && available) void cartActions.add(currentVariant.id, quantity);
+  };
+  const buyNow = async () => {
+    if (currentVariant && available) {
+      await cartActions.add(currentVariant.id, quantity);
+      router.push(routes.cart);
+    }
+  };
+  const notifyBackInStock = async () => {
+    if (!bisEmail.trim()) return;
+    setBisStatus('sending');
+    const res = await requestBackInStock(bisEmail.trim(), product.handle, currentVariant?.id);
+    setBisStatus(res.ok ? 'done' : 'idle');
+  };
+
   return (
     <div>
-      <form
-        method="post"
-        action="/cart/add"
-        acceptCharset="UTF-8"
-        encType="multipart/form-data"
-        noValidate
-        data-product-form=""
-      >
-        <input type="hidden" name="form_type" value="product" />
-        <input type="hidden" name="utf8" value="✓" />
-
-        {/* ── SKU ───────────────────────────────────────────────────────────── */}
+      <div data-product-form="">
         {sku && (
           <Text as="p" size="xs" color="muted" className="mb-1">
             SKU: <span>{sku}</span>
           </Text>
         )}
 
-        {/* ── title (probed 32px / 700 / ls 1px) ────────────────────────────── */}
         <Heading
           as="h1"
           level={4}
@@ -58,7 +77,6 @@ export function ProductForm({ product }: { product: ShopProduct }) {
           {product.title}
         </Heading>
 
-        {/* ── vendor (live order: SKU → title → vendor → price) ─────────────── */}
         <div className="mb-2">
           <span className="sr-only">Доставчик</span>
           <Link
@@ -70,7 +88,6 @@ export function ProductForm({ product }: { product: ShopProduct }) {
           </Link>
         </div>
 
-        {/* ── price (dual лв/€; sale styling — probed 20px / 400) ───────────── */}
         <div className="flex flex-wrap items-baseline gap-[10px]" data-product-policies-anchor>
           <Text
             as="span"
@@ -79,9 +96,13 @@ export function ProductForm({ product }: { product: ShopProduct }) {
             value={dualPrice(price)}
           />
           {onSale && compareAtPrice != null && (
-            <Text as="s" color="muted" className="text-[20px] leading-[30px]" value={money(compareAtPrice)} />
+            <Text
+              as="s"
+              color="muted"
+              className="text-[20px] leading-[30px]"
+              value={money(compareAtPrice)}
+            />
           )}
-          {/* Sale badge — inline w/ the price (probed: bg #ea0606, text #f4f4f4, 10px/700, uppercase). */}
           {onSale && (
             <Text
               as="span"
@@ -94,9 +115,36 @@ export function ProductForm({ product }: { product: ShopProduct }) {
 
         <Text as="div" size="sm" className="mb-4 mt-[6px]" value="ДДС Включено." />
 
-        {/* ── quantity (full-width white pill: label inside-left, grey stepper right) ── */}
-        {/* Probed live ABS PDP: outer white pill w-full h-70 radius-50 pad 10px 30px; inner grey */}
-        {/* stepper pill 150×50 (#f4f4f4, radius 50, pad 10). */}
+        {/* ── variant selector (only when the product has real options) ───────── */}
+        {product.options.map((option, i) => (
+          <div key={option.name} className="mb-4">
+            <Text as="span" size="sm" weight="bold" className="mb-2 block">
+              {option.name}
+            </Text>
+            <div className="flex flex-wrap gap-2">
+              {option.values.map((value) => {
+                const isSel = selected[i] === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setOption(i, value)}
+                    className={cn(
+                      'rounded-btn border px-4 py-2 text-sm font-medium transition-colors',
+                      isSel
+                        ? 'border-primary bg-primary text-surface'
+                        : 'border-border bg-surface text-ink hover:border-ink',
+                    )}
+                  >
+                    {value}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+
+        {/* ── quantity ──────────────────────────────────────────────────────── */}
         <div className="mb-[10px] flex h-[70px] w-full items-center justify-between rounded-btn bg-surface px-[30px] py-[10px]">
           <label className="font-bold text-ink" htmlFor="Quantity-main">
             Количество:
@@ -121,7 +169,7 @@ export function ProductForm({ product }: { product: ShopProduct }) {
               className="w-[70px] border-0 bg-transparent text-center font-bold text-ink outline-none"
               data-quantity-input=""
               onChange={(e) => {
-                const n = parseInt(e.target.value, 10);
+                const n = Number.parseInt(e.target.value, 10);
                 setQuantity(Number.isNaN(n) ? 1 : Math.max(1, n));
               }}
             />
@@ -136,27 +184,35 @@ export function ProductForm({ product }: { product: ShopProduct }) {
           </div>
         </div>
 
-        {/* ── action buttons (side-by-side 50/50 on desktop, stacked on mobile) ── */}
+        {/* ── action buttons ────────────────────────────────────────────────── */}
         <div className="flex flex-col gap-[10px] sm:flex-row">
           <Button
             variant="primary"
             block
-            name="add"
+            type="button"
             aria-label="Добави в количката"
-            disabled={!available}
+            disabled={!available || pending}
             data-add-to-cart=""
             className="flex-1"
+            onClick={add}
           >
-            <Text as="span" weight="bold" color="white" value={available ? 'Добави в количката' : 'Изпродадено'} />
+            <Text
+              as="span"
+              weight="bold"
+              color="white"
+              value={available ? 'Добави в количката' : 'Изпродадено'}
+            />
             <Icon name="cart" className="size-5 shrink-0" />
           </Button>
 
-          {/* Live "Buy it now" accelerated checkout — #f4f4f4 pill with pink text (no backend). */}
           <Button
             variant="primary"
             block
+            type="button"
             className="flex-1 border border-primary bg-page text-primary hover:bg-[#e6e6e6]"
             aria-label="Купете сега"
+            disabled={!available || pending}
+            onClick={buyNow}
           >
             <Text as="span" weight="bold" color="primary" value="Купете сега" />
             <Icon name="tail-right" className="size-4 shrink-0" />
@@ -169,29 +225,44 @@ export function ProductForm({ product }: { product: ShopProduct }) {
             <label className="mb-2 block" htmlFor={`back_in_stock_custom_formInput-${product.id}`}>
               <Text as="span" size="h5" weight="bold" value="Извести ме като се презареди" />
             </label>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                id={`back_in_stock_custom_formInput-${product.id}`}
-                className={cn(
-                  'w-full rounded-input border border-border bg-surface px-4 py-3 text-base text-ink',
-                  'outline-none transition-colors placeholder:text-ink/40 focus:border-ink',
-                )}
-                defaultValue=""
-                placeholder="Имейл"
-                autoCorrect="off"
-                autoCapitalize="off"
+            {bisStatus === 'done' ? (
+              <Text
+                as="p"
+                size="sm"
+                weight="bold"
+                className="text-success"
+                value="Ще Ви известим на този имейл, когато се презареди."
               />
-              <Button variant="primary" size="circle" aria-label="Изпрати">
-                <Icon name="check" className="size-5" />
-              </Button>
-            </div>
+            ) : (
+              <div className="flex gap-2">
+                <input
+                  type="email"
+                  id={`back_in_stock_custom_formInput-${product.id}`}
+                  className={cn(
+                    'w-full rounded-input border border-border bg-surface px-4 py-3 text-base text-ink',
+                    'outline-none transition-colors placeholder:text-ink/40 focus:border-ink',
+                  )}
+                  value={bisEmail}
+                  onChange={(e) => setBisEmail(e.target.value)}
+                  placeholder="Имейл"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                />
+                <Button
+                  variant="primary"
+                  size="circle"
+                  type="button"
+                  aria-label="Изпрати"
+                  disabled={bisStatus === 'sending' || !bisEmail.trim()}
+                  onClick={notifyBackInStock}
+                >
+                  <Icon name="check" className="size-5" />
+                </Button>
+              </div>
+            )}
           </div>
         )}
-
-        <input type="hidden" name="product-id" value={product.id} />
-        <input type="hidden" name="section-id" value="main" />
-      </form>
+      </div>
     </div>
   );
 }

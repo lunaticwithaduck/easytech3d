@@ -5,8 +5,8 @@
 // (primary → home, outline → contact), copyright footer.
 // No theme class names; styling exclusively from @theme tokens + design-system primitives.
 
-import { Button, Container, Heading, Link, Text } from '@/design-system';
 import { shop } from '@/data/settings';
+import { Button, Container, Heading, Link, Text } from '@/design-system';
 
 export function Page404() {
   const year = new Date().getFullYear();

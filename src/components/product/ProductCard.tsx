@@ -1,7 +1,9 @@
-import { Button, Card, Icon, Image, Link, Price, ProductLabel, Text, cn } from '@/design-system';
+import { Card, cn, Image, Link, Price, ProductLabel, Text } from '@/design-system';
 import { imageUrl } from '@/lib/shopify/image';
 import { percentSavings } from '@/lib/shopify/money';
 import type { ShopProduct } from '@/lib/shopify/types';
+import { AddToCartButton } from './AddToCartButton';
+import { QuickView } from './QuickView';
 
 // Product card — design-system version (primitives only; no theme classes). Faithful to the live
 // card: white surface radius 20 / padding 20, ~200px contained image with an alternate hover image,
@@ -26,6 +28,7 @@ export function ProductCard({
   const onSale = product.compareAtPrice != null && product.compareAtPrice > product.price;
   const soldOut = !product.available;
   const alternate = product.media[1];
+  const defaultVariant = product.variants.find((v) => v.available) ?? product.variants[0];
 
   const labels = (onSale || soldOut) && (
     <div className="absolute left-5 top-5 z-10 flex flex-col items-start gap-2">
@@ -42,10 +45,7 @@ export function ProductCard({
     <Link
       href={product.url}
       aria-label={product.title}
-      className={cn(
-        'relative block w-full',
-        list ? 'h-[200px]' : 'mb-4 h-[215px]',
-      )}
+      className={cn('relative block w-full', list ? 'h-[200px]' : 'mb-4 h-[215px]')}
     >
       <Image
         src={imageUrl(product.featuredImage.src, 535)}
@@ -54,7 +54,10 @@ export function ProductCard({
         sizes={list ? '269px' : '(min-width: 990px) 25vw, (min-width: 750px) 33vw, 50vw'}
         // When there's a hover image, fade the primary OUT as the alternate fades IN (clean
         // cross-fade — otherwise both stack and the alternate shows over the primary).
-        className={cn('object-contain', alternate && 'transition-opacity duration-300 group-hover:opacity-0')}
+        className={cn(
+          'object-contain',
+          alternate && 'transition-opacity duration-300 group-hover:opacity-0',
+        )}
       />
       {alternate && (
         <Image
@@ -69,12 +72,7 @@ export function ProductCard({
   );
 
   const info = (
-    <div
-      className={cn(
-        'flex min-w-0 flex-1 flex-col',
-        list && 'sm:pl-[50px]',
-      )}
-    >
+    <div className={cn('flex min-w-0 flex-1 flex-col', list && 'sm:pl-[50px]')}>
       {showVendor && product.vendor ? (
         <Text as="span" size="xs" color="muted" className="mb-1" value={product.vendor} />
       ) : null}
@@ -93,14 +91,8 @@ export function ProductCard({
 
       {/* Live card CTAs are the standard .btn: 16px / 50px tall / padding 13px 20px 13px 23px. */}
       <div className={cn('mt-auto flex flex-col gap-3', list && 'sm:max-w-[400px]')}>
-        <Button variant="primary" block aria-label="Добави в количката">
-          <Text as="span" weight="bold" color="white" value="Добави в количката" />
-          <Icon name="cart" className="size-[18px] shrink-0" />
-        </Button>
-        <Button variant="primary" block aria-label="Бърз преглед">
-          <Text as="span" weight="bold" color="white" value="Бърз преглед" />
-          <Icon name="tail-right" className="size-4 shrink-0" />
-        </Button>
+        <AddToCartButton variantId={defaultVariant?.id ?? null} available={!soldOut} />
+        <QuickView product={product} />
       </div>
     </div>
   );

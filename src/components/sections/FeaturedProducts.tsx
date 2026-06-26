@@ -20,8 +20,8 @@
 //   .product-item-block            → flex tile, padding-left 11px (the 11px gutter)
 
 import { useRef, useState } from 'react';
-import { Button, Container, Heading, Icon, Section, Text, cn } from '@/design-system';
 import { ProductCard } from '@/components/product/ProductCard';
+import { Button, Container, cn, Heading, Icon, Section, Text } from '@/design-system';
 import type { ShopProduct } from '@/lib/shopify/types';
 
 interface FeaturedProductsTab {
@@ -133,11 +133,7 @@ export function FeaturedProducts({
                         : 'opacity-50 hover:opacity-80',
                     )}
                   >
-                    <Heading
-                      as={HeadingTag}
-                      level={3}
-                      className={cn('font-bold', tabHeadingClass)}
-                    >
+                    <Heading as={HeadingTag} level={3} className={cn('font-bold', tabHeadingClass)}>
                       {tab.heading}
                     </Heading>
                   </button>

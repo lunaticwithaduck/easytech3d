@@ -1,6 +1,6 @@
-import { Button, Container, Heading, Icon, Image, Link, Text, cn } from '@/design-system';
-import { Rte } from '@/components/snippets/Rte';
 import { ProductCard } from '@/components/product/ProductCard';
+import { Rte } from '@/components/snippets/Rte';
+import { Container, cn, Heading, Icon, Image, Link, Text } from '@/design-system';
 import { imageUrl } from '@/lib/shopify/image';
 import type { ShopCollection, ShopProduct } from '@/lib/shopify/types';
 
@@ -66,7 +66,13 @@ export function CollectionTemplate({
     <div className="pb-14">
       {showBanner && image ? (
         <header className="relative mb-8 flex h-[280px] items-center overflow-hidden md:h-[360px]">
-          <Image src={imageUrl(image.src, 1500)} alt={image.alt || collection.title} fill sizes="100vw" className="object-cover" />
+          <Image
+            src={imageUrl(image.src, 1500)}
+            alt={image.alt || collection.title}
+            fill
+            sizes="100vw"
+            className="object-cover"
+          />
           <div className="absolute inset-0 bg-black/40" />
           <Container className="relative">
             <Heading as="h1" level={1} color="white">
@@ -99,7 +105,12 @@ export function CollectionTemplate({
         </div>
 
         {products.length === 0 && (
-          <Text as="p" color="muted" className="py-16 text-center" value="Няма продукти в тази колекция." />
+          <Text
+            as="p"
+            color="muted"
+            className="py-16 text-center"
+            value="Няма продукти в тази колекция."
+          />
         )}
 
         {collection.descriptionHtml && (

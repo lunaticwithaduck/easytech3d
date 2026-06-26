@@ -25,7 +25,7 @@ import { Link } from '@/i18n/navigation';
  */
 export function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
   return (
-    <nav className="breadcrumbs" role="navigation" aria-label="breadcrumbs">
+    <nav className="breadcrumbs" aria-label="breadcrumbs">
       <ol className="breadcrumbs__list">
         {items.map((item, index) => {
           const isLast = index === items.length - 1;

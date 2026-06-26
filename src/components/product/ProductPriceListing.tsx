@@ -4,14 +4,14 @@
 
 import type { ReactElement } from 'react';
 import { cn } from '@/lib/cn';
-import { money, moneyWithoutCurrency, EUR_RATE } from '@/lib/shopify/money';
+import { EUR_RATE, money, moneyWithoutCurrency } from '@/lib/shopify/money';
 import type { ShopProduct, ShopVariant } from '@/lib/shopify/types';
 
 export function ProductPriceListing({
   product,
-  variant,
 }: {
   product: ShopProduct;
+  /** Accepted for caller symmetry; the listing snippet reads product-level fields only. */
   variant?: ShopVariant;
 }): ReactElement {
   // ── price resolution (mirrors the Liquid's {%- liquid ... -%} block) ────────
