@@ -1,7 +1,8 @@
 # Build: docker build --build-arg NEXT_PUBLIC_SITE_URL=... -t easytech3d-web .
 #
 # Railway passes service variables as --build-arg only for ARGs declared here, so every
-# NEXT_PUBLIC_* var must be listed below to be inlined by `next build`.
+# NEXT_PUBLIC_* var must be listed below to be inlined by `next build`. BACKEND_API_URL is
+# needed too: `next build` prerenders catalog pages (home, collections) from the backend.
 
 # ---------- build ----------
 FROM node:22-alpine AS build
@@ -14,6 +15,7 @@ RUN pnpm install --frozen-lockfile
 
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_MEDIA_HOST
+ARG BACKEND_API_URL
 COPY . .
 RUN pnpm build
 
