@@ -4,7 +4,7 @@
 
 import type { ReactElement } from 'react';
 import { cn } from '@/lib/cn';
-import { EUR_RATE, money, moneyWithoutCurrency } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 import type { ShopProduct, ShopVariant } from '@/lib/shopify/types';
 
 export function ProductPriceListing({
@@ -25,10 +25,7 @@ export function ProductPriceListing({
   // price_varies: product has a price range (priceMin != priceMax)
   const priceVaries = product.priceMin !== product.priceMax;
 
-  // EUR conversion: {{ price_full | times: 0.51 }}
-  const convertedPrice = Math.round(price * EUR_RATE);
-
-  // money_compare: compare-at price as "X.XX лв"
+  // money_compare: compare-at price as "X.XX €"
   const moneyCompare = compareAtPrice !== null ? money(compareAtPrice) : '';
 
   // ── modifier classes ─────────────────────────────────────────────────────────
@@ -38,13 +35,8 @@ export function ProductPriceListing({
     compareAtPrice !== null && compareAtPrice > price && 'price--on-sale',
   );
 
-  // ── dual price string used in both __regular and __sale ─────────────────────
-  // {{ price_full | money_without_currency }} лв / {{ converted_price | money_without_currency }} €
-  const dualPriceSpan = (
-    <span>
-      {moneyWithoutCurrency(price)} лв / {moneyWithoutCurrency(convertedPrice)} €
-    </span>
-  );
+  // ── price string used in both __regular and __sale ───────────────────────────
+  const priceSpan = <span>{money(price)}</span>;
 
   // from_lowest_price_html: "от {{ lowest_price }}" — used when price varies
   const fromLowestPrice = `от ${money(product.priceMin)}`;
@@ -55,7 +47,7 @@ export function ProductPriceListing({
       <div className="price__regular">
         <span className="visually-hidden visually-hidden--inline">Нормална цена</span>
         <span className="price-item price-item--regular">
-          {priceVaries ? fromLowestPrice : dualPriceSpan}
+          {priceVaries ? fromLowestPrice : priceSpan}
         </span>
       </div>
 
@@ -63,7 +55,7 @@ export function ProductPriceListing({
       <div className="price__sale">
         <span className="visually-hidden visually-hidden--inline">Цена</span>
         <span className="price-item price-item--sale">
-          {priceVaries ? fromLowestPrice : dualPriceSpan}
+          {priceVaries ? fromLowestPrice : priceSpan}
         </span>
 
         <div className="price__compare">

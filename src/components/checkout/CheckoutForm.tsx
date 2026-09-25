@@ -7,7 +7,7 @@ import { cartActions } from '@/components/layout/cart-store';
 import { routes } from '@/config/routes';
 import { Button, cn, Heading, Image, Text } from '@/design-system';
 import { useRouter } from '@/i18n/navigation';
-import { dualPrice, money } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 import type { EcontCity, EcontOffice, ShippingMethodInfo, ShopCart } from '@/lib/shopify/types';
 
 const inputCls =
@@ -420,7 +420,7 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
           </div>
           <div className="flex justify-between pt-2">
             <Text as="span" size="base" weight="bold" value="Общо" />
-            <Text as="span" size="base" weight="bold" value={dualPrice(total)} />
+            <Text as="span" size="base" weight="bold" value={money(total)} />
           </div>
           <Text as="p" size="xs" color="muted" className="pt-1" value="ДДС включено." />
         </div>

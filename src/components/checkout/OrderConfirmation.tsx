@@ -1,6 +1,6 @@
 import { routes } from '@/config/routes';
 import { Button, Container, Heading, Icon, Image, Link, Text } from '@/design-system';
-import { dualPrice, money } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 import type { ShopOrder } from '@/lib/shopify/types';
 
 // Order confirmation / thank-you. Server component — receives the order fetched from the backend.
@@ -60,7 +60,12 @@ export function OrderConfirmation({ order }: { order: ShopOrder }) {
                     </Text>
                   )}
                 </span>
-                <Text as="span" size="sm" weight="bold" value={money(item.lineTotal)} />
+                <Text
+                  as="span"
+                  size="sm"
+                  weight="bold"
+                  value={money(item.lineTotal, order.currency)}
+                />
               </li>
             ))}
           </ul>
@@ -68,19 +73,26 @@ export function OrderConfirmation({ order }: { order: ShopOrder }) {
           <div className="mt-4 space-y-1 border-t border-border pt-4">
             <div className="flex justify-between">
               <Text as="span" size="sm" color="muted" value="Междинна сума" />
-              <Text as="span" size="sm" value={money(order.subtotal)} />
+              <Text as="span" size="sm" value={money(order.subtotal, order.currency)} />
             </div>
             <div className="flex justify-between">
               <Text as="span" size="sm" color="muted" value="Доставка" />
               <Text
                 as="span"
                 size="sm"
-                value={order.shippingCost === 0 ? 'Безплатно' : money(order.shippingCost)}
+                value={
+                  order.shippingCost === 0 ? 'Безплатно' : money(order.shippingCost, order.currency)
+                }
               />
             </div>
             <div className="flex justify-between pt-2">
               <Text as="span" size="base" weight="bold" value="Общо" />
-              <Text as="span" size="base" weight="bold" value={dualPrice(order.total)} />
+              <Text
+                as="span"
+                size="base"
+                weight="bold"
+                value={money(order.total, order.currency)}
+              />
             </div>
           </div>
         </div>

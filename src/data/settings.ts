@@ -20,7 +20,7 @@ export const announcementBar = {
   blocks: [
     {
       contentHtml:
-        '<p><strong>Безплатна </strong>доставка за поръчки над <strong>150лв</strong>!</p>',
+        '<p><strong>Безплатна </strong>доставка за поръчки над <strong>76.69 €</strong>!</p>',
       link: '',
     },
     {

@@ -1,9 +1,9 @@
 import { cn } from '@/design-system/lib/cn';
 import { Text } from '@/design-system/primitives/Text/Text';
-import { dualPrice, money } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 
-// The theme's dual-currency price: "{lev} лв / {eur} €" (eur = lev × 0.51). On sale the current
-// price turns red (--color-sale) and the compare-at is struck through. Prices are integer cents.
+// EUR price, e.g. "24.90 €". On sale the current price turns red (--color-sale) and the
+// compare-at is struck through. Prices are integer cents.
 export function Price({
   price,
   compareAtPrice,
@@ -23,7 +23,7 @@ export function Price({
         size={size}
         weight="bold"
         color={onSale ? 'sale' : 'ink'}
-        value={dualPrice(price)}
+        value={money(price)}
       />
       {onSale ? <Text as="s" size="sm" color="muted" value={money(compareAtPrice)} /> : null}
     </div>

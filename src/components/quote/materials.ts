@@ -1,5 +1,6 @@
 // Materials, colours, pricing config — ported verbatim from the easytech3d-quote reference.
-// Prices are лв/gram. MIN_PRICE / discount tiers / dimension cap match the live calculator.
+// Prices are €/gram (converted from BGN at the fixed 1 EUR = 1.95583 BGN rate — see
+// contracts/euro.md). MIN_PRICE / discount tiers / dimension cap match the live calculator.
 
 export type MaterialId = 'pla' | 'pla-pro' | 'petg' | 'abs' | 'asa';
 
@@ -7,19 +8,19 @@ export interface Material {
   id: MaterialId;
   label: string;
   density: number; // g/cm³
-  pricePerGram: number; // лв/g
+  pricePerGram: number; // €/g
   flow: number; // g/h (for print-time estimate)
 }
 
 export const MATERIALS: Material[] = [
-  { id: 'pla', label: 'PLA', density: 1.24, pricePerGram: 0.55, flow: 25 },
-  { id: 'pla-pro', label: 'PLA Pro', density: 1.24, pricePerGram: 0.55, flow: 22 },
-  { id: 'petg', label: 'PETG', density: 1.27, pricePerGram: 0.55, flow: 22 },
-  { id: 'abs', label: 'ABS', density: 1.04, pricePerGram: 0.75, flow: 24 },
-  { id: 'asa', label: 'ASA', density: 1.07, pricePerGram: 0.8, flow: 22 },
+  { id: 'pla', label: 'PLA', density: 1.24, pricePerGram: 0.2812, flow: 25 },
+  { id: 'pla-pro', label: 'PLA Pro', density: 1.24, pricePerGram: 0.2812, flow: 22 },
+  { id: 'petg', label: 'PETG', density: 1.27, pricePerGram: 0.2812, flow: 22 },
+  { id: 'abs', label: 'ABS', density: 1.04, pricePerGram: 0.3835, flow: 24 },
+  { id: 'asa', label: 'ASA', density: 1.07, pricePerGram: 0.409, flow: 22 },
 ];
 
-export const MIN_PRICE = 10; // лв
+export const MIN_PRICE = 5.11; // €
 export const MAX_DIM_MM = 220;
 export const DISCOUNT_TIERS = [
   { min: 10, pct: 20 },

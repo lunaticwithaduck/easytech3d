@@ -197,7 +197,7 @@ export function QuoteCalculator() {
     const body =
       `Здравейте,\n\nБих искал/а да поръчам 3D принт:\n\nФайлове:\n${filesList}\n\n` +
       `Материал: ${material.label}\nЦвят: ${color}\nЗапълване: ${infill}%\nКоличество: ${qty} бр.\n` +
-      `Ориентировъчна цена: ${pricing.finalPrice.toFixed(2)} лв\nОчаквана доставка: ${pricing.delivery}\n` +
+      `Ориентировъчна цена: ${pricing.finalPrice.toFixed(2)} €\nОчаквана доставка: ${pricing.delivery}\n` +
       (printNotes ? `\nБележки: ${printNotes}\n` : '') +
       '\nМоля, потвърдете поръчката.\n\nБлагодаря!';
     window.open(
@@ -319,7 +319,7 @@ export function QuoteCalculator() {
                   weight="bold"
                   color="primary"
                   className="mt-1"
-                  value={`${price.toFixed(2)} лв`}
+                  value={`${price.toFixed(2)} €`}
                 />
               </div>
               <button
@@ -346,7 +346,7 @@ export function QuoteCalculator() {
           >
             {MATERIALS.map((m) => (
               <option key={m.id} value={m.id}>
-                {m.label} — {m.pricePerGram.toFixed(2)} лв/г
+                {m.label} — {m.pricePerGram.toFixed(2)} €/г
               </option>
             ))}
           </select>
@@ -356,7 +356,7 @@ export function QuoteCalculator() {
             weight="bold"
             color="primary"
             className="mt-1 block"
-            value={`${material.pricePerGram.toFixed(2)} лв/г`}
+            value={`${material.pricePerGram.toFixed(2)} €/г`}
           />
         </label>
         <label className="block">
@@ -447,14 +447,14 @@ export function QuoteCalculator() {
             <div className="mb-2 flex justify-between text-sm text-surface/70">
               <span>Материал</span>
               <span>
-                {material.label} @ {material.pricePerGram.toFixed(2)} лв/г
+                {material.label} @ {material.pricePerGram.toFixed(2)} €/г
               </span>
             </div>
             {pricing.discount > 0 && (
               <div className="mb-2 flex justify-between text-sm">
                 <span className="text-surface/70">Отстъпка за количество</span>
                 <span className="font-bold text-success">
-                  −{pricing.discount}% (−{(pricing.discountAmt * qty).toFixed(2)} лв)
+                  −{pricing.discount}% (−{(pricing.discountAmt * qty).toFixed(2)} €)
                 </span>
               </div>
             )}
@@ -464,7 +464,7 @@ export function QuoteCalculator() {
                 <span className="text-3xl font-bold text-primary">
                   {pricing.finalPrice.toFixed(2)}
                 </span>
-                <span className="ml-1 text-base text-surface/70">лв</span>
+                <span className="ml-1 text-base text-surface/70">€</span>
               </span>
             </div>
           </div>
@@ -475,7 +475,7 @@ export function QuoteCalculator() {
               size="sm"
               weight="bold"
               className="mb-4 rounded-md border border-primary bg-primary/5 px-4 py-2.5 text-center text-primary"
-              value={`Минималната поръчка е ${MIN_PRICE.toFixed(2)} лв. Цената е коригирана.`}
+              value={`Минималната поръчка е ${MIN_PRICE.toFixed(2)} €. Цената е коригирана.`}
             />
           )}
           {pricing.discount > 0 && (

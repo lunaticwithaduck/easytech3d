@@ -1,6 +1,6 @@
 import { routes } from '@/config/routes';
 import { Icon, Link, Text } from '@/design-system';
-import { dualPrice } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 import type { ShopOrder } from '@/lib/shopify/types';
 
 const STATUS_LABEL: Record<string, string> = {
@@ -60,7 +60,7 @@ export function OrderHistoryList({ orders }: { orders: ShopOrder[] }) {
                   {formatDate(order.createdAt)} · {itemCount} артикула
                 </Text>
               </span>
-              <Text as="span" weight="bold" value={dualPrice(order.total)} />
+              <Text as="span" weight="bold" value={money(order.total, order.currency)} />
               <Icon name="chevron-right" className="size-4 shrink-0 text-ink/40" />
             </Link>
           </li>

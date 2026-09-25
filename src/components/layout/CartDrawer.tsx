@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { routes } from '@/config/routes';
 import { Button, cn, Heading, Icon, Image, Link, Text } from '@/design-system';
-import { dualPrice, money } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 import { cartActions, cartDrawer, useCart, useCartDrawerOpen, useCartPending } from './cart-store';
 
 // Off-canvas cart drawer — backed by the server cart (cart-store). Slides in from the right; shows
@@ -177,7 +177,7 @@ export function CartDrawer() {
             <div className="border-t border-border px-5 py-4">
               <div className="mb-3 flex items-center justify-between">
                 <Text as="span" size="base" weight="bold" value="Междинна сума" />
-                <Text as="span" size="base" weight="bold" value={dualPrice(cart.subtotal)} />
+                <Text as="span" size="base" weight="bold" value={money(cart.subtotal)} />
               </div>
               <Button variant="primary" block asChild>
                 <Link href={routes.cart} onClick={() => cartDrawer.close()}>

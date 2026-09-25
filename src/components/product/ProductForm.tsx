@@ -10,7 +10,7 @@ import { cartActions, useCartPending } from '@/components/layout/cart-store';
 import { routes } from '@/config/routes';
 import { Button, cn, Heading, Icon, Link, Text } from '@/design-system';
 import { useRouter } from '@/i18n/navigation';
-import { dualPrice, money } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 import type { ShopProduct, ShopVariant } from '@/lib/shopify/types';
 
 export function ProductForm({ product }: { product: ShopProduct }) {
@@ -93,7 +93,7 @@ export function ProductForm({ product }: { product: ShopProduct }) {
             as="span"
             color={onSale ? 'sale' : 'ink'}
             className="text-[20px] leading-[30px]"
-            value={dualPrice(price)}
+            value={money(price)}
           />
           {onSale && compareAtPrice != null && (
             <Text

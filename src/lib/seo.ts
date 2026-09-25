@@ -21,7 +21,7 @@ export const DEFAULT_DESCRIPTION =
   'Висококачествени филаменти (PLA, PETG, ABS, ASA, PLA Flex), резини, дюзи, легла и части за 3D принтери на достъпни цени. Бърза доставка в цяла България.';
 export const DEFAULT_OG_IMAGE =
   'https://cdn.shopify.com/s/files/1/0726/9413/7129/files/baner_sait.jpg';
-const CURRENCY = 'BGN';
+const CURRENCY = 'EUR';
 const OG_LOCALE: Record<string, string> = { bg: 'bg_BG', en: 'en_US' };
 
 export function absoluteUrl(path = '/'): string {

@@ -3,7 +3,7 @@
 import { cartActions, useCart, useCartPending } from '@/components/layout/cart-store';
 import { routes } from '@/config/routes';
 import { Button, Heading, Icon, Image, Link, Text } from '@/design-system';
-import { dualPrice, money } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 
 // Full cart page contents — server cart via the store. Line items with qty + remove, a summary with
 // subtotal + free-shipping note, and a (Phase 2b) checkout CTA.
@@ -129,7 +129,7 @@ export function CartContents() {
         </Heading>
         <div className="mb-2 flex items-center justify-between">
           <Text as="span" size="base" color="muted" value="Междинна сума" />
-          <Text as="span" size="base" weight="bold" value={dualPrice(cart.subtotal)} />
+          <Text as="span" size="base" weight="bold" value={money(cart.subtotal)} />
         </div>
         <Text
           as="p"

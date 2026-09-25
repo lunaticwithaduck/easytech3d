@@ -5,7 +5,7 @@ import { cartActions, useCartPending } from '@/components/layout/cart-store';
 import { Button, cn, Heading, Icon, Image, Link, Text } from '@/design-system';
 import { useRouter } from '@/i18n/navigation';
 import { imageUrl } from '@/lib/shopify/image';
-import { dualPrice, money } from '@/lib/shopify/money';
+import { money } from '@/lib/shopify/money';
 import type { ShopProduct, ShopVariant } from '@/lib/shopify/types';
 
 // Quick-view modal — opens from a product card's "Бърз преглед" button without leaving the grid.
@@ -159,7 +159,7 @@ export function QuickView({ product }: { product: ShopProduct }) {
                   weight="bold"
                   color={onSale ? 'sale' : 'ink'}
                   className="text-[22px] leading-[30px]"
-                  value={dualPrice(price)}
+                  value={money(price)}
                 />
                 {onSale && compareAtPrice != null && (
                   <Text

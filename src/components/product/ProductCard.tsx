@@ -7,14 +7,14 @@ import { QuickView } from './QuickView';
 
 // Product card — design-system version (primitives only; no theme classes). Faithful to the live
 // card: white surface radius 20 / padding 20, ~200px contained image with an alternate hover image,
-// outlined green sale label, dual лв/€ price, 22px regular title, and the two pink pill buttons
+// outlined green sale label, EUR price, 22px regular title, and the two pink pill buttons
 // (Добави в количката + Бърз преглед). Fills its grid cell (h-full); the parent provides the cell.
 //
 // Two layouts (export/props otherwise identical):
 //   • default (grid)  → vertical card; image on top, info stacked below (collection / featured).
 //   • list (`list`)   → horizontal row used on the search results page. Probed from live
 //     /search?q=pla (.product-card list view): flex-row, padding 20, a fixed ~269px object-contain
-//     image box on the LEFT, and a flex-1 info column on the RIGHT (vendor 13px, 22px title, dual
+//     image box on the LEFT, and a flex-1 info column on the RIGHT (vendor 13px, 22px title,
 //     price, then the two stacked pill buttons ~400px wide) with a 50px gap to the image.
 export function ProductCard({
   product,

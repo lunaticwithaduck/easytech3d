@@ -13,7 +13,7 @@ import type {
 /**
  * Catalog read layer — backed by the easytech3d-backend (NestJS) over HTTP via apiFetch
  * (`BACKEND_API_URL`). These accessors are async; callers are RSC / Server Actions that await them.
- * Responses match the Shop* contract the BE mirrors. Money is integer BGN cents.
+ * Responses match the Shop* contract the BE mirrors. Money is integer EUR cents.
  *
  * Articles/blog below remain editorial placeholders (static) until blog content is migrated.
  */
@@ -100,8 +100,8 @@ export function getRelatedProducts(handle: string, limit = 4): Promise<ShopProdu
 export type SearchFilters = {
   q: string;
   available?: 'in' | 'out';
-  minPrice?: number; // лв
-  maxPrice?: number; // лв
+  minPrice?: number; // EUR
+  maxPrice?: number; // EUR
   sort?: SortKey;
 };
 

@@ -2,8 +2,9 @@
 // `product.compare_at_price`, `collection.products`, `block.settings.heading`. Translated React
 // components consume these same shapes so the port is a 1:1 mapping, not a reinterpretation.
 //
-// Money is INTEGER CENTS, exactly like Shopify (`product.price` == 2490 for "24.90"). Format it
-// with the helpers in ./money (moneyWithoutCurrency / dualPrice).
+// Money is INTEGER CENTS, exactly like Shopify (`product.price` == 2490 for "24.90"). Since the
+// 2026-01-01 euro changeover, catalog/cart/shipping money is EUR cents; order payloads (ShopOrder)
+// carry their own `currency` (historical pre-2026 orders stay BGN). Format with ./money's `money()`.
 
 export interface ShopImage {
   /** Absolute URL (Shopify CDN). */
@@ -103,7 +104,7 @@ export interface MenuLink {
   links?: MenuLink[];
 }
 
-// ---- Cart (Phase 2) — mirrors the backend cart contract. Money is integer BGN cents. ----------
+// ---- Cart (Phase 2) — mirrors the backend cart contract. Money is integer EUR cents. -----------
 
 export interface ShopCartItem {
   id: string;
@@ -155,6 +156,8 @@ export interface ShopOrder {
   id: string;
   orderNumber: string;
   status: string;
+  /** 'EUR' for orders placed since the 2026-01-01 changeover; 'BGN' for historical imported orders. */
+  currency: 'EUR' | 'BGN';
   paymentMethod: string;
   paymentStatus: string;
   email: string;

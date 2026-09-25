@@ -13,8 +13,8 @@ const EMPTY_CART: ShopCart = {
   items: [],
   itemCount: 0,
   subtotal: 0,
-  freeShippingThreshold: 10500,
-  freeShippingRemaining: 10500,
+  freeShippingThreshold: 5369, // 53.69 € — matches the server's EUR free-shipping threshold
+  freeShippingRemaining: 5369,
   qualifiesForFreeShipping: false,
 };
 
