@@ -8,7 +8,7 @@
 //   main media 580×580 (1:1, contained) · thumbnails-block 148px / image 137px / 11px gutter / 2px top.
 
 import { useState } from 'react';
-import { Image, cn } from '@/design-system';
+import { cn, Image } from '@/design-system';
 import { imageUrl } from '@/lib/shopify/image';
 import type { ShopImage } from '@/lib/shopify/types';
 

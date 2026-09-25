@@ -26,3 +26,8 @@ tools/output/
 .DS_Store
 *.tsbuildinfo
 .turbo
+
+# Shopify source exports — input for tools/extract-catalog.py. Kept local, never committed:
+# products/inventory are large, and orders/customers contain customer PII. The committed
+# source of truth is the generated src/data/catalog.generated.ts.
+easytech3d csv's/

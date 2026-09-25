@@ -32,19 +32,19 @@ const icons: IconMap = {
 
   'arrow-bottom': (cls) => (
     <svg className={cls} viewBox="0 0 12 8" role="presentation">
-      <path stroke="currentColor" strokeWidth="2" d="M10 2L6 6 2 2" fill="none" strokeLinecap="square" />
+      <path
+        stroke="currentColor"
+        strokeWidth="2"
+        d="M10 2L6 6 2 2"
+        fill="none"
+        strokeLinecap="square"
+      />
     </svg>
   ),
 
   // ── chevrons ─────────────────────────────────────────────────────────────
   'chevron-down': (cls) => (
-    <svg
-      aria-hidden="true"
-      focusable={false}
-      role="presentation"
-      className={cls}
-      viewBox="0 0 9 9"
-    >
+    <svg aria-hidden="true" focusable={false} role="presentation" className={cls} viewBox="0 0 9 9">
       <path
         d="M8.542 2.558a.625.625 0 0 1 0 .884l-3.6 3.6a.626.626 0 0 1-.884 0l-3.6-3.6a.625.625 0 1 1 .884-.884L4.5 5.716l3.158-3.158a.625.625 0 0 1 .884 0z"
         fill="#fff"
@@ -82,7 +82,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'caret': (cls) => (
+  caret: (cls) => (
     <svg
       aria-hidden="true"
       focusable={false}
@@ -100,7 +100,7 @@ const icons: IconMap = {
   ),
 
   // ── search ────────────────────────────────────────────────────────────────
-  'search': (cls) => (
+  search: (cls) => (
     <svg className={cls} viewBox="0 0 21 21" role="presentation">
       <g strokeWidth="2" stroke="currentColor" fill="none" fillRule="evenodd">
         <path d="M19 19l-5-5" strokeLinecap="square" />
@@ -123,7 +123,7 @@ const icons: IconMap = {
   ),
 
   // ── hamburger / close ─────────────────────────────────────────────────────
-  'hamburger': (cls) => (
+  hamburger: (cls) => (
     <svg className={cls} viewBox="0 0 20 14" role="presentation">
       <path
         d="M0 12h20v2H0v-2zM0 0h20v2H0V0zm0 6h20v2H0V6z"
@@ -156,7 +156,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'close': (cls) => (
+  close: (cls) => (
     <svg className={cls} viewBox="0 0 19 19" role="presentation">
       <path
         d="M9.1923882 8.39339828l7.7781745-7.7781746 1.4142136 1.41421357-7.7781746 7.77817459 7.7781746 7.77817456L16.9705627 19l-7.7781745-7.7781746L1.41421356 19 0 17.5857864l7.7781746-7.77817456L0 2.02943725 1.41421356.61522369 9.1923882 8.39339828z"
@@ -183,9 +183,15 @@ const icons: IconMap = {
   ),
 
   // ── cart / basket / bag ───────────────────────────────────────────────────
-  'cart': (cls) => (
+  cart: (cls) => (
     <svg className={cls} viewBox="0 0 27 24" role="presentation">
-      <g transform="translate(0 1)" strokeWidth="2" stroke="currentColor" fill="none" fillRule="evenodd">
+      <g
+        transform="translate(0 1)"
+        strokeWidth="2"
+        stroke="currentColor"
+        fill="none"
+        fillRule="evenodd"
+      >
         <circle strokeLinecap="square" cx="11" cy="20" r="2" />
         <circle strokeLinecap="square" cx="22" cy="20" r="2" />
         <path d="M7.31 5h18.27l-1.44 10H9.78L6.22 0H0" />
@@ -193,7 +199,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'basket': (cls) => (
+  basket: (cls) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -209,7 +215,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'bag': (cls) => (
+  bag: (cls) => (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
@@ -226,7 +232,7 @@ const icons: IconMap = {
   ),
 
   // ── account / user / heart ────────────────────────────────────────────────
-  'account': (cls) => (
+  account: (cls) => (
     <svg className={cls} viewBox="0 0 20 22" role="presentation">
       <path
         d="M10 13c2.82 0 5.33.64 6.98 1.2A3 3 0 0 1 19 17.02V21H1v-3.97a3 3 0 0 1 2.03-2.84A22.35 22.35 0 0 1 10 13zm0 0c-2.76 0-5-3.24-5-6V6a5 5 0 0 1 10 0v1c0 2.76-2.24 6-5 6z"
@@ -237,7 +243,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'user': (cls) => (
+  user: (cls) => (
     <svg className={cls} viewBox="0 0 20 22" role="presentation">
       <path
         d="M10 13c2.82 0 5.33.64 6.98 1.2A3 3 0 0 1 19 17.02V21H1v-3.97a3 3 0 0 1 2.03-2.84A22.35 22.35 0 0 1 10 13zm0 0c-2.76 0-5-3.24-5-6V6a5 5 0 0 1 10 0v1c0 2.76-2.24 6-5 6z"
@@ -248,27 +254,27 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'heart': (cls) => (
+  heart: (cls) => (
     <svg className={cls} viewBox="0 0 17 15" role="presentation">
       <path d="M15.0349331 1.40485867C14.1287273.49933787 12.9252477 0 11.6443673 0S9.16000731.49933787 8.25448651 1.40417371c-.01164437.01164436-.02328874.02328873-.03493311.03561806-.01164436-.01232933-.02260377-.02328873-.03424813-.0349331C7.2790995.49933787 6.07561989 0 4.79473949 0 3.51385908 0 2.31037947.49933787 1.40417371 1.40485867.49796794 2.31037947 0 3.51385908 0 4.79473949 0 6.07561989.4986529 7.2790995 1.40417371 8.1846203L8.2195534 15l6.8153797-6.8153797c.9055208-.9055208 1.4041737-2.10900041 1.4041737-3.38988081 0-1.28019545-.4986529-2.48436002-1.4041737-3.38988082z" />
     </svg>
   ),
 
   // ── plus / minus ─────────────────────────────────────────────────────────
-  'plus': (cls) => (
+  plus: (cls) => (
     <svg className={cls} viewBox="0 0 10 10" role="presentation">
       <path d="M6 4h4v2H6v4H4V6H0V4h4V0h2v4z" fill="currentColor" fillRule="evenodd" />
     </svg>
   ),
 
-  'minus': (cls) => (
+  minus: (cls) => (
     <svg className={cls} viewBox="0 0 10 2" role="presentation">
       <path d="M10 0v2H0V0z" fill="currentColor" />
     </svg>
   ),
 
   // ── social ────────────────────────────────────────────────────────────────
-  'facebook': (cls) => (
+  facebook: (cls) => (
     <svg
       aria-hidden="true"
       focusable={false}
@@ -283,7 +289,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'twitter': (cls) => (
+  twitter: (cls) => (
     <svg
       aria-hidden="true"
       focusable={false}
@@ -298,7 +304,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'pinterest': (cls) => (
+  pinterest: (cls) => (
     <svg
       aria-hidden="true"
       focusable={false}
@@ -313,7 +319,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'instagram': (cls) => (
+  instagram: (cls) => (
     <svg
       aria-hidden="true"
       focusable={false}
@@ -327,7 +333,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'youtube': (cls) => (
+  youtube: (cls) => (
     <svg
       aria-hidden="true"
       focusable={false}
@@ -343,7 +349,7 @@ const icons: IconMap = {
   ),
 
   // ── misc ui ───────────────────────────────────────────────────────────────
-  'check': (cls) => (
+  check: (cls) => (
     <svg className={cls} viewBox="0 0 24 24" role="presentation">
       <path fill="currentColor" d="M9 20l-7-7 3-3 4 4L19 4l3 3z" />
     </svg>
@@ -361,7 +367,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'filter': (cls) => (
+  filter: (cls) => (
     <svg className={cls} viewBox="0 0 19 20" role="presentation">
       <path
         d="M17.0288086 4.01391602L11 9v7.0072021l-4 2.008545V9L1.01306152 4.01391602V1H17.0288086z"
@@ -373,7 +379,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'grid': (cls) => (
+  grid: (cls) => (
     <svg className={cls} viewBox="0 0 18 18" role="presentation">
       <path
         d="M1 .030067h2c.55228475 0 1 .44771525 1 1v2c0 .55228475-.44771525 1-1 1H1c-.55228475 0-1-.44771525-1-1v-2c0-.55228475.44771525-1 1-1zm0 7h2c.55228475 0 1 .44771525 1 1v2c0 .5522847-.44771525 1-1 1H1c-.55228475 0-1-.4477153-1-1v-2c0-.55228475.44771525-1 1-1zm0 7h2c.55228475 0 1 .4477153 1 1v2c0 .5522847-.44771525 1-1 1H1c-.55228475 0-1-.4477153-1-1v-2c0-.5522847.44771525-1 1-1zm7-14h2c.5522847 0 1 .44771525 1 1v2c0 .55228475-.4477153 1-1 1H8c-.55228475 0-1-.44771525-1-1v-2c0-.55228475.44771525-1 1-1zm0 7h2c.5522847 0 1 .44771525 1 1v2c0 .5522847-.4477153 1-1 1H8c-.55228475 0-1-.4477153-1-1v-2c0-.55228475.44771525-1 1-1zm0 7h2c.5522847 0 1 .4477153 1 1v2c0 .5522847-.4477153 1-1 1H8c-.55228475 0-1-.4477153-1-1v-2c0-.5522847.44771525-1 1-1zm7-14h2c.5522847 0 1 .44771525 1 1v2c0 .55228475-.4477153 1-1 1h-2c-.5522847 0-1-.44771525-1-1v-2c0-.55228475.4477153-1 1-1zm0 7h2c.5522847 0 1 .44771525 1 1v2c0 .5522847-.4477153 1-1 1h-2c-.5522847 0-1-.4477153-1-1v-2c0-.55228475.4477153-1 1-1zm0 7h2c.5522847 0 1 .4477153 1 1v2c0 .5522847-.4477153 1-1 1h-2c-.5522847 0-1-.4477153-1-1v-2c0-.5522847.4477153-1 1-1z"
@@ -383,7 +389,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'list': (cls) => (
+  list: (cls) => (
     <svg className={cls} viewBox="0 0 18 18" role="presentation">
       <path
         d="M8 1.030067h9c.5522847 0 1 .44771525 1 1s-.4477153 1-1 1H8c-.55228475 0-1-.44771525-1-1s.44771525-1 1-1zm0 7h9c.5522847 0 1 .44771525 1 1s-.4477153 1-1 1H8c-.55228475 0-1-.44771525-1-1s.44771525-1 1-1zm0 7h9c.5522847 0 1 .4477153 1 1s-.4477153 1-1 1H8c-.55228475 0-1-.4477153-1-1s.44771525-1 1-1zm-7-15h2c.55228475 0 1 .44771525 1 1v2c0 .55228475-.44771525 1-1 1H1c-.55228475 0-1-.44771525-1-1v-2c0-.55228475.44771525-1 1-1zm0 7h2c.55228475 0 1 .44771525 1 1v2c0 .5522847-.44771525 1-1 1H1c-.55228475 0-1-.4477153-1-1v-2c0-.55228475.44771525-1 1-1zm0 7h2c.55228475 0 1 .4477153 1 1v2c0 .5522847-.44771525 1-1 1H1c-.55228475 0-1-.4477153-1-1v-2c0-.5522847.44771525-1 1-1z"
@@ -395,13 +401,19 @@ const icons: IconMap = {
 
   'lock-2': (cls) => (
     <svg className={cls} viewBox="0 0 12 15" role="presentation">
-      <g stroke="currentColor" strokeWidth="2" fill="none" fillRule="evenodd" strokeLinecap="square">
+      <g
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+        fillRule="evenodd"
+        strokeLinecap="square"
+      >
         <path d="M6 1C4.32 1 3 2.375 3 4.125V6h6V4.125C9 2.375 7.68 1 6 1zM1 6h10v8H1z" />
       </g>
     </svg>
   ),
 
-  'newsletter': (cls) => (
+  newsletter: (cls) => (
     <svg className={cls} viewBox="0 0 20 17" role="presentation">
       <path
         d="M19.1666667 0H.83333333C.37333333 0 0 .37995 0 .85v15.3c0 .47005.37333333.85.83333333.85H19.1666667c.46 0 .8333333-.37995.8333333-.85V.85c0-.47005-.3733333-.85-.8333333-.85zM7.20975004 10.8719018L5.3023283 12.7794369c-.14877889.1487878-.34409888.2235631-.53941886.2235631-.19531999 0-.39063998-.0747753-.53941887-.2235631-.29832076-.2983385-.29832076-.7805633 0-1.0789018L6.1309123 9.793l1.07883774 1.0789018zm8.56950946 1.9075351c-.1487789.1487878-.3440989.2235631-.5394189.2235631-.19532 0-.39064-.0747753-.5394189-.2235631L12.793 10.8719018 13.8718377 9.793l1.9074218 1.9075351c.2983207.2983385.2983207.7805633 0 1.0789018zm.9639048-7.45186267l-6.1248086 5.44429317c-.1706197.1516625-.3946127.2278826-.6186057.2278826-.223993 0-.447986-.0762201-.61860567-.2278826l-6.1248086-5.44429317c-.34211431-.30410267-.34211431-.79564457 0-1.09974723.34211431-.30410267.89509703-.30410267 1.23721134 0L9.99975 9.1222466l5.5062029-4.8944196c.3421143-.30410267.8950971-.30410267 1.2372114 0 .3421143.30410266.3421143.79564456 0 1.09974723z"
@@ -410,7 +422,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'timer': (cls) => (
+  timer: (cls) => (
     <svg className={cls} viewBox="0 0 20 20" role="presentation">
       <g stroke="currentColor" fill="none" fillRule="evenodd">
         <circle cx="10" cy="10" r="9" />
@@ -419,7 +431,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'zoom': (cls) => (
+  zoom: (cls) => (
     <svg className={cls} viewBox="0 0 10 10" role="presentation">
       <path
         d="M7.58801492 6.8808396L9.999992 9.292784l-.70716.707208-2.41193007-2.41199543C6.15725808 8.15916409 5.24343297 8.50004 4.25 8.50004c-2.347188 0-4.249968-1.902876-4.249968-4.2501C.000032 1.902704 1.902812.000128 4.25.000128c2.347176 0 4.249956 1.902576 4.249956 4.249812 0 .99341752-.34083418 1.90724151-.91194108 2.6308996zM4.25.999992C2.455064.999992.999992 2.454944.999992 4.24994c0 1.794984 1.455072 3.249936 3.250008 3.249936 1.794924 0 3.249996-1.454952 3.249996-3.249936C7.499996 2.454944 6.044924.999992 4.25.999992z"
@@ -429,7 +441,7 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'sale': (cls) => (
+  sale: (cls) => (
     <svg className={cls} role="presentation" viewBox="0 0 24 24">
       <path
         d="M22.707 12.293l-11-11A1.002 1.002 0 0 0 11 1H2a1 1 0 0 0-1 1v9c0 .265.105.52.293.707l11 11a.997.997 0 0 0 1.414 0l9-9a.999.999 0 0 0 0-1.414zM7 9a2 2 0 1 1-.001-3.999A2 2 0 0 1 7 9zm6 8.414L8.586 13 10 11.586 14.414 16 13 17.414zm3-3L11.586 10 13 8.586 17.414 13 16 14.414z"
@@ -440,13 +452,19 @@ const icons: IconMap = {
 
   'cross-sold-out': (cls) => (
     <svg className={cls} viewBox="0 0 14 14" role="presentation">
-      <g fillRule="nonzero" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="square">
+      <g
+        fillRule="nonzero"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+        strokeLinecap="square"
+      >
         <path d="M11.89949494 2L2 11.89949494M1.99999906 2l9.89949494 9.89949494" />
       </g>
     </svg>
   ),
 
-  'package': (cls) => (
+  package: (cls) => (
     <svg className={cls} viewBox="0 0 46 46" role="presentation">
       <g stroke="currentColor" strokeWidth="2" fill="none" fillRule="evenodd">
         <path d="M11 8l24 14m10-6L25 28 1 14m24 14v16" />
@@ -455,9 +473,16 @@ const icons: IconMap = {
     </svg>
   ),
 
-  'address': (cls) => (
+  address: (cls) => (
     <svg className={cls} viewBox="0 0 46 45" role="presentation">
-      <g transform="translate(1 1)" stroke="currentColor" strokeWidth="2" fill="none" fillRule="evenodd" strokeLinecap="square">
+      <g
+        transform="translate(1 1)"
+        stroke="currentColor"
+        strokeWidth="2"
+        fill="none"
+        fillRule="evenodd"
+        strokeLinecap="square"
+      >
         <path d="M38 9.5L44 8v30l-16 4-12-4-16 4V12l6-1.5" />
         <path d="M32 10c0 6.172-10 16.25-10 16.25S12 16.172 12 10c0-6.328 5.168-10 10-10s10 3.672 10 10z" />
         <circle cx="22" cy="10" r="3" />

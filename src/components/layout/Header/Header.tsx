@@ -1,7 +1,8 @@
 import { mainMenu } from '@/data/menus';
 import { shop } from '@/data/settings';
-import { Container, Icon, Image, Link, Text } from '@/design-system';
+import { Container, Image, Link } from '@/design-system';
 import { CartButton } from '../CartButton';
+import { AccountLink } from './AccountLink';
 import { DesktopNav } from './DesktopNav';
 import { HeaderSearch } from './HeaderSearch';
 import { MobileMenu } from './MobileMenu';
@@ -15,18 +16,13 @@ import { MobileMenu } from './MobileMenu';
 //     right, and a slide-down dark drawer (MobileMenu owns the open/close state)
 export function Header() {
   return (
-    <header className="relative bg-surface" role="banner">
+    <header className="relative bg-surface">
       {/* top account row — desktop only (the live `header_top` is display:none on mobile). The
-          localization/account slot lives here; accounts are deferred, so this is a static link. */}
+          account state is fetched CLIENT-side (AccountLink) so this server component reads no
+          cookies and the whole page stays statically rendered (preserves catalog ISR). */}
       <Container className="hidden py-[5px] md:block">
         <div className="flex justify-end">
-          <Link
-            href="/account"
-            className="inline-flex items-center gap-2 text-xs text-ink hover:text-primary"
-          >
-            <Icon name="account" className="size-4" />
-            <Text as="span" size="xs" value="Моят Акаунт" />
-          </Link>
+          <AccountLink />
         </div>
       </Container>
 

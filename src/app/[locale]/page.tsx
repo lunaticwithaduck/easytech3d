@@ -1,18 +1,30 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { BodyClass } from '@/components/util/BodyClass';
+import { routes } from '@/config/routes';
+import { buildMetadata, DEFAULT_DESCRIPTION, SITE_NAME } from '@/lib/seo';
 
-export const metadata: Metadata = {
-  title: 'EasyTech3D – Филаменти и части за 3D печат',
-  description:
-    'Висококачествени филаменти (PLA, PETG, ABS, ASA, PLA Flex), резини, дюзи, легла и части за 3D принтери на достъпни цени. Бърза доставка в цяла България.',
-};
-import { Slideshow } from '@/components/sections/Slideshow';
-import { FeaturedProducts } from '@/components/sections/FeaturedProducts';
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  return buildMetadata({
+    locale,
+    path: routes.home,
+    absoluteTitle: `${SITE_NAME} – Филаменти и части за 3D печат`,
+    description: DEFAULT_DESCRIPTION,
+  });
+}
+
 import { CollectionList } from '@/components/sections/CollectionList';
-import { IconsWithText } from '@/components/sections/IconsWithText';
 import { FeaturedBlog } from '@/components/sections/FeaturedBlog';
+import { FeaturedProducts } from '@/components/sections/FeaturedProducts';
+import { IconsWithText } from '@/components/sections/IconsWithText';
 import { Newsletter } from '@/components/sections/Newsletter';
+import { Slideshow } from '@/components/sections/Slideshow';
+import { getBlog, getCollection, getProductsInCollection } from '@/data/catalog';
 import {
   collectionListSection,
   featuredBlogSection,
@@ -22,7 +34,6 @@ import {
   newsletterSection,
   slideshowSettings,
 } from '@/data/home';
-import { getBlog, getCollection, getProductsInCollection } from '@/data/catalog';
 
 // Home (templates/index.json) — sections in the live order: slideshow → 3× featured-products →
 // collection-list (circle carousel) → icons-with-text → featured-blog → newsletter. Data is
@@ -34,17 +45,23 @@ export default async function HomePage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const featured = featuredProductsSections.map((section) => ({
-    ...section,
-    tabs: section.tabs.map((tab) => ({
-      heading: tab.heading,
-      products: getProductsInCollection(tab.collectionHandle).slice(0, tab.maxProducts),
+  const featured = await Promise.all(
+    featuredProductsSections.map(async (section) => ({
+      ...section,
+      tabs: await Promise.all(
+        section.tabs.map(async (tab) => ({
+          heading: tab.heading,
+          products: (await getProductsInCollection(tab.collectionHandle)).slice(0, tab.maxProducts),
+        })),
+      ),
     })),
-  }));
+  );
 
-  const showcaseCollections = collectionListSection.collectionHandles
-    .map((handle) => getCollection(handle))
-    .filter((c): c is NonNullable<typeof c> => Boolean(c));
+  const showcaseCollections = (
+    await Promise.all(
+      collectionListSection.collectionHandles.map((handle) => getCollection(handle)),
+    )
+  ).filter((c): c is NonNullable<typeof c> => Boolean(c));
 
   const blogArticles = (getBlog(featuredBlogSection.blogHandle)?.articles ?? []).slice(
     0,

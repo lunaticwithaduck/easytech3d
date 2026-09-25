@@ -1,6 +1,15 @@
-import { Card, Container, Heading, Image, Link, Section, SectionHeader, Text } from '@/design-system';
-import { imageUrl } from '@/lib/shopify/image';
 import type { featuredBlogSection } from '@/data/home';
+import {
+  Card,
+  Container,
+  Heading,
+  Image,
+  Link,
+  Section,
+  SectionHeader,
+  Text,
+} from '@/design-system';
+import { imageUrl } from '@/lib/shopify/image';
 import type { ShopArticle } from '@/lib/shopify/types';
 
 /** Format an ISO date string as the theme does: "July 29, 2024" */
@@ -25,17 +34,29 @@ export function FeaturedBlog({
     <Section data-section-type="featured-blog">
       <Container>
         {(section.title || section.subtitle) && (
-          <SectionHeader eyebrow={section.subtitle || undefined} title={section.title || undefined} />
+          <SectionHeader
+            eyebrow={section.subtitle || undefined}
+            title={section.title || undefined}
+          />
         )}
 
         {/* enable_carousel is false — render the static grid */}
         <ul className="grid grid-cols-1 gap-x-[11px] gap-y-[30px] sm:grid-cols-2 lg:grid-cols-4">
           {limited.map((article, index) => (
             <li key={article.id}>
-              <Card as="article" className="overflow-hidden" aria-labelledby={`FeaturedBlogTitle-${index}`}>
+              <Card
+                as="article"
+                className="overflow-hidden"
+                aria-labelledby={`FeaturedBlogTitle-${index}`}
+              >
                 {/* Image — square 1:1 aspect (probed live: 324×324px), rounded top, object-cover */}
                 {article.image && (
-                  <Link href={article.url} className="relative block aspect-square overflow-hidden rounded-[10px]" tabIndex={-1} aria-hidden="true">
+                  <Link
+                    href={article.url}
+                    className="relative block aspect-square overflow-hidden rounded-[10px]"
+                    tabIndex={-1}
+                    aria-hidden="true"
+                  >
                     <Image
                       src={imageUrl(article.image.src, 535)}
                       alt={article.image.alt || article.title}
@@ -82,7 +103,13 @@ export function FeaturedBlog({
                   )}
 
                   {article.excerpt && (
-                    <Text as="p" size="sm" color="muted" className="mt-2 line-clamp-3" value={article.excerpt} />
+                    <Text
+                      as="p"
+                      size="sm"
+                      color="muted"
+                      className="mt-2 line-clamp-3"
+                      value={article.excerpt}
+                    />
                   )}
                 </div>
               </Card>

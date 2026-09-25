@@ -53,7 +53,11 @@ function CollectionsGridItem({ collection }: { collection: ShopCollection }) {
   return (
     <Card className="flex h-full flex-col overflow-hidden">
       {/* Image area — uniform square (aspect-ratio 1/1), object-cover */}
-      <Link href={collection.url} aria-label={collection.title} className="relative block h-[200px] w-full overflow-hidden rounded-t-card mb-[15px]">
+      <Link
+        href={collection.url}
+        aria-label={collection.title}
+        className="relative block h-[200px] w-full overflow-hidden rounded-t-card mb-[15px]"
+      >
         {image ? (
           <Image
             src={imageUrl(image.src, 535)}
@@ -97,11 +101,7 @@ function CollectionsGridItem({ collection }: { collection: ShopCollection }) {
   );
 }
 
-export function ListCollectionsTemplate({
-  collections,
-}: {
-  collections: ShopCollection[];
-}) {
+export function ListCollectionsTemplate({ collections }: { collections: ShopCollection[] }) {
   return (
     <div className="pb-14">
       {/* Page header — mirrors: <div class="page-width"><div class="section-header"><h1 class="h2"> */}

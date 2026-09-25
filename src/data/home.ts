@@ -125,7 +125,15 @@ export const collectionListSection = {
   imageStyle: 'circle' as const,
   imageOverlay: '#000000',
   imageOverlayOpacity: 82,
-  collectionHandles: ['nozzles', 'pla-flex', 'pla-pro-filaments', 'pla-filaments', 'petg', 'abs', 'asa'],
+  collectionHandles: [
+    'nozzles',
+    'pla-flex',
+    'pla-pro-filaments',
+    'pla-filaments',
+    'petg',
+    'abs',
+    'asa',
+  ],
 };
 
 export const iconsWithTextSection = {
@@ -133,9 +141,23 @@ export const iconsWithTextSection = {
   subtitle: 'от ентусиасти за ентусиасти',
   iconColor: 'rgba(0,0,0,0)',
   blocks: [
-    { icon: 'money-check', title: 'Ниски Цени', contentHtml: '<p>Целим се да направим 3Д принтирането по достъпно за българската общност</p>' },
-    { icon: 'truck', title: 'Бързи Доставки', contentHtml: '<p>Поръчките се изпращат на същия ден, за да можете възможно най-скоро да се завърнете към проектите си</p>' },
-    { icon: 'envelope', title: 'Поддръжка', contentHtml: '<p>Ако имате въпроси относно нашите продукти и използването им, свържете се с нас чрез формата за контакти с какъвто и да е въпрос.</p>' },
+    {
+      icon: 'money-check',
+      title: 'Ниски Цени',
+      contentHtml: '<p>Целим се да направим 3Д принтирането по достъпно за българската общност</p>',
+    },
+    {
+      icon: 'truck',
+      title: 'Бързи Доставки',
+      contentHtml:
+        '<p>Поръчките се изпращат на същия ден, за да можете възможно най-скоро да се завърнете към проектите си</p>',
+    },
+    {
+      icon: 'envelope',
+      title: 'Поддръжка',
+      contentHtml:
+        '<p>Ако имате въпроси относно нашите продукти и използването им, свържете се с нас чрез формата за контакти с какъвто и да е въпрос.</p>',
+    },
   ],
 };
 
@@ -152,5 +174,6 @@ export const featuredBlogSection = {
 export const newsletterSection = {
   title: 'Абонирайте се към нашият мейл лист',
   subtitle: '',
-  subheadingHtml: '<p>Получавайте известия за промоции, нови продукти, евенти, развития в 3D принтинг светът и други</p>',
+  subheadingHtml:
+    '<p>Получавайте известия за промоции, нови продукти, евенти, развития в 3D принтинг светът и други</p>',
 };

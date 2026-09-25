@@ -10,10 +10,10 @@
 // Contract unchanged: ProductTemplate({ product }). The two children own their own client logic.
 
 import type { ReactElement } from 'react';
-import { Container, Link, Text } from '@/design-system';
-import { Rte } from '@/components/snippets/Rte';
-import { ProductMedia } from '@/components/product/ProductMedia';
 import { ProductForm } from '@/components/product/ProductForm';
+import { ProductMedia } from '@/components/product/ProductMedia';
+import { Rte } from '@/components/snippets/Rte';
+import { Container, Link, Text } from '@/design-system';
 import type { ShopProduct } from '@/lib/shopify/types';
 
 // breadcrumbs_color #ff1b5c → pink crumbs (same as CollectionTemplate).

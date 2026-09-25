@@ -11,9 +11,9 @@
 // Block HTML is rendered via Rte (dangerouslySetInnerHTML with .rte wrapper).
 
 import { useEffect, useRef, useState } from 'react';
+import { Rte } from '@/components/snippets/Rte';
 import { announcementBar } from '@/data/settings';
 import { Icon } from '@/design-system';
-import { Rte } from '@/components/snippets/Rte';
 
 const { enabled, showArrows, autoplay, cycleSpeed, blocks } = announcementBar;
 
@@ -44,10 +44,10 @@ function AnnouncementBarInner() {
     }
   };
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: mount-only autoplay timer; startTimer/clearTimer are stable closures and re-running on every render would reset the carousel.
   useEffect(() => {
     startTimer();
     return clearTimer;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const prev = () => {
@@ -65,11 +65,14 @@ function AnnouncementBarInner() {
   const block = blocks[current];
 
   return (
-    <div
+    // Semantic <section> + aria-label = a labelled "region" landmark (satisfies a11y without a
+    // role attr). Hover pauses the autoplay; it's a non-essential enhancement, not a click target.
+    <section
       // min-h-10 + py-2 so the bar grows to fit wrapped copy on mobile (a fixed h-10 clips/off-centers
       // the multi-line text); reduced mobile side padding (px-6) keeps the centered text from crowding
       // the arrows. Desktop stays a single line, so it still reads as the 40px-tall bar.
       className="group relative flex min-h-10 items-center justify-center bg-announce px-6 py-2 text-center text-sm text-white md:px-10"
+      aria-label="Промоционални съобщения"
       onMouseEnter={clearTimer}
       onMouseLeave={startTimer}
     >
@@ -105,6 +108,6 @@ function AnnouncementBarInner() {
           </button>
         </>
       )}
-    </div>
+    </section>
   );
 }

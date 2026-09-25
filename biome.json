@@ -3,7 +3,7 @@
   "vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": true },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["src/**", "scripts/**", "e2e/**"]
+    "includes": ["src/**", "scripts/**", "e2e/**", "!**/*.css"]
   },
   "formatter": {
     "enabled": true,
@@ -27,6 +27,11 @@
     {
       "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.stories.tsx", "**/*.spec.ts"],
       "linter": { "rules": { "suspicious": { "noExplicitAny": "off", "noArrayIndexKey": "off" } } }
+    },
+    {
+      "includes": ["src/data/catalog.generated.ts"],
+      "formatter": { "enabled": false },
+      "linter": { "enabled": false }
     }
   ]
 }

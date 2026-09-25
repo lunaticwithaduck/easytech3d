@@ -10,7 +10,11 @@ export function Container({
   className,
   children,
   ...rest
-}: HTMLAttributes<HTMLElement> & { as?: ElementType; size?: 'default' | 'small'; children?: ReactNode }) {
+}: HTMLAttributes<HTMLElement> & {
+  as?: ElementType;
+  size?: 'default' | 'small';
+  children?: ReactNode;
+}) {
   return (
     <Tag
       className={cn(

@@ -56,6 +56,9 @@ export interface ShopProduct {
   compareAtPrice: number | null;
   available: boolean;
   tags: string[];
+  /** Hand-written Shopify SEO copy; falls back to title/description when absent. */
+  seoTitle?: string;
+  seoDescription?: string;
 }
 
 export interface ShopCollection {
@@ -98,6 +101,117 @@ export interface MenuLink {
   title: string;
   url: string;
   links?: MenuLink[];
+}
+
+// ---- Cart (Phase 2) — mirrors the backend cart contract. Money is integer BGN cents. ----------
+
+export interface ShopCartItem {
+  id: string;
+  variantId: string;
+  productHandle: string;
+  productTitle: string;
+  variantTitle: string;
+  options: string[];
+  url: string;
+  image: ShopImage | null;
+  unitPrice: number;
+  quantity: number;
+  lineTotal: number;
+  available: boolean;
+}
+
+export interface ShopCart {
+  id: string;
+  items: ShopCartItem[];
+  itemCount: number;
+  subtotal: number;
+  freeShippingThreshold: number;
+  freeShippingRemaining: number;
+  qualifiesForFreeShipping: boolean;
+}
+
+// ---- Checkout / orders (Phase 2b) -------------------------------------------------------------
+
+export interface ShippingMethodInfo {
+  id: 'ECONT' | 'SPEEDY';
+  label: string;
+  priceCents: number;
+  baseCents: number;
+}
+
+export interface ShopOrderLineItem {
+  productHandle: string;
+  productTitle: string;
+  variantTitle: string;
+  sku: string;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+  image: ShopImage | null;
+  url: string;
+}
+
+export interface ShopOrder {
+  id: string;
+  orderNumber: string;
+  status: string;
+  paymentMethod: string;
+  paymentStatus: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+  shipping: {
+    city: string;
+    postalCode: string;
+    address1: string;
+    address2: string | null;
+    province: string | null;
+    method: string;
+    deliveryType: string; // ADDRESS | OFFICE
+    officeCode: string | null;
+    officeName: string | null;
+  };
+  items: ShopOrderLineItem[];
+  subtotal: number;
+  shippingCost: number;
+  tax: number;
+  total: number;
+  createdAt: string;
+}
+
+// ---- Courier office pickup (Econt) ------------------------------------------------------------
+
+export interface EcontCity {
+  name: string;
+  postCode: string;
+}
+
+export interface EcontOffice {
+  code: string;
+  name: string;
+  city: string;
+  postCode: string;
+  address: string;
+  isAPS: boolean; // Econtomat (automated parcel machine)
+}
+
+export interface SearchResult {
+  products: ShopProduct[];
+  priceMinCents: number;
+  priceMaxCents: number;
+  total: number;
+}
+
+// ---- Customer accounts (Phase 5) --------------------------------------------------------------
+
+export interface SafeCustomer {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  createdAt: string;
 }
 
 export type SortKey =

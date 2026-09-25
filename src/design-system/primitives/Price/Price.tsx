@@ -18,7 +18,13 @@ export function Price({
   const onSale = compareAtPrice != null && compareAtPrice > price;
   return (
     <div className={cn('flex flex-wrap items-baseline gap-2', className)} data-price>
-      <Text as="span" size={size} weight="bold" color={onSale ? 'sale' : 'ink'} value={dualPrice(price)} />
+      <Text
+        as="span"
+        size={size}
+        weight="bold"
+        color={onSale ? 'sale' : 'ink'}
+        value={dualPrice(price)}
+      />
       {onSale ? <Text as="s" size="sm" color="muted" value={money(compareAtPrice)} /> : null}
     </div>
   );

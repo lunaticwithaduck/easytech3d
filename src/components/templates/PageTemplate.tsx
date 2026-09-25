@@ -8,8 +8,8 @@
 //
 // Ground truth: tools/output/reference/mirror/pages/contact/index.html lines 1573–1614.
 
-import { Container, Heading, Link, Text } from '@/design-system';
 import { Rte } from '@/components/snippets/Rte';
+import { Container, Heading, Link, Text } from '@/design-system';
 
 function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
   return (
@@ -33,18 +33,9 @@ function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
   );
 }
 
-export function PageTemplate({
-  title,
-  contentHtml,
-}: {
-  title: string;
-  contentHtml: string;
-}) {
+export function PageTemplate({ title, contentHtml }: { title: string; contentHtml: string }) {
   // Breadcrumbs: Начало → current page (no URL for current item → aria-current="page")
-  const breadcrumbItems = [
-    { title: 'Начало', url: '/' },
-    { title },
-  ];
+  const breadcrumbItems = [{ title: 'Начало', url: '/' }, { title }];
 
   return (
     <>

@@ -11,57 +11,17 @@
 
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
-
+import { PrintOnOrderTemplate } from '@/components/quote/PrintOnOrderTemplate';
 import { ContactTemplate } from '@/components/templates/ContactTemplate';
 import { PageTemplate } from '@/components/templates/PageTemplate';
 import { BodyClass } from '@/components/util/BodyClass';
+import { routes } from '@/config/routes';
+import { CONTACT_CONTENT, getPageFixture, type PageFixture } from '@/data/pages';
+import { buildMetadata, stripHtml } from '@/lib/seo';
 
-// ── Fixture content ─────────────────────────────────────────────────────────────────────────────
-
-type PageFixture = { title: string; contentHtml: string };
-
-const CONTACT_CONTENT: PageFixture = {
-  title: 'Контакти',
-  contentHtml: `<p>Добре дошли в нашия свят на вълнуващи възможности и технологични иновации!
-Ние сме водещ доставчик на филаменти и части, предоставяйки на нашите клиенти
-инструментите за творчество, които търсят.</p>
-<p>Телефон: +359 878 19 68 23 / +359 876 874 749<br />
-Имейл: <a href="mailto:easytech3dbg@gmail.com">easytech3dbg@gmail.com</a></p>`,
-};
-
-const PAGE_CONTENT: Record<string, PageFixture> = {
-  '3d-принт-при-поръчка': {
-    title: '3D Принт на поръчка',
-    contentHtml: `<p>Предлагаме услуга за 3D принтиране по поръчка. Изпратете ни своя дизайн
-или идея и ние ще го отпечатаме с най-висока прецизност, използвайки широка гама от материали
-— PLA, PETG, ABS, ASA и други.</p>
-<p>За повече информация и запитвания се свържете с нас чрез формата за контакт или директно
-по телефон / имейл.</p>`,
-  },
-  'общи-условия': {
-    title: 'Общи условия',
-    contentHtml: `<p>Настоящите общи условия уреждат отношенията между easytech3d и потребителите
-на онлайн магазина. Моля, прочетете ги внимателно преди да направите поръчка.</p>
-<p>С използването на сайта вие се съгласявате с тези условия. При въпроси не се колебайте
-да се свържете с нас.</p>`,
-  },
-};
-
-function genericFixture(slug: string): PageFixture {
-  const title =
-    slug
-      .replace(/-/g, ' ')
-      .replace(/^./, (c) => c.toUpperCase()) || slug;
-  return {
-    title,
-    contentHtml: `<p>Тази страница е в процес на изграждане. Моля, върнете се по-късно.</p>`,
-  };
-}
-
-function getFixture(slug: string): PageFixture {
-  // Try with the decoded slug directly first, then fall back to generic.
-  return PAGE_CONTENT[slug] ?? genericFixture(slug);
-}
+// The 3D-print-on-order page renders the STL quote calculator (both the Latin route handle and the
+// Cyrillic menu handle resolve here).
+const PRINT_SLUGS = ['3d-print-on-order', '3d-принт-при-поръчка'];
 
 // ── Route ────────────────────────────────────────────────────────────────────────────────────────
 
@@ -73,26 +33,49 @@ type Props = {
 function fixtureFor(rawSlug: string): PageFixture {
   const slug = decodeURIComponent(rawSlug);
   if (slug === 'contact') return CONTACT_CONTENT;
-  return getFixture(slug);
+  return getPageFixture(slug);
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
-  return { title: `${fixtureFor(slug).title} – easytech3d` };
+  const { locale, slug } = await params;
+  const decoded = decodeURIComponent(slug);
+  if (PRINT_SLUGS.includes(decoded)) {
+    return buildMetadata({
+      locale,
+      path: routes.page(decoded),
+      title: '3D Принт по поръчка',
+      description:
+        'Качете STL файл и получете моментална цена за 3D принт по поръчка. PLA, PETG, ABS, ASA. Доставка в цяла България.',
+    });
+  }
+  const fixture = fixtureFor(slug);
+  return buildMetadata({
+    locale,
+    path: routes.page(decoded),
+    title: fixture.title,
+    description: stripHtml(fixture.contentHtml),
+  });
 }
 
 export default async function StaticPage({ params }: Props) {
   const { locale, slug } = await params;
   setRequestLocale(locale);
 
-  if (decodeURIComponent(slug) === 'contact') {
+  const decoded = decodeURIComponent(slug);
+  if (PRINT_SLUGS.includes(decoded)) {
     return (
       <>
         <BodyClass name="template-page" />
-        <ContactTemplate
-          title={CONTACT_CONTENT.title}
-          contentHtml={CONTACT_CONTENT.contentHtml}
-        />
+        <PrintOnOrderTemplate />
+      </>
+    );
+  }
+
+  if (decoded === 'contact') {
+    return (
+      <>
+        <BodyClass name="template-page" />
+        <ContactTemplate title={CONTACT_CONTENT.title} contentHtml={CONTACT_CONTENT.contentHtml} />
       </>
     );
   }

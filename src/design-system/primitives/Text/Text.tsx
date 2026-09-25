@@ -1,6 +1,6 @@
-import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
+import type { ElementType, HTMLAttributes, ReactNode } from 'react';
 import { cn } from '@/design-system/lib/cn';
 
 // Body / UI copy. The type scale + colours come from the @theme tokens (globals.css), so this is
@@ -25,7 +25,13 @@ export const textVariants = cva('font-sans', {
       sale: 'text-sale',
       current: 'text-current',
     },
-    leading: { none: 'leading-none', tight: 'leading-tight', snug: 'leading-snug', normal: 'leading-normal', relaxed: 'leading-relaxed' },
+    leading: {
+      none: 'leading-none',
+      tight: 'leading-tight',
+      snug: 'leading-snug',
+      normal: 'leading-normal',
+      relaxed: 'leading-relaxed',
+    },
     uppercase: { true: 'uppercase' },
     nav: { true: 'font-nav' },
   },
@@ -58,7 +64,10 @@ export function Text({
 }: TextProps) {
   const Comp = asChild ? Slot : Tag;
   return (
-    <Comp className={cn(textVariants({ size, weight, color, leading, uppercase, nav }), className)} {...rest}>
+    <Comp
+      className={cn(textVariants({ size, weight, color, leading, uppercase, nav }), className)}
+      {...rest}
+    >
       {value ?? children}
     </Comp>
   );

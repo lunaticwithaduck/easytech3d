@@ -1,5 +1,5 @@
-import { Container, Heading, Image, Link, Text } from '@/design-system';
 import { Rte } from '@/components/snippets/Rte';
+import { Container, Heading, Image, Link, Text } from '@/design-system';
 import { imageUrl } from '@/lib/shopify/image';
 import type { ShopArticle } from '@/lib/shopify/types';
 

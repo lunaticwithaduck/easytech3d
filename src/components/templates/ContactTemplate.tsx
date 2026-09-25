@@ -21,8 +21,9 @@
 //   contact.form.message = "Съобщение"
 //   contact.form.submit = "Прати"
 
-import { Button, Container, Heading, Icon, Input, Link, Section, SectionHeader, Text, Textarea } from '@/design-system';
 import { Rte } from '@/components/snippets/Rte';
+import { Container, Heading, Link, Section, SectionHeader, Text } from '@/design-system';
+import { ContactForm } from './ContactForm';
 
 function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
   return (
@@ -46,17 +47,8 @@ function Breadcrumbs({ items }: { items: { title: string; url?: string }[] }) {
   );
 }
 
-export function ContactTemplate({
-  title,
-  contentHtml,
-}: {
-  title: string;
-  contentHtml: string;
-}) {
-  const breadcrumbItems = [
-    { title: 'Начало', url: '/' },
-    { title },
-  ];
+export function ContactTemplate({ title, contentHtml }: { title: string; contentHtml: string }) {
+  const breadcrumbItems = [{ title: 'Начало', url: '/' }, { title }];
 
   return (
     <>
@@ -86,69 +78,7 @@ export function ContactTemplate({
 
             <p className="mb-8 text-center text-base text-ink/70">Въпроси по мейла</p>
 
-            {/* contact form */}
-            <form
-              method="post"
-              action="#"
-              id="ContactForm"
-              acceptCharset="UTF-8"
-              className="flex flex-col gap-6"
-            >
-              {/* Name + Email row — 2-up on md+ */}
-              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="ContactForm-name" className="text-sm font-bold text-ink">
-                    Име<span aria-hidden="true"> *</span>
-                  </label>
-                  <Input
-                    type="text"
-                    id="ContactForm-name"
-                    name="contact[Име]"
-                    aria-required="true"
-                    required
-                    defaultValue=""
-                  />
-                </div>
-
-                <div className="flex flex-col gap-2">
-                  <label htmlFor="ContactForm-email" className="text-sm font-bold text-ink">
-                    Имейл<span aria-hidden="true"> *</span>
-                  </label>
-                  <Input
-                    type="email"
-                    id="ContactForm-email"
-                    name="contact[email]"
-                    autoCorrect="off"
-                    autoCapitalize="off"
-                    defaultValue=""
-                    aria-required="true"
-                    required
-                  />
-                </div>
-              </div>
-
-              {/* Message */}
-              <div className="flex flex-col gap-2">
-                <label htmlFor="ContactForm-message" className="text-sm font-bold text-ink">
-                  Съобщение<span aria-hidden="true"> *</span>
-                </label>
-                <Textarea
-                  rows={10}
-                  required
-                  aria-required="true"
-                  id="ContactForm-message"
-                  name="contact[Съобщение]"
-                />
-              </div>
-
-              {/* Submit */}
-              <div>
-                <Button type="submit" variant="primary">
-                  <Text as="span" weight="bold" color="white" value="Прати" />
-                  <Icon name="tail-right" className="size-4 shrink-0" />
-                </Button>
-              </div>
-            </form>
+            <ContactForm />
           </div>
         </Container>
       </Section>

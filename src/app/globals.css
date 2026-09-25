@@ -128,6 +128,8 @@
   --color-border: #ebebeb; /* color_borders */
   --color-sale: #ea0606; /* on-sale price text */
   --color-sale-label: #00a500; /* green sale badge */
+  --color-success: #0a8d3a; /* confirmations: order placed, free shipping, form sent */
+  --color-warning: #b45309; /* pending / attention states */
   --color-soldout-label: #8a9297;
   --color-announce: #fd5b2a; /* announcement bar */
   --color-footer: #000000;
