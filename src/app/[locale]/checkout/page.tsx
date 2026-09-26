@@ -23,7 +23,7 @@ export default async function CheckoutPage({ params }: Props) {
   const cart = await getCart();
   if (cart.items.length === 0) redirect(`/${locale}${routes.cart}`);
 
-  const methods = await getShippingMethods(cart.subtotal);
+  const methods = await getShippingMethods(cart.id);
 
   return (
     <>

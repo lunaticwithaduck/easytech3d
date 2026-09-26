@@ -183,20 +183,21 @@ export interface ShopOrder {
   createdAt: string;
 }
 
-// ---- Courier office pickup (Econt) ------------------------------------------------------------
+// ---- Courier office pickup (Econt / Speedy) ---------------------------------------------------
+// Backed by Medusa's `GET /store/couriers/{carrier}/cities|offices` (contracts/medusa-storefront.md).
 
-export interface EcontCity {
+export interface CourierCity {
+  id: string;
   name: string;
   postCode: string;
+  region: string;
 }
 
-export interface EcontOffice {
+export interface CourierOffice {
   code: string;
   name: string;
-  city: string;
-  postCode: string;
   address: string;
-  isAPS: boolean; // Econtomat (automated parcel machine)
+  type: 'office' | 'locker';
 }
 
 export interface SearchResult {

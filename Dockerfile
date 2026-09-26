@@ -1,8 +1,10 @@
 # Build: docker build --build-arg NEXT_PUBLIC_SITE_URL=... -t easytech3d-web .
 #
 # Railway passes service variables as --build-arg only for ARGs declared here, so every
-# NEXT_PUBLIC_* var must be listed below to be inlined by `next build`. BACKEND_API_URL is
-# needed too: `next build` prerenders catalog pages (home, collections) from the backend.
+# NEXT_PUBLIC_* var must be listed below to be inlined by `next build`. MEDUSA_BACKEND_URL /
+# MEDUSA_PUBLISHABLE_KEY and BACKEND_API_URL are needed too: `next build` prerenders catalog pages
+# (home, collections) from Medusa. Catalog reads degrade to an empty-fallback render when
+# MEDUSA_PUBLISHABLE_KEY is unset or Medusa is unreachable — the build still succeeds.
 
 # ---------- build ----------
 FROM node:22-alpine AS build
@@ -15,6 +17,8 @@ RUN pnpm install --frozen-lockfile
 
 ARG NEXT_PUBLIC_SITE_URL
 ARG NEXT_PUBLIC_MEDIA_HOST
+ARG MEDUSA_BACKEND_URL
+ARG MEDUSA_PUBLISHABLE_KEY
 ARG BACKEND_API_URL
 COPY . .
 RUN pnpm build

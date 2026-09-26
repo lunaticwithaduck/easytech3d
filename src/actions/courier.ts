@@ -1,24 +1,38 @@
 'use server';
 
-import { apiFetch } from '@/lib/api/client';
-import type { EcontCity, EcontOffice } from '@/lib/shopify/types';
+import { medusaFetch } from '@/lib/medusa/client';
+import { mapCourierCity, mapCourierOffice } from '@/lib/medusa/mappers';
+import type { CourierCity, CourierOffice } from '@/lib/shopify/types';
 
-// Econt office lookup (the backend proxies + caches Econt's public nomenclature API).
-export async function getEcontCities(): Promise<EcontCity[]> {
+// Courier office lookup — Medusa's new store routes (built in `commerce/` in parallel; coded
+// against contracts/medusa-storefront.md's shape): `GET /store/couriers/{carrier}/cities|offices`.
+// `carrier` is 'econt' | 'speedy'; the checkout UI only offers office pickup for Econt today.
+
+export async function getCourierCities(
+  carrier: 'econt' | 'speedy' = 'econt',
+): Promise<CourierCity[]> {
   try {
-    return await apiFetch<EcontCity[]>('/courier/econt/cities', { next: { revalidate: 86400 } });
+    const res = await medusaFetch<{ cities: Parameters<typeof mapCourierCity>[0][] }>(
+      `/store/couriers/${carrier}/cities`,
+      { withCustomerAuth: false, next: { revalidate: 86400 } },
+    );
+    return res.cities.map(mapCourierCity);
   } catch {
     return [];
   }
 }
 
-export async function getEcontOffices(city: string): Promise<EcontOffice[]> {
-  if (!city.trim()) return [];
+export async function getCourierOffices(
+  cityId: string,
+  carrier: 'econt' | 'speedy' = 'econt',
+): Promise<CourierOffice[]> {
+  if (!cityId.trim()) return [];
   try {
-    return await apiFetch<EcontOffice[]>(
-      `/courier/econt/offices?city=${encodeURIComponent(city)}`,
-      { next: { revalidate: 86400 } },
+    const res = await medusaFetch<{ offices: Parameters<typeof mapCourierOffice>[0][] }>(
+      `/store/couriers/${carrier}/offices?city_id=${encodeURIComponent(cityId)}`,
+      { withCustomerAuth: false, next: { revalidate: 86400 } },
     );
+    return res.offices.map(mapCourierOffice);
   } catch {
     return [];
   }

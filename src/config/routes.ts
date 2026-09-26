@@ -23,5 +23,9 @@ export const routes = {
     home: '/account',
     orders: '/account/orders',
     login: '/account/login',
+    /** Request a reset-password email (imported Shopify customers need to set a password). */
+    resetPassword: '/account/reset-password',
+    /** Set-new-password page the emailed link points to (`?token=…&email=…`). */
+    resetPasswordConfirm: '/account/reset-password/confirm',
   },
 } as const;

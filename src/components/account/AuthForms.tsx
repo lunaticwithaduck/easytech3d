@@ -3,7 +3,7 @@
 import { useState, useTransition } from 'react';
 import { login, register } from '@/actions/account';
 import { routes } from '@/config/routes';
-import { Button, Heading, Input, Text } from '@/design-system';
+import { Button, Heading, Input, Link, Text } from '@/design-system';
 import { useRouter } from '@/i18n/navigation';
 
 type Mode = 'login' | 'register';
@@ -124,6 +124,15 @@ export function AuthForms({ initialMode = 'login' }: { initialMode?: Mode }) {
             value={pending ? 'Моля изчакайте…' : mode === 'login' ? 'Вход' : 'Създай акаунт'}
           />
         </Button>
+
+        {mode === 'login' && (
+          <Link
+            href={routes.account.resetPassword}
+            className="text-center text-sm text-ink/60 hover:text-primary"
+          >
+            <Text as="span" size="sm" value="Забравена парола?" />
+          </Link>
+        )}
       </form>
     </div>
   );

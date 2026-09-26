@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { type CheckoutInput, submitCheckout } from '@/actions/checkout';
-import { getEcontCities, getEcontOffices } from '@/actions/courier';
+import { getCourierCities, getCourierOffices } from '@/actions/courier';
 import { cartActions } from '@/components/layout/cart-store';
 import { routes } from '@/config/routes';
 import { Button, cn, Heading, Image, Text } from '@/design-system';
 import { useRouter } from '@/i18n/navigation';
 import { money } from '@/lib/shopify/money';
-import type { EcontCity, EcontOffice, ShippingMethodInfo, ShopCart } from '@/lib/shopify/types';
+import type { CourierCity, CourierOffice, ShippingMethodInfo, ShopCart } from '@/lib/shopify/types';
 
 const inputCls =
   'w-full rounded-input border border-border bg-surface px-4 py-3 text-base text-ink outline-none transition-colors placeholder:text-ink/40 focus:border-ink';
@@ -71,9 +71,10 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
   // Delivery target. Office pickup is available for Econt (its office API is public); Speedy needs
   // a contract account, so it stays address-only until those credentials are configured.
   const [deliveryType, setDeliveryType] = useState<'ADDRESS' | 'OFFICE'>('ADDRESS');
-  const [cities, setCities] = useState<EcontCity[]>([]);
-  const [offices, setOffices] = useState<EcontOffice[]>([]);
-  const [officeCity, setOfficeCity] = useState('');
+  const [cities, setCities] = useState<CourierCity[]>([]);
+  const [offices, setOffices] = useState<CourierOffice[]>([]);
+  const [officeCity, setOfficeCity] = useState(''); // the datalist's free-text input value
+  const [officeCityId, setOfficeCityId] = useState('');
   const [officeCode, setOfficeCode] = useState('');
   const [loadingOffices, setLoadingOffices] = useState(false);
 
@@ -83,7 +84,7 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
   // Lazy-load the city list the first time office pickup is chosen.
   useEffect(() => {
     if (usingOffice && cities.length === 0) {
-      getEcontCities().then(setCities);
+      getCourierCities('econt').then(setCities);
     }
   }, [usingOffice, cities.length]);
 
@@ -93,14 +94,17 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
     setOfficeCity(name);
     setOfficeCode('');
     setOffices([]);
-    if (cities.some((c) => c.name === name)) {
+    const city = cities.find((c) => c.name === name);
+    setOfficeCityId(city?.id ?? '');
+    if (city) {
       setLoadingOffices(true);
-      getEcontOffices(name)
+      getCourierOffices(city.id, 'econt')
         .then(setOffices)
         .finally(() => setLoadingOffices(false));
     }
   };
 
+  const selectedCity = cities.find((c) => c.id === officeCityId);
   const selectedOffice = offices.find((o) => o.code === officeCode);
   const shippingCost = methods.find((m) => m.id === shippingMethod)?.priceCents ?? 0;
   const total = cart.subtotal + shippingCost;
@@ -116,7 +120,7 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
 
     let input: CheckoutInput;
     if (usingOffice) {
-      if (!selectedOffice) {
+      if (!selectedOffice || !selectedCity) {
         setError('Моля, изберете офис на Еконт.');
         return;
       }
@@ -125,8 +129,8 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
         firstName: form.firstName,
         lastName: form.lastName,
         phone: form.phone,
-        city: selectedOffice.city,
-        postalCode: selectedOffice.postCode,
+        city: selectedCity.name,
+        postalCode: selectedCity.postCode,
         address1: `${selectedOffice.name} — ${selectedOffice.address}`,
         shippingMethod,
         deliveryType: 'OFFICE',
@@ -286,7 +290,7 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
                     </option>
                     {offices.map((o) => (
                       <option key={o.code} value={o.code}>
-                        {o.isAPS ? '📦 ' : ''}
+                        {o.type === 'locker' ? '📦 ' : ''}
                         {o.name} — {o.address}
                       </option>
                     ))}
@@ -294,11 +298,11 @@ export function CheckoutForm({ cart, methods }: { cart: ShopCart; methods: Shipp
                 </label>
               )}
 
-              {selectedOffice && (
+              {selectedOffice && selectedCity && (
                 <div className="rounded-btn border border-primary/30 bg-primary/5 px-4 py-3">
                   <Text as="span" size="sm" weight="bold" value={selectedOffice.name} />
                   <Text as="p" size="xs" color="muted">
-                    {selectedOffice.city} · {selectedOffice.address}
+                    {selectedCity.name} · {selectedOffice.address}
                   </Text>
                 </div>
               )}
